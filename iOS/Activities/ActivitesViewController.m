@@ -41,6 +41,37 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void)setTextInCell:(ActivityTableCell *)cell activityTitle:(NSString *) activityTitle userName:(NSString *)userName {
+    
+    NSString *joinedString = [[userName stringByAppendingString:@" is "] stringByAppendingString:activityTitle];
+    
+    // Define general attributes for the entire text
+    NSDictionary *attribs = @{
+                              NSForegroundColorAttributeName: cell.activityLabel.textColor,
+                              };
+    
+    UIFont *largeText = [UIFont fontWithName:@"Roboto" size:16];
+    UIFont *smallText = [UIFont fontWithName:@"Roboto-Light" size:14];
+    
+    NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithString:joinedString
+                                           attributes:attribs];
+
+    NSRange userNameRange = {0, [userName length]};
+    NSRange isRange = {[userName length], 4};
+    NSRange activityRange = {[userName length]+4, [activityTitle length]};
+    
+    [attributedText setAttributes:@{NSFontAttributeName: largeText}
+                            range:userNameRange];
+    [attributedText setAttributes:@{NSFontAttributeName: smallText}
+                            range:isRange];
+    [attributedText setAttributes:@{NSFontAttributeName: largeText}
+                            range:activityRange];
+    
+    cell.activityLabel.attributedText = attributedText;
+    
+}
+
 - (void)loadActivities
 {
     RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
@@ -97,8 +128,8 @@
     }
     
     NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
-    cell.activityLabel.text = [@"Owen Campbell-Moore is " stringByAppendingString:activityTitle];
-    //    cell.thumbnailImageView.image = [UIImage imageNamed:[thumbnails objectAtIndex:indexPath.row]];
+    NSString *userName = @"Owen Campbell-Moore";
+    [self setTextInCell :cell activityTitle:activityTitle userName:userName];
     
     return cell;
 }
