@@ -47,7 +47,11 @@
 {
     RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
     [activityMapping addAttributeMappingsFromDictionary:@{
-     @"title": @"title"
+     @"title": @"title",
+     @"start_time": @"start_time",
+     @"location": @"location",
+     @"max_attendees": @"max_attendees",
+     @"description": @"description"
     }];
     
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
