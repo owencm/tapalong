@@ -10,19 +10,31 @@
 
 @implementation ActivityTableCell
 
+// This seems to never be called
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-        // Init
+
     }
     return self;
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
+    // Todo: Put these in the right place
+    self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    self.clipsToBounds = YES;
     [super setSelected:selected animated:animated];
-    NSLog(@"SELECTED\n");
+    if (selected) {
+        [self.detailsButton setTitle:@"Hide Details" forState:UIControlStateNormal];
+        self.descriptionLabel.hidden = NO;
+        self.locationLabel.hidden = NO;
+    } else {
+        [self.detailsButton setTitle:@"Details" forState:UIControlStateNormal];
+        self.descriptionLabel.hidden = YES;
+        self.locationLabel.hidden = YES;
+    }
 }
 
 @end

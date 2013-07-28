@@ -31,7 +31,7 @@
     [super viewDidLoad];
 
     self.activities = [[NSArray alloc] init];
-
+    
     [self loadActivities];
     
     // Uncomment the following line to preserve selection between presentations.
@@ -39,37 +39,6 @@
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)setTextInCell:(ActivityTableCell *)cell activityTitle:(NSString *) activityTitle userName:(NSString *)userName {
-    
-    NSString *joinedString = [[userName stringByAppendingString:@" is "] stringByAppendingString:activityTitle];
-    
-    // Define general attributes for the entire text
-    NSDictionary *attribs = @{
-                              NSForegroundColorAttributeName: cell.activityLabel.textColor,
-                              };
-    
-    UIFont *largeText = [UIFont fontWithName:@"Roboto" size:16];
-    UIFont *smallText = [UIFont fontWithName:@"Roboto-Light" size:14];
-    
-    NSMutableAttributedString *attributedText =
-    [[NSMutableAttributedString alloc] initWithString:joinedString
-                                           attributes:attribs];
-
-    NSRange userNameRange = {0, [userName length]};
-    NSRange isRange = {[userName length], 4};
-    NSRange activityRange = {[userName length]+4, [activityTitle length]};
-    
-    [attributedText setAttributes:@{NSFontAttributeName: largeText}
-                            range:userNameRange];
-    [attributedText setAttributes:@{NSFontAttributeName: smallText}
-                            range:isRange];
-    [attributedText setAttributes:@{NSFontAttributeName: largeText}
-                            range:activityRange];
-    
-    cell.activityLabel.attributedText = attributedText;
-    
 }
 
 - (void)loadActivities
@@ -127,22 +96,57 @@
         cell = [nib objectAtIndex:0];
     }
     
-    NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
-    // Todo: pull other info correctly
+    Activity *activity = [self.activities objectAtIndex:indexPath.row];
+    NSString *activityTitle = [activity title];
+    NSString *description = [activity description];
+    NSString *location = [activity location];
     NSString *userName = @"Owen Campbell-Moore";
-    [self setTextInCell :cell activityTitle:activityTitle userName:userName];
-    
-    // Todo: Put these in the right place
-//    cell.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-//    cell.clipsToBounds = YES;
+    [self setTextInCell :cell activityTitle:activityTitle userName:userName description:description location:location];
     
     return cell;
 }
 
+- (void)setTextInCell:(ActivityTableCell *)cell activityTitle:(NSString *) activityTitle userName:(NSString *)userName description:(NSString *)description location:(NSString *)location {
+    
+    cell.activityLabel.attributedText = [self getAttributedActivity:userName activityTitle:activityTitle];
+    cell.descriptionLabel.text = description;
+    cell.locationLabel.text = [@"Location: " stringByAppendingString:location];
+    
+}
+
+-(NSMutableAttributedString *)getAttributedActivity:(NSString *)userName activityTitle:(NSString *)activityTitle
+{
+    NSString *dateText = @" tomorrow at 7pm";
+    NSString *joinedString = [[[userName stringByAppendingString:@" is "] stringByAppendingString:activityTitle] stringByAppendingString:dateText];
+    // Define general attributes for the entire text
+    NSDictionary *attribs = @{};
+    UIFont *largeText = [UIFont fontWithName:@"Roboto" size:16];
+    UIFont *smallText = [UIFont fontWithName:@"Roboto-Light" size:14];
+    UIColor *veryDarkGrey = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+    UIColor *lessDarkGrey = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
+    NSDictionary *largeTextAttributes = @{NSFontAttributeName: largeText,
+                                         NSForegroundColorAttributeName: veryDarkGrey};
+    NSDictionary *smallTextAttributes = @{NSFontAttributeName: smallText,
+                                          NSForegroundColorAttributeName: lessDarkGrey};
+    NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithString:joinedString
+                                           attributes:attribs];
+    NSRange userNameRange = {0, [userName length]};
+    NSRange isRange = {[userName length], 4};
+    NSRange activityRange = {[userName length]+4, [activityTitle length]};
+    NSRange dateRange = {[userName length]+4+[activityTitle length], [dateText length]};
+    [attributedText setAttributes:largeTextAttributes range:userNameRange];
+    [attributedText setAttributes:smallTextAttributes range:isRange];
+    [attributedText setAttributes:largeTextAttributes range:activityRange];
+    [attributedText setAttributes:smallTextAttributes range:dateRange];
+    return attributedText;
+}
+
+
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (self.selectedCell && indexPath.row == self.selectedCell.row) {
-        return 126;
+        return 150;
     } else {
         return 86;
     }
@@ -154,16 +158,18 @@
     ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
     [tableView beginUpdates];
     [tableView endUpdates];
-    [cell.detailsButton setTitle:@"Hide Details" forState:UIControlStateNormal];
-    //    cell.activityLabel.hidden = NO;
 }
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
     ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
     [tableView beginUpdates];
     [tableView endUpdates];
-    [cell.detailsButton setTitle:@"Details" forState:UIControlStateNormal];
-//    cell.activityLabel.hidden = YES;
+    //Displaying and hiding items is managed by the cell itself
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [UIColor colorWithRed:0.94 green:0.94 blue:0.94 alpha:1];
 }
 
 @end
