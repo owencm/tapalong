@@ -8,6 +8,7 @@
 
 #import "AppDelegate.h"
 #import "ActivitesViewController.h"
+#import <RestKit/RestKit.h>
 
 @implementation AppDelegate
 
