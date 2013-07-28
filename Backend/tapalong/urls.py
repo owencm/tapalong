@@ -5,6 +5,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+	url(r'', include('social_auth.urls')),
 	url(r'^activities/', include('tapalong_app.urls')),
 
     # Examples:

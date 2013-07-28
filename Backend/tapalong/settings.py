@@ -17,8 +17,22 @@ FACEBOOK_API_SECRET='f29bad19065dfa433ec0b89815e86f64'
 # This too? : django.contrib.auth.backends.ModelBackend
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
+SOCIAL_AUTH_ENABLED_BACKENDS = ('facebook',)
+# Used to build a default username if provider didn't return any useful value:
+SOCIAL_AUTH_DEFAULT_USERNAME = 'new_social_auth_user'
+
+#Setup login URLs:
+LOGIN_URL          = '/login-form/'
+LOGIN_REDIRECT_URL = '/logged-in/'
+LOGIN_ERROR_URL    = '/login-error/'
+
+# Configuring authentication and association complete URL
+# names to avoid possible clashes 
+# SOCIAL_AUTH_COMPLETE_URL_NAME  = 'socialauth_complete'
+# SOCIAL_AUTH_ASSOCIATE_URL_NAME = 'socialauth_associate_complete'
 
 MANAGERS = ADMINS
 
