@@ -8,6 +8,8 @@ from tapalong_app.models import User, Activity
 # returns in order of creation; youngest to oldest.
 def get_events_list(request, user_id):
 	user_events_list = Activity.objects.filter(attendees=user_id).order_by('-pub_date')
-	return HttpResponse("hi %s" % user_id)
+	output = ', '.join([a.title for a in user_events_list])
+
+	return HttpResponse(output)
 
 
