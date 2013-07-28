@@ -28,8 +28,12 @@ def get_activities_list(request, user_id):
 def create_activity(request, user_id):
 	now = datetime.datetime.utcnow().replace(tzinfo=utc)
 	activity_info=json.loads(request.raw_post_data)
-	print(request)
 	activity = Activity(creator_id=1, title=activity_info.get("title"), pub_date=now, start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+	activity.save()
+	activity_attendees = activity_info.get("attendees")
+	for user_id in activity_attendees:
+		user = User.objects.get(id=user_id)
+		activity.attendees.add(user)
 	activity.save()
 	return HttpResponse("I saved stuff!")
 
