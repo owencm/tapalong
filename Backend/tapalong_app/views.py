@@ -2,6 +2,9 @@ from django.utils import simplejson as json
 from django.utils.timezone import utc
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.template import RequestContext, loader
+# Make sure users are logged in before they can view.
+from django.contrib.auth.decorators import login_required
 import datetime
 
 from tapalong_app.models import User, Activity
@@ -33,7 +36,10 @@ def get_activities_list(request, user_id):
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
-		return HttpResponse(json_output, mimetype='application/json')
+		template = loader.get_template('tapalong_app/index.html')
+		context = RequestContext(request, {})
+		# return HttpResponse(json_output, mimetype='application/json')
+		return HttpResponse(template.render(context))
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
