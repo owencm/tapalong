@@ -10,6 +10,16 @@ ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
 
+#Facebook integration
+FACEBOOK_APP_ID='416549371775324'
+FACEBOOK_API_SECRET='f29bad19065dfa433ec0b89815e86f64'
+
+# This too? : django.contrib.auth.backends.ModelBackend
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.facebook.FacebookBackend',
+)
+
+
 MANAGERS = ADMINS
 
 DATABASES = {
@@ -127,6 +137,8 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    # For Facebook authentication
+    'social_auth',
     'tapalong_app',
 )
 
