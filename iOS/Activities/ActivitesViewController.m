@@ -97,51 +97,54 @@
     }
     
     Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    NSString *activityTitle = [activity title];
-    NSString *description = [activity description];
-    NSString *location = [activity location];
-    NSString *userName = @"Owen Campbell-Moore";
-    [self setTextInCell :cell activityTitle:activityTitle userName:userName description:description location:location];
+    NSString *titleString = [activity title];
+    NSString *descriptionString = [activity description];
+    NSString *locationString = [activity location];
+    NSString *dateString = @" tomorrow at 7pm";
+    NSString *userNameString = @"Owen Campbell-Moore";
+    [self setTextInCell:cell titleString:titleString userNameString:userNameString descriptionString:descriptionString locationString:locationString dateString:dateString];
     
     return cell;
 }
 
-- (void)setTextInCell:(ActivityTableCell *)cell activityTitle:(NSString *) activityTitle userName:(NSString *)userName description:(NSString *)description location:(NSString *)location {
+- (void)setTextInCell:(ActivityTableCell *)cell titleString:(NSString *)titleString userNameString:(NSString *)userNameString descriptionString:(NSString *)descriptionString locationString:(NSString *)locationString dateString:(NSString *)dateString {
     
-    cell.activityLabel.attributedText = [self getAttributedActivity:userName activityTitle:activityTitle];
-    cell.descriptionLabel.text = description;
-    cell.locationLabel.text = [@"Location: " stringByAppendingString:location];
+    cell.activityLabel.attributedText = [self getAttributedActivity:userNameString titleString:titleString dateString:dateString];
+    cell.descriptionLabel.text = descriptionString;
+    cell.locationLabel.text = [@"Location: " stringByAppendingString:locationString];
     
 }
 
--(NSMutableAttributedString *)getAttributedActivity:(NSString *)userName activityTitle:(NSString *)activityTitle
+-(NSMutableAttributedString *)getAttributedActivity:(NSString *)userNameString titleString:(NSString *)titleString dateString:(NSString *)dateString
 {
-    NSString *dateText = @" tomorrow at 7pm";
-    NSString *joinedString = [[[userName stringByAppendingString:@" is "] stringByAppendingString:activityTitle] stringByAppendingString:dateText];
-    // Define general attributes for the entire text
+    NSString *joinedString = [[[userNameString stringByAppendingString:@" is "] stringByAppendingString:titleString] stringByAppendingString:dateString];
+    
+    // Define general attributes for the entire String
     NSDictionary *attribs = @{};
-    UIFont *largeText = [UIFont fontWithName:@"Roboto" size:16];
-    UIFont *smallText = [UIFont fontWithName:@"Roboto-Light" size:14];
+    
+    // Define preset styles we will use
+    UIFont *largeString = [UIFont fontWithName:@"Roboto" size:16];
+    UIFont *smallString = [UIFont fontWithName:@"Roboto-Light" size:14];
     UIColor *veryDarkGrey = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
     UIColor *lessDarkGrey = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
-    NSDictionary *largeTextAttributes = @{NSFontAttributeName: largeText,
+    NSDictionary *largeStringAttributes = @{NSFontAttributeName: largeString,
                                          NSForegroundColorAttributeName: veryDarkGrey};
-    NSDictionary *smallTextAttributes = @{NSFontAttributeName: smallText,
+    NSDictionary *smallStringAttributes = @{NSFontAttributeName: smallString,
                                           NSForegroundColorAttributeName: lessDarkGrey};
-    NSMutableAttributedString *attributedText =
+    
+    NSMutableAttributedString *attributedString =
     [[NSMutableAttributedString alloc] initWithString:joinedString
                                            attributes:attribs];
-    NSRange userNameRange = {0, [userName length]};
-    NSRange isRange = {[userName length], 4};
-    NSRange activityRange = {[userName length]+4, [activityTitle length]};
-    NSRange dateRange = {[userName length]+4+[activityTitle length], [dateText length]};
-    [attributedText setAttributes:largeTextAttributes range:userNameRange];
-    [attributedText setAttributes:smallTextAttributes range:isRange];
-    [attributedText setAttributes:largeTextAttributes range:activityRange];
-    [attributedText setAttributes:smallTextAttributes range:dateRange];
-    return attributedText;
+    NSRange userNameRange = {0, [userNameString length]};
+    NSRange isRange = {[userNameString length], 4};
+    NSRange titleRange = {[userNameString length]+4, [titleString length]};
+    NSRange dateRange = {[userNameString length]+4+[titleString length], [dateString length]};
+    [attributedString setAttributes:largeStringAttributes range:userNameRange];
+    [attributedString setAttributes:smallStringAttributes range:isRange];
+    [attributedString setAttributes:largeStringAttributes range:titleRange];
+    [attributedString setAttributes:smallStringAttributes range:dateRange];
+    return attributedString;
 }
-
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
