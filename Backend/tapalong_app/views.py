@@ -1,5 +1,7 @@
 from django.utils import simplejson as json
+from django.utils.timezone import utc
 from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
 import datetime
 
 from tapalong_app.models import User, Activity
@@ -16,5 +18,19 @@ def get_activities_list(request, user_id):
 	serialized_activities = map(serialize_activity, user_activities_list)
 	json_output = json.dumps(serialized_activities)
 	return HttpResponse(json_output, mimetype='application/json')
+
+# Accepts and stores a new activity
+
+# Will need to convert start time from str to datetime,
+# fix creator_id always being 1 (post fb-auth),
+# check to make sure user exists?
+@csrf_exempt
+def create_activity(request, user_id):
+	now = datetime.datetime.utcnow().replace(tzinfo=utc)
+	activity_info=json.loads(request.raw_post_data)
+	print(request)
+	activity = Activity(creator_id=1, title=activity_info.get("title"), pub_date=now, start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+	activity.save()
+	return HttpResponse("I saved stuff!")
 
 
