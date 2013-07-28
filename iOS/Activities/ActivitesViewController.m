@@ -30,9 +30,7 @@
 {
     [super viewDidLoad];
 
-    self.activities = [[NSMutableArray alloc] init];
-    [self.activities addObject:@"Owen Campbell-Moore is blah"];
-    [self.activities addObject:@"Ally Gale is blah"];
+    self.activities = [[NSArray alloc] init];
 
     [self loadActivities];
     
@@ -60,7 +58,9 @@
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
     RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
     [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        RKLogInfo(@"Load collection of Activities: %@", mappingResult.array);
+//        RKLogInfo(@"Load collection of Activities: %@", mappingResult.array);
+        self.activities = mappingResult.array;
+        [self.tableView reloadData];
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Operation failed with error: %@", error);
     }];
@@ -96,7 +96,8 @@
         cell = [nib objectAtIndex:0];
     }
     
-    cell.activityLabel.text = [self.activities objectAtIndex:indexPath.row];
+    NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
+    cell.activityLabel.text = [@"Owen Campbell-Moore is " stringByAppendingString:activityTitle];
     //    cell.thumbnailImageView.image = [UIImage imageNamed:[thumbnails objectAtIndex:indexPath.row]];
     
     return cell;

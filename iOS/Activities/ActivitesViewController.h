@@ -9,5 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface ActivitesViewController : UITableViewController
-@property NSMutableArray *activities;
+@property NSArray *activities;
 @end
