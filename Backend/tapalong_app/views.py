@@ -36,10 +36,7 @@ def get_activities_list(request, user_id):
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
-		template = loader.get_template('tapalong_app/index.html')
-		context = RequestContext(request, {})
-		# return HttpResponse(json_output, mimetype='application/json')
-		return HttpResponse(template.render(context))
+		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
