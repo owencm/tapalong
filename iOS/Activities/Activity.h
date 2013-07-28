@@ -10,4 +10,6 @@
 
 @interface Activity : NSObject
 
+@property (strong, nonatomic) NSString *title;
+
 @end

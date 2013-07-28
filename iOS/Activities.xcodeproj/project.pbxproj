@@ -13,6 +13,7 @@
 		626C843517A4EC740024D105 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843417A4EC740024D105 /* MobileCoreServices.framework */; };
 		626C843717A4EC860024D105 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C842717A4E77A0024D105 /* libRestKit.a */; };
 		626C844017A4EF290024D105 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843F17A4EF290024D105 /* SystemConfiguration.framework */; };
+		626C844317A4F2000024D105 /* Activity.m in Sources */ = {isa = PBXBuildFile; fileRef = 626C844217A4F2000024D105 /* Activity.m */; };
 		62D6DEDC17A4C35D00EF920F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDB17A4C35D00EF920F /* UIKit.framework */; };
 		62D6DEDE17A4C35D00EF920F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDD17A4C35D00EF920F /* Foundation.framework */; };
 		62D6DEE017A4C35D00EF920F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDF17A4C35D00EF920F /* CoreGraphics.framework */; };
@@ -82,6 +83,8 @@
 		626C843217A4EC6F0024D105 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
 		626C843417A4EC740024D105 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		626C843F17A4EF290024D105 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		626C844117A4F2000024D105 /* Activity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Activity.h; sourceTree = "<group>"; };
+		626C844217A4F2000024D105 /* Activity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Activity.m; sourceTree = "<group>"; };
 		62D6DED817A4C35D00EF920F /* Activities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Activities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62D6DEDB17A4C35D00EF920F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		62D6DEDD17A4C35D00EF920F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -180,6 +183,8 @@
 				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
 				62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */,
 				62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */,
+				626C844117A4F2000024D105 /* Activity.h */,
+				626C844217A4F2000024D105 /* Activity.m */,
 			);
 			path = Activities;
 			sourceTree = "<group>";
@@ -313,6 +318,7 @@
 				62D6DEEC17A4C35D00EF920F /* AppDelegate.m in Sources */,
 				62D6DF0117A4C4DC00EF920F /* ActivitesViewController.m in Sources */,
 				62D6DF0817A4C5C100EF920F /* ActivityTableCell.m in Sources */,
+				626C844317A4F2000024D105 /* Activity.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
