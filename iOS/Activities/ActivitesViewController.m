@@ -41,6 +41,37 @@
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+- (void)setTextInCell:(ActivityTableCell *)cell activityTitle:(NSString *) activityTitle userName:(NSString *)userName {
+    
+    NSString *joinedString = [[userName stringByAppendingString:@" is "] stringByAppendingString:activityTitle];
+    
+    // Define general attributes for the entire text
+    NSDictionary *attribs = @{
+                              NSForegroundColorAttributeName: cell.activityLabel.textColor,
+                              };
+    
+    UIFont *largeText = [UIFont fontWithName:@"Roboto" size:16];
+    UIFont *smallText = [UIFont fontWithName:@"Roboto-Light" size:14];
+    
+    NSMutableAttributedString *attributedText =
+    [[NSMutableAttributedString alloc] initWithString:joinedString
+                                           attributes:attribs];
+
+    NSRange userNameRange = {0, [userName length]};
+    NSRange isRange = {[userName length], 4};
+    NSRange activityRange = {[userName length]+4, [activityTitle length]};
+    
+    [attributedText setAttributes:@{NSFontAttributeName: largeText}
+                            range:userNameRange];
+    [attributedText setAttributes:@{NSFontAttributeName: smallText}
+                            range:isRange];
+    [attributedText setAttributes:@{NSFontAttributeName: largeText}
+                            range:activityRange];
+    
+    cell.activityLabel.attributedText = attributedText;
+    
+}
+
 - (void)loadActivities
 {
     RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
@@ -97,28 +128,42 @@
     }
     
     NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
-    cell.activityLabel.text = [@"Owen Campbell-Moore is " stringByAppendingString:activityTitle];
-    //    cell.thumbnailImageView.image = [UIImage imageNamed:[thumbnails objectAtIndex:indexPath.row]];
+    // Todo: pull other info correctly
+    NSString *userName = @"Owen Campbell-Moore";
+    [self setTextInCell :cell activityTitle:activityTitle userName:userName];
+    
+    // Todo: Put these in the right place
+//    cell.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+//    cell.clipsToBounds = YES;
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    if (self.selectedCell && indexPath.row == self.selectedCell.row) {
+        return 126;
+    } else {
+        return 86;
+    }
 }
-
-#pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    self.selectedCell = indexPath;
+    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+    [tableView beginUpdates];
+    [tableView endUpdates];
+    [cell.detailsButton setTitle:@"Hide Details" forState:UIControlStateNormal];
+    //    cell.activityLabel.hidden = NO;
+}
+
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+    [tableView beginUpdates];
+    [tableView endUpdates];
+    [cell.detailsButton setTitle:@"Details" forState:UIControlStateNormal];
+//    cell.activityLabel.hidden = YES;
 }
 
 @end

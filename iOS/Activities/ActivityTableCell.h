@@ -11,5 +11,6 @@
 @interface ActivityTableCell : UITableViewCell
 
 @property (nonatomic, weak) IBOutlet UILabel *activityLabel;
+@property (nonatomic, weak) IBOutlet UIButton *detailsButton;
 
 @end

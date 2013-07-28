@@ -23,6 +23,7 @@
     [[UINavigationBar appearance] setBackgroundColor:[UIColor redColor]];
     self.window.backgroundColor = [UIColor lightGrayColor];
     [self.window makeKeyAndVisible];
+    
     return YES;
 }
 

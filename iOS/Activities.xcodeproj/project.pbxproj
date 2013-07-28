@@ -14,6 +14,8 @@
 		626C843717A4EC860024D105 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C842717A4E77A0024D105 /* libRestKit.a */; };
 		626C844017A4EF290024D105 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843F17A4EF290024D105 /* SystemConfiguration.framework */; };
 		626C844317A4F2000024D105 /* Activity.m in Sources */ = {isa = PBXBuildFile; fileRef = 626C844217A4F2000024D105 /* Activity.m */; };
+		626C844617A58BCA0024D105 /* Roboto-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 626C844417A58BCA0024D105 /* Roboto-Light.ttf */; };
+		626C844717A58BCA0024D105 /* Roboto-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 626C844517A58BCA0024D105 /* Roboto-Regular.ttf */; };
 		62D6DEDC17A4C35D00EF920F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDB17A4C35D00EF920F /* UIKit.framework */; };
 		62D6DEDE17A4C35D00EF920F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDD17A4C35D00EF920F /* Foundation.framework */; };
 		62D6DEE017A4C35D00EF920F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDF17A4C35D00EF920F /* CoreGraphics.framework */; };
@@ -85,6 +87,8 @@
 		626C843F17A4EF290024D105 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		626C844117A4F2000024D105 /* Activity.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Activity.h; sourceTree = "<group>"; };
 		626C844217A4F2000024D105 /* Activity.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Activity.m; sourceTree = "<group>"; };
+		626C844417A58BCA0024D105 /* Roboto-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Light.ttf"; sourceTree = "<group>"; };
+		626C844517A58BCA0024D105 /* Roboto-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Regular.ttf"; sourceTree = "<group>"; };
 		62D6DED817A4C35D00EF920F /* Activities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Activities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62D6DEDB17A4C35D00EF920F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		62D6DEDD17A4C35D00EF920F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -192,6 +196,8 @@
 		62D6DEE217A4C35D00EF920F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				626C844417A58BCA0024D105 /* Roboto-Light.ttf */,
+				626C844517A58BCA0024D105 /* Roboto-Regular.ttf */,
 				62D6DF0917A4C5EE00EF920F /* placeholder.png */,
 				62D6DEE317A4C35D00EF920F /* Activities-Info.plist */,
 				62D6DEE417A4C35D00EF920F /* InfoPlist.strings */,
@@ -304,6 +310,8 @@
 				62D6DEFB17A4C45E00EF920F /* red.png in Resources */,
 				62D6DF0517A4C5A000EF920F /* ActivityTableCell.xib in Resources */,
 				62D6DF0A17A4C5EE00EF920F /* placeholder.png in Resources */,
+				626C844617A58BCA0024D105 /* Roboto-Light.ttf in Resources */,
+				626C844717A58BCA0024D105 /* Roboto-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
