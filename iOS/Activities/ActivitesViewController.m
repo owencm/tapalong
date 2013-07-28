@@ -128,28 +128,42 @@
     }
     
     NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
+    // Todo: pull other info correctly
     NSString *userName = @"Owen Campbell-Moore";
     [self setTextInCell :cell activityTitle:activityTitle userName:userName];
+    
+    // Todo: Put these in the right place
+//    cell.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+//    cell.clipsToBounds = YES;
     
     return cell;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    if (self.selectedCell && indexPath.row == self.selectedCell.row) {
+        return 126;
+    } else {
+        return 86;
+    }
 }
-
-#pragma mark - Table view delegate
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    // Navigation logic may go here. Create and push another view controller.
-    /*
-     <#DetailViewController#> *detailViewController = [[<#DetailViewController#> alloc] initWithNibName:@"<#Nib name#>" bundle:nil];
-     // ...
-     // Pass the selected object to the new view controller.
-     [self.navigationController pushViewController:detailViewController animated:YES];
-     */
+    self.selectedCell = indexPath;
+    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+    [tableView beginUpdates];
+    [tableView endUpdates];
+    [cell.detailsButton setTitle:@"Hide Details" forState:UIControlStateNormal];
+    //    cell.activityLabel.hidden = NO;
+}
+
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+    [tableView beginUpdates];
+    [tableView endUpdates];
+    [cell.detailsButton setTitle:@"Details" forState:UIControlStateNormal];
+//    cell.activityLabel.hidden = YES;
 }
 
 @end

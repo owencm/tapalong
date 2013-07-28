@@ -10,4 +10,5 @@
 
 @interface ActivitesViewController : UITableViewController
 @property NSArray *activities;
+@property NSIndexPath *selectedCell;
 @end
