@@ -8,6 +8,8 @@
 
 #import "ActivitesViewController.h"
 #import "ActivityTableCell.h"
+#import <RestKit/RestKit.h>
+#import "Activity.h"
 
 @interface ActivitesViewController ()
 
@@ -27,16 +29,43 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    self.activities = [[NSMutableArray alloc] init];
-    [self.activities addObject:@"Owen Campbell-Moore is blah"];
-    [self.activities addObject:@"Ally Gale is blah"];
 
+    self.activities = [[NSArray alloc] init];
+
+    [self loadActivities];
+    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (void)loadActivities
+{
+    RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
+    [activityMapping addAttributeMappingsFromDictionary:@{
+     @"title": @"title",
+     @"start_time": @"start_time",
+     @"location": @"location",
+     @"max_attendees": @"max_attendees",
+     @"description": @"description"
+    }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURL *URL = [NSURL URLWithString:@"http://127.0.0.1:8000/activities/1/"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+//        RKLogInfo(@"Load collection of Activities: %@", mappingResult.array);
+        self.activities = mappingResult.array;
+        [self.tableView reloadData];
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Operation failed with error: %@", error);
+    }];
+    
+    [objectRequestOperation start];
 }
 
 - (void)didReceiveMemoryWarning
@@ -67,7 +96,8 @@
         cell = [nib objectAtIndex:0];
     }
     
-    cell.activityLabel.text = [self.activities objectAtIndex:indexPath.row];
+    NSString *activityTitle = [[self.activities objectAtIndex:indexPath.row] title];
+    cell.activityLabel.text = [@"Owen Campbell-Moore is " stringByAppendingString:activityTitle];
     //    cell.thumbnailImageView.image = [UIImage imageNamed:[thumbnails objectAtIndex:indexPath.row]];
     
     return cell;

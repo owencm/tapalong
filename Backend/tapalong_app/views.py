@@ -9,7 +9,7 @@ from tapalong_app.models import User, Activity
 # Serializes a single activity, passing along the following:
 # Title, start time, description, location, max attendees
 def serialize_activity(activity):
-	return {"title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees}
+	return {"activity": {"title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
