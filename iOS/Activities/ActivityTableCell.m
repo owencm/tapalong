@@ -11,11 +11,11 @@
 @implementation ActivityTableCell
 
 // This seems to never be called
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithCoder:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
 {
     self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
     if (self) {
-
+        [self.activityLabel sizeToFit];
     }
     return self;
 }

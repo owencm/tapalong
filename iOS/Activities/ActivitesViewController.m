@@ -97,7 +97,7 @@
     }
     
     Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    NSString *titleString = [activity title];
+    NSString *titleString = [[activity title] capitalizedString];
     NSString *descriptionString = [activity description];
     NSString *locationString = [activity location];
     NSString *dateString = @" tomorrow at 7pm";
@@ -143,6 +143,11 @@
     [attributedString setAttributes:smallStringAttributes range:isRange];
     [attributedString setAttributes:largeStringAttributes range:titleRange];
     [attributedString setAttributes:smallStringAttributes range:dateRange];
+    
+    CGRect size = [attributedString boundingRectWithSize: CGSizeMake(250, 0.0) options:NSStringDrawingUsesDeviceMetrics context:nil];
+    
+    NSLog(@"%@", NSStringFromCGRect(size));
+    
     return attributedString;
 }
 
@@ -158,13 +163,14 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     self.selectedCell = indexPath;
-    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
     [tableView beginUpdates];
     [tableView endUpdates];
 }
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+    self.selectedCell = nil;
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
     [tableView beginUpdates];
     [tableView endUpdates];
     //Displaying and hiding items is managed by the cell itself
