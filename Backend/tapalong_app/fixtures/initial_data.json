@@ -1,0 +1,90 @@
+[
+  {
+    "model": "tapalong_app.Activity",
+    "pk": 1,
+    "fields": {
+      "creator": 1,
+      "pub_date": "2013-03-16 17:41:28",
+      "start_time": "2013-03-16 20:30:00",
+      "title": "Walking My Dogs Around Green Lake",
+      "description": "I'm walking my dogs and would love some company! We can go get dessert after!",
+      "attendees": [1, 2, 3, 4],
+      "location": "Green Lake Park, Seattle , WA",
+      "max_attendees": 3
+    }
+  },
+  {
+    "model": "tapalong_app.Activity",
+    "pk": 2,
+    "fields": {
+      "creator": 1,
+      "pub_date": "2013-05-05 09:30:00",
+      "start_time": "2013-05-06 19:30:00",
+      "title": "Perfecting my Pie Baking Skills",
+      "description": "I'm trying to become a better baker! Help me make pies and get some tasty smaples!",
+      "attendees": [1, 2, 3, 4],
+      "location": "4004 SW Hinds St, Seattle , WA 98116",
+      "max_attendees": 2
+    }
+  },
+    {
+    "model": "tapalong_app.Activity",
+    "pk": 3,
+    "fields": {
+      "creator": 2,
+      "pub_date": "2013-07-29 12:00:00",
+      "start_time": "2013-07-28 14:30:00",
+      "title": "Thrift Shopping",
+      "description": "I'm gonna pop some tags, only got $20 in my pocket! Come get some crazy outfits with me!",
+      "attendees": [1, 2, 3],
+      "location": "Goodwill on Dearborn St.",
+      "max_attendees": 2
+    }
+  },
+    {
+    "model": "tapalong_app.Activity",
+    "pk": 4,
+    "fields": {
+      "creator": 2,
+      "pub_date": "2013-03-14 08:24:28",
+      "start_time": "2013-03-16 17:30:00",
+      "title": "Doing Math Homework and Watching Community",
+      "description": "I procrastinated hard-core on this assignment so I'm going to be up late. Come over and do homework with me!",
+      "attendees": [1, 2, 3, 4],
+      "location": "300 25th Ave S, Seattle , WA",
+      "max_attendees": 4
+    }
+  },
+  {
+    "model": "tapalong_app.User",
+    "pk": 1,
+    "fields": {
+      "name": "Ally Gale",
+      "password": "hulubaloo"
+    }
+  },
+    {
+    "model": "tapalong_app.User",
+    "pk": 2,
+    "fields": {
+      "name": "Owen Campbell-Moore",
+      "password": "ILikeSushi"
+    }
+  },
+    {
+    "model": "tapalong_app.User",
+    "pk": 3,
+    "fields": {
+      "name": "Tyler Rigsby",
+      "password": "Iamsocoolz224"
+    }
+  },
+    {
+    "model": "tapalong_app.User",
+    "pk": 4,
+    "fields": {
+      "name": "Stuart Kearney",
+      "password": "Whyarentyoubuildingslant#45  "
+    }
+  }
+]
