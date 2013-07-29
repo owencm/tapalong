@@ -13,6 +13,7 @@
       "max_attendees": 3
     }
   },
+
   {
     "model": "tapalong_app.Activity",
     "pk": 2,
@@ -53,6 +54,34 @@
       "attendees": [1, 2, 3, 4],
       "location": "300 25th Ave S, Seattle , WA",
       "max_attendees": 4
+    }
+  },
+    {
+    "model": "tapalong_app.Activity",
+    "pk": 5,
+    "fields": {
+      "creator": 3,
+      "pub_date": "2013-06-24 09:47:30",
+      "start_time": "2013-06-24 10:20:00",
+      "title": "Teaching My First CSE 142 Lecture!",
+      "description": "I'm the lecturer for CSE 142 for UW this summer and am teaching my first class today. Come root me on!",
+      "attendees": [1, 2, 3, 4],
+      "location": "University of Washington, GUG 120, Seattle , WA",
+      "max_attendees": 0
+    }
+  },
+    {
+    "model": "tapalong_app.Activity",
+    "pk": 6,
+    "fields": {
+      "creator": 4,
+      "pub_date": "2013-05-05 17:40:34",
+      "start_time": "2013-03-16 17:40:00",
+      "title": "Cinco de Mayo Party",
+      "description": "Drink cerveza and hit a pinata!",
+      "attendees": [1, 2, 3, 4],
+      "location": "The Tree House, Palo Alto, CA",
+      "max_attendees": 0
     }
   },
   {
