@@ -17,8 +17,10 @@
 
 @implementation ActivitesViewController
 
+// This seems to do nothing
 - (id)initWithStyle:(UITableViewStyle)style
 {
+    NSLog(@"Hi");
     self = [super initWithStyle:style];
     if (self) {
         // Custom initialization
@@ -156,10 +158,12 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
-    //Do me!
-    
-    return 100;
+    //TODO: DO ME
+    if (self.selectedCell && self.selectedCell.row == indexPath.row) {
+        return 150;
+    } else {
+        return 100;
+    }
     
 }
 

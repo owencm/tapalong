@@ -25,6 +25,7 @@
     [self.window addSubview:navigationController.view];
     
     [[navigationController navigationBar] setBackgroundImage:[UIImage imageNamed:@"red.png"] forBarMetrics:UIBarMetricsDefault];
+    [navigationController navigationBar].barStyle = UIBarStyleBlackTranslucent;
     
     [self.window makeKeyAndVisible];
     

@@ -10,9 +10,9 @@
 
 @implementation ActivityTableCell
 
-- (id)initWithCoder:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
+- (id)initWithCoder:(NSCoder *)aDecoder
 {
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    self = [super initWithCoder:aDecoder];
     if (self) {
         self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
         self.clipsToBounds = YES;
