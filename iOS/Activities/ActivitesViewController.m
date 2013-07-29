@@ -30,6 +30,8 @@
 {
     [super viewDidLoad];
 
+    self.fakeActivityTableCell = [[ActivityTableCell alloc] init];
+    
     self.activities = [[NSArray alloc] init];
     
     [self loadActivities];
@@ -103,6 +105,7 @@
     NSString *dateString = @" tomorrow at 7pm";
     NSString *userNameString = @"Owen Campbell-Moore";
     [self setTextInCell:cell titleString:titleString userNameString:userNameString descriptionString:descriptionString locationString:locationString dateString:dateString];
+    [cell refreshLayout];
     
     return cell;
 }
@@ -144,20 +147,20 @@
     [attributedString setAttributes:largeStringAttributes range:titleRange];
     [attributedString setAttributes:smallStringAttributes range:dateRange];
     
-    CGRect size = [attributedString boundingRectWithSize: CGSizeMake(250, 0.0) options:NSStringDrawingUsesDeviceMetrics context:nil];
+//    CGRect size = [attributedString boundingRectWithSize: CGSizeMake(250, 0.0) options:NSStringDrawingUsesDeviceMetrics context:nil];
     
-    NSLog(@"%@", NSStringFromCGRect(size));
+//    NSLog(@"%@", NSStringFromCGRect(size));
     
     return attributedString;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (self.selectedCell && indexPath.row == self.selectedCell.row) {
-        return 150;
-    } else {
-        return 86;
-    }
+
+    //Do me!
+    
+    return 200;
+    
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
