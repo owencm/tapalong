@@ -3,8 +3,6 @@ from django.utils.timezone import utc
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
-# Make sure users are logged in before they can view.
-from django.contrib.auth.decorators import login_required
 import datetime
 
 from tapalong_app.models import User, Activity
