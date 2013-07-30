@@ -155,7 +155,7 @@
 								</object>
 								<object class="NSCustomResource" key="IBUINormalBackgroundImage">
 									<string key="NSClassName">NSImage</string>
-									<string key="NSResourceName">lightgrey.png</string>
+									<string key="NSResourceName">lightGrey.png</string>
 								</object>
 								<reference key="IBUIFontDescription" ref="365355928"/>
 								<reference key="IBUIFont" ref="89091381"/>
@@ -195,6 +195,7 @@
 								<int key="NSvFlags">292</int>
 								<string key="NSFrame">{{20, 119}, {280, 21}}</string>
 								<reference key="NSSuperview" ref="623276420"/>
+								<reference key="NSNextKeyView"/>
 								<string key="NSReuseIdentifierKey">_NS:9</string>
 								<bool key="IBUIOpaque">NO</bool>
 								<bool key="IBUIClipsSubviews">YES</bool>
@@ -401,7 +402,7 @@
 		<bool key="IBDocument.PluginDeclaredDependenciesTrackSystemTargetVersion">YES</bool>
 		<int key="IBDocument.defaultPropertyAccessControl">3</int>
 		<dictionary class="NSMutableDictionary" key="IBDocument.LastKnownImageSizes">
-			<string key="lightgrey.png">{1, 1}</string>
+			<string key="lightGrey.png">{1, 1}</string>
 			<string key="placeholder.png">{32, 32}</string>
 			<string key="red.png">{1, 1}</string>
 		</dictionary>

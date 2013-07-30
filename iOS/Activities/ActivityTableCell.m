@@ -6,6 +6,8 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
+// TODO: Set colors of buttons programatically
+
 #import "ActivityTableCell.h"
 
 @implementation ActivityTableCell

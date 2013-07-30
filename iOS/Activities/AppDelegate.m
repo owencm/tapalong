@@ -10,6 +10,8 @@
 #import "ActivitesViewController.h"
 #import <RestKit/RestKit.h>
 #import "GLobalColors.h"
+#import "LoginViewController.h"
+#import <FacebookSDK/FacebookSDK.h>
 
 @implementation AppDelegate
 
