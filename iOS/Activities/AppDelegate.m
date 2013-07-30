@@ -26,7 +26,9 @@
     
     [[navigationController navigationBar] setBackgroundImage:[UIImage imageNamed:@"red.png"] forBarMetrics:UIBarMetricsDefault];
     [navigationController navigationBar].barStyle = UIBarStyleBlackTranslucent;
-    
+//    [[UIBarButtonItem appearance]
+//     setBackButtonBackgroundImage:[UIImage imageNamed:@"backButton.png"]
+//     forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
     [self.window makeKeyAndVisible];
     
     return YES;

@@ -10,6 +10,7 @@
 #import "ActivityTableCell.h"
 #import <RestKit/RestKit.h>
 #import "Activity.h"
+#import "CreateActivityViewController.h"
 
 @interface ActivitesViewController ()
 
@@ -35,10 +36,10 @@
     // This adds a button with a custom image and no box/border
     UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [addButton setFrame:CGRectMake(0.0f, 0.0f, 25.0f, 25.0f)];
-    [addButton addTarget:self action:@selector(randomMsg) forControlEvents:UIControlEventTouchUpInside];
     [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateNormal];
+    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateHighlighted];
+    [addButton addTarget:self action:@selector(createButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithCustomView:addButton];
-    
     self.navigationItem.rightBarButtonItem = addBarButton;
     
     self.activities = [[NSArray alloc] init];
@@ -48,8 +49,12 @@
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+}
+
+- (IBAction) createButtonPressed:(id)sender
+{
+    CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
+    [self.navigationController pushViewController:createActivityViewController animated:YES];
 }
 
 - (void)loadActivities
