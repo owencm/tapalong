@@ -17,13 +17,11 @@
 
 @implementation ActivitesViewController
 
-// This seems to do nothing
-- (id)initWithStyle:(UITableViewStyle)style
+- (id)init
 {
-    NSLog(@"Hi");
-    self = [super initWithStyle:style];
+    self = [super init];
     if (self) {
-        // Custom initialization
+        self.title = @"Activites";
     }
     return self;
 }
@@ -33,6 +31,15 @@
     [super viewDidLoad];
 
     self.fakeActivityTableCell = [[ActivityTableCell alloc] init];
+    
+    // This adds a button with a custom image and no box/border
+    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [addButton setFrame:CGRectMake(0.0f, 0.0f, 25.0f, 25.0f)];
+    [addButton addTarget:self action:@selector(randomMsg) forControlEvents:UIControlEventTouchUpInside];
+    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateNormal];
+    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    
+    self.navigationItem.rightBarButtonItem = addBarButton;
     
     self.activities = [[NSArray alloc] init];
     

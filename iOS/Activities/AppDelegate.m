@@ -17,12 +17,12 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
-    // Initialize Activities View Controller
     ActivitesViewController *activitiesViewController = [[ActivitesViewController alloc] init];
     navigationController = [[UINavigationController alloc]
                             initWithRootViewController:activitiesViewController];
+    
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    [self.window addSubview:navigationController.view];
+    self.window.rootViewController = navigationController;
     
     [[navigationController navigationBar] setBackgroundImage:[UIImage imageNamed:@"red.png"] forBarMetrics:UIBarMetricsDefault];
     [navigationController navigationBar].barStyle = UIBarStyleBlackTranslucent;
