@@ -20,6 +20,7 @@
 		626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 626C847817A77A300024D105 /* CreateActivityViewController.m */; };
 		626C847B17A77A310024D105 /* CreateActivityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 626C847917A77A310024D105 /* CreateActivityViewController.xib */; };
 		626C848117A77F690024D105 /* addButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 626C848017A77F690024D105 /* addButton.png */; };
+		626C848417A785C10024D105 /* GlobalColors.m in Sources */ = {isa = PBXBuildFile; fileRef = 626C848317A785C10024D105 /* GlobalColors.m */; };
 		62D6DEDC17A4C35D00EF920F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDB17A4C35D00EF920F /* UIKit.framework */; };
 		62D6DEDE17A4C35D00EF920F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDD17A4C35D00EF920F /* Foundation.framework */; };
 		62D6DEE017A4C35D00EF920F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDF17A4C35D00EF920F /* CoreGraphics.framework */; };
@@ -98,6 +99,8 @@
 		626C847817A77A300024D105 /* CreateActivityViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CreateActivityViewController.m; sourceTree = "<group>"; };
 		626C847917A77A310024D105 /* CreateActivityViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = CreateActivityViewController.xib; sourceTree = "<group>"; };
 		626C848017A77F690024D105 /* addButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton.png; sourceTree = "<group>"; };
+		626C848217A785C10024D105 /* GlobalColors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalColors.h; sourceTree = "<group>"; };
+		626C848317A785C10024D105 /* GlobalColors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalColors.m; sourceTree = "<group>"; };
 		62D6DED817A4C35D00EF920F /* Activities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Activities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62D6DEDB17A4C35D00EF920F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		62D6DEDD17A4C35D00EF920F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -203,6 +206,8 @@
 				626C847917A77A310024D105 /* CreateActivityViewController.xib */,
 				626C844117A4F2000024D105 /* Activity.h */,
 				626C844217A4F2000024D105 /* Activity.m */,
+				626C848217A785C10024D105 /* GlobalColors.h */,
+				626C848317A785C10024D105 /* GlobalColors.m */,
 			);
 			path = Activities;
 			sourceTree = "<group>";
@@ -345,6 +350,7 @@
 				62D6DF0817A4C5C100EF920F /* ActivityTableCell.m in Sources */,
 				626C844317A4F2000024D105 /* Activity.m in Sources */,
 				626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */,
+				626C848417A785C10024D105 /* GlobalColors.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

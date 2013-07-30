@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "ActivitesViewController.h"
 #import <RestKit/RestKit.h>
+#import "GLobalColors.h"
 
 @implementation AppDelegate
 
@@ -24,7 +25,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = navigationController;
     
-    [[navigationController navigationBar] setBackgroundImage:[UIImage imageNamed:@"red.png"] forBarMetrics:UIBarMetricsDefault];
+    [[navigationController navigationBar] setBackgroundImage:[[GlobalColors sharedGlobal] redImage] forBarMetrics:UIBarMetricsDefault];
     [navigationController navigationBar].barStyle = UIBarStyleBlackTranslucent;
 //    [[UIBarButtonItem appearance]
 //     setBackButtonBackgroundImage:[UIImage imageNamed:@"backButton.png"]

@@ -11,6 +11,7 @@
 #import <RestKit/RestKit.h>
 #import "Activity.h"
 #import "CreateActivityViewController.h"
+#import "GlobalColors.h"
 
 @interface ActivitesViewController ()
 
@@ -142,12 +143,12 @@
     // Define preset styles we will use
     UIFont *largeString = [UIFont fontWithName:@"Roboto" size:16];
     UIFont *smallString = [UIFont fontWithName:@"Roboto-Light" size:14];
-    UIColor *veryDarkGrey = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-    UIColor *lessDarkGrey = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
+    UIColor *darkGreyText = [[GlobalColors sharedGlobal] darkGreyText];
+    UIColor *lightGreyText = [[GlobalColors sharedGlobal] lightGreyText];
     NSDictionary *largeStringAttributes = @{NSFontAttributeName: largeString,
-                                         NSForegroundColorAttributeName: veryDarkGrey};
+                                         NSForegroundColorAttributeName: darkGreyText};
     NSDictionary *smallStringAttributes = @{NSFontAttributeName: smallString,
-                                          NSForegroundColorAttributeName: lessDarkGrey};
+                                          NSForegroundColorAttributeName: lightGreyText};
     
     NSMutableAttributedString *attributedString =
     [[NSMutableAttributedString alloc] initWithString:joinedString
@@ -197,7 +198,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = [UIColor colorWithRed:0.94 green:0.94 blue:0.94 alpha:1];
+    cell.backgroundColor = [[GlobalColors sharedGlobal] backgroundGrey];
 }
 
 @end
