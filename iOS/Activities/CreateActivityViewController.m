@@ -7,6 +7,7 @@
 //
 
 #import "CreateActivityViewController.h"
+#import "GlobalColors.h"
 
 @interface CreateActivityViewController ()
 
@@ -18,7 +19,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        // Custom initialization
+        [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
     }
     return self;
 }

@@ -32,7 +32,11 @@
 {
     [super viewDidLoad];
 
+    // TODO: Use me or remove me.
     self.fakeActivityTableCell = [[ActivityTableCell alloc] init];
+    
+    // Set the background to a pleasant grey
+    [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
     
     // This adds a button with a custom image and no box/border
     UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -43,8 +47,10 @@
     UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithCustomView:addButton];
     self.navigationItem.rightBarButtonItem = addBarButton;
     
+    // Initialise the activities array
     self.activities = [[NSArray alloc] init];
     
+    // Download activities from the server and display them
     [self loadActivities];
     
     // Uncomment the following line to preserve selection between presentations.
