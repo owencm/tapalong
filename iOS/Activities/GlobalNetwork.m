@@ -7,6 +7,8 @@
 //
 
 #import "GlobalNetwork.h"
+#import <RestKit/RestKit.h>
+#import "Activity.h"
 
 static GlobalNetwork *sharedGlobalInstance = nil;
 
@@ -27,6 +29,37 @@ static GlobalNetwork *sharedGlobalInstance = nil;
     }
     return self;
 }
+
+- (void)getActivities:(GetActivitiesCallbackBlock) successHandler
+{
+    GetActivitiesCallbackBlock _completionHandler = [successHandler copy];
+    
+    RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
+    [activityMapping addAttributeMappingsFromDictionary:@{
+         @"title": @"title",
+         @"start_time": @"start_time",
+         @"location": @"location",
+         @"max_attendees": @"max_attendees",
+         @"description": @"description"
+     }];
+    
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    
+    NSURL *URL = [NSURL URLWithString:@"http://127.0.0.1:8000/activities/1/"];
+    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        // Call completion handler
+        _completionHandler(mappingResult.array);
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        RKLogError(@"Operation failed with error: %@", error);
+    }];
+    
+    [objectRequestOperation start];
+    
+
+}
+
 
 
 @end

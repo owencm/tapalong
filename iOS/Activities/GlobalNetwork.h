@@ -8,11 +8,14 @@
 
 #import <Foundation/Foundation.h>
 
+typedef void (^GetActivitiesCallbackBlock)(NSArray *);
+
 @interface GlobalNetwork : NSObject
 
 @property (nonatomic, strong) GlobalNetwork *sharedGlobalInstance;
 
 + (id)sharedGlobal;
+- (void)getActivities:(GetActivitiesCallbackBlock)successHandler;
 
 @end
 

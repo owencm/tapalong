@@ -8,10 +8,10 @@
 
 #import "ActivitesViewController.h"
 #import "ActivityTableCell.h"
-#import <RestKit/RestKit.h>
 #import "Activity.h"
 #import "CreateActivityViewController.h"
 #import "GlobalColors.h"
+#import "GlobalNetwork.h"
 
 @interface ActivitesViewController ()
 
@@ -51,7 +51,12 @@
     self.activities = [[NSArray alloc] init];
     
     // Download activities from the server and display them
-    [self loadActivities];
+    [[GlobalNetwork sharedGlobal] getActivities:^(NSArray *result)
+        {
+            self.activities = result;
+            [[self tableView] reloadData];
+        }
+     ];
     
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
@@ -62,33 +67,6 @@
 {
     CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
     [self.navigationController pushViewController:createActivityViewController animated:YES];
-}
-
-- (void)loadActivities
-{
-    RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
-    [activityMapping addAttributeMappingsFromDictionary:@{
-     @"title": @"title",
-     @"start_time": @"start_time",
-     @"location": @"location",
-     @"max_attendees": @"max_attendees",
-     @"description": @"description"
-    }];
-    
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-    
-    NSURL *URL = [NSURL URLWithString:@"http://127.0.0.1:8000/activities/1/"];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-//        RKLogInfo(@"Load collection of Activities: %@", mappingResult.array);
-        self.activities = mappingResult.array;
-        [self.tableView reloadData];
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        RKLogError(@"Operation failed with error: %@", error);
-    }];
-    
-    [objectRequestOperation start];
 }
 
 - (void)didReceiveMemoryWarning
