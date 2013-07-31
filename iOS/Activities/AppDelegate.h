@@ -17,4 +17,6 @@
 @property (strong, nonatomic) UINavigationController *navigationController;
 @property (strong, nonatomic) UIWindow *window;
 
+- (void)openSession;
+
 @end

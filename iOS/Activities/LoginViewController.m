@@ -35,4 +35,13 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (IBAction)performLogin:(id)sender {
+    AppDelegate* appDelegate = [UIApplication sharedApplication].delegate;
+    [appDelegate openSession];
+}
+
+- (void)loginFailed
+{
+    // User switched back to the app without authorizing.
+}
 @end
