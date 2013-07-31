@@ -38,17 +38,21 @@ def get_activities_list(request, user_id):
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
-		# Get request data into json format
-		activity_info=json.loads(request.raw_post_data)
+		# Get request data
+		activity_info=request.POST
 		activity = Activity(creator_id=1, title=activity_info.get("title"), pub_date=now, start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
-		# Go through each activity and populate its attendees set
-		activity_attendees = activity_info.get("attendees")
-		for user_id in activity_attendees:
-			user = User.objects.get(id=user_id)
-			activity.attendees.add(user)
+		activity.attendees.add(User.objects.get(id=1))
 		activity.save()
-		return HttpResponse("I saved stuff!")
+		# Go through each activity and populate its attendees set
+		# activity_attendees = activity_info.get("attendees")
+		# for user_id in activity_attendees:
+		# 	user = User.objects.get(id=user_id)
+		# 	activity.attendees.add(user)
+		# activity.save()
+		serialized_activity = serialize_activity(activity, user_id)
+		json_output = json.dumps(serialized_activity)
+		return HttpResponse(json_output, mimetype='application/json')
 
 
 

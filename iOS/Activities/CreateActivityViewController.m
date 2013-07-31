@@ -34,8 +34,8 @@
     activity.title = @"title";
     activity.description = @"description";
     activity.location = @"location";
-    activity.max_attendees = @"maxatendees";
-    activity.start_time = @"time";
+    activity.max_attendees = @"1";
+    activity.start_time = @"today";
     
     [self requestCreateActivity:activity];
 }
