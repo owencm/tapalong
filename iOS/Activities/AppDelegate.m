@@ -41,7 +41,7 @@
         [self showLoginView];
     }
     
-    NSLog([@"\nToken: " stringByAppendingString:[[FBSession.activeSession accessTokenData] accessToken]] );
+    NSLog([@"\nToken: " stringByAppendingString:[[FBSession.activeSession accessTokenData] accessToken]]);
     
     return YES;
 }

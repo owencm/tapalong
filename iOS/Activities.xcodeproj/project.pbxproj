@@ -164,6 +164,52 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		62BD2F7117A894E70010A1E9 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				626C844117A4F2000024D105 /* Activity.h */,
+				626C844217A4F2000024D105 /* Activity.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		62BD2F7317A895120010A1E9 /* ViewsControllers */ = {
+			isa = PBXGroup;
+			children = (
+				62D6DEFF17A4C4DC00EF920F /* ActivitesViewController.h */,
+				62D6DF0017A4C4DC00EF920F /* ActivitesViewController.m */,
+				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
+				62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */,
+				62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */,
+				626C847717A77A300024D105 /* CreateActivityViewController.h */,
+				626C847817A77A300024D105 /* CreateActivityViewController.m */,
+				626C847917A77A310024D105 /* CreateActivityViewController.xib */,
+				62BD2F6A17A886300010A1E9 /* LoginViewController.h */,
+				62BD2F6B17A886300010A1E9 /* LoginViewController.m */,
+				62BD2F6C17A886300010A1E9 /* LoginViewController.xib */,
+			);
+			name = ViewsControllers;
+			sourceTree = "<group>";
+		};
+		62BD2F7417A895320010A1E9 /* Graphics */ = {
+			isa = PBXGroup;
+			children = (
+				62D6DEF917A4C45E00EF920F /* red.png */,
+				62BD2F6F17A886E70010A1E9 /* lightGrey.png */,
+				626C848017A77F690024D105 /* addButton.png */,
+			);
+			name = Graphics;
+			sourceTree = "<group>";
+		};
+		62BD2F7517A8953B0010A1E9 /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				626C844417A58BCA0024D105 /* Roboto-Light.ttf */,
+				626C844517A58BCA0024D105 /* Roboto-Regular.ttf */,
+			);
+			name = Fonts;
+			sourceTree = "<group>";
+		};
 		62D6DECF17A4C35C00EF920F = {
 			isa = PBXGroup;
 			children = (
@@ -202,24 +248,13 @@
 		62D6DEE117A4C35D00EF920F /* Activities */ = {
 			isa = PBXGroup;
 			children = (
-				62D6DEE217A4C35D00EF920F /* Supporting Files */,
 				62D6DEEA17A4C35D00EF920F /* AppDelegate.h */,
 				62D6DEEB17A4C35D00EF920F /* AppDelegate.m */,
-				62D6DEFF17A4C4DC00EF920F /* ActivitesViewController.h */,
-				62D6DF0017A4C4DC00EF920F /* ActivitesViewController.m */,
-				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
-				62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */,
-				62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */,
-				626C847717A77A300024D105 /* CreateActivityViewController.h */,
-				626C847817A77A300024D105 /* CreateActivityViewController.m */,
-				626C847917A77A310024D105 /* CreateActivityViewController.xib */,
-				626C844117A4F2000024D105 /* Activity.h */,
-				626C844217A4F2000024D105 /* Activity.m */,
-				62BD2F6A17A886300010A1E9 /* LoginViewController.h */,
-				62BD2F6B17A886300010A1E9 /* LoginViewController.m */,
-				62BD2F6C17A886300010A1E9 /* LoginViewController.xib */,
 				626C848217A785C10024D105 /* GlobalColors.h */,
 				626C848317A785C10024D105 /* GlobalColors.m */,
+				62BD2F7117A894E70010A1E9 /* Model */,
+				62BD2F7317A895120010A1E9 /* ViewsControllers */,
+				62D6DEE217A4C35D00EF920F /* Supporting Files */,
 			);
 			path = Activities;
 			sourceTree = "<group>";
@@ -227,8 +262,6 @@
 		62D6DEE217A4C35D00EF920F /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				626C844417A58BCA0024D105 /* Roboto-Light.ttf */,
-				626C844517A58BCA0024D105 /* Roboto-Regular.ttf */,
 				62D6DF0917A4C5EE00EF920F /* placeholder.png */,
 				62D6DEE317A4C35D00EF920F /* Activities-Info.plist */,
 				62D6DEE417A4C35D00EF920F /* InfoPlist.strings */,
@@ -237,9 +270,8 @@
 				62D6DEED17A4C35D00EF920F /* Default.png */,
 				62D6DEEF17A4C35D00EF920F /* Default@2x.png */,
 				62D6DEF117A4C35D00EF920F /* Default-568h@2x.png */,
-				62D6DEF917A4C45E00EF920F /* red.png */,
-				62BD2F6F17A886E70010A1E9 /* lightGrey.png */,
-				626C848017A77F690024D105 /* addButton.png */,
+				62BD2F7517A8953B0010A1E9 /* Fonts */,
+				62BD2F7417A895320010A1E9 /* Graphics */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
