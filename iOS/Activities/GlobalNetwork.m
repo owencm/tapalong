@@ -6,8 +6,8 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
-#import "GlobalNetwork.h"
 #import <RestKit/RestKit.h>
+#import "GlobalNetwork.h"
 #import "Activity.h"
 
 static GlobalNetwork *sharedGlobalInstance = nil;
@@ -30,10 +30,12 @@ static GlobalNetwork *sharedGlobalInstance = nil;
     return self;
 }
 
-- (void)getActivities:(GetActivitiesCallbackBlock) successHandler
+- (void)getActivities:(GetActivitiesCallbackBlock) successCallback
 {
-    GetActivitiesCallbackBlock _completionHandler = [successHandler copy];
+    // Store a copy of the success callback
+    GetActivitiesCallbackBlock _successCallback = [successCallback copy];
     
+    // Define the object mapping 
     RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
     [activityMapping addAttributeMappingsFromDictionary:@{
          @"title": @"title",
@@ -43,21 +45,25 @@ static GlobalNetwork *sharedGlobalInstance = nil;
          @"description": @"description"
      }];
     
+    // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
+    // Set up the request
     NSURL *URL = [NSURL URLWithString:@"http://127.0.0.1:8000/activities/1/"];
     NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    
+    // Associate the descriptor with the request
     RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
+    
+    // Set the success and failure callbacks, forwarding the success to successCallback
     [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        // Call completion handler
-        _completionHandler(mappingResult.array);
+        // Call success callback with returned data!
+        _successCallback(mappingResult.array);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         RKLogError(@"Operation failed with error: %@", error);
     }];
     
     [objectRequestOperation start];
-    
-
 }
 
 

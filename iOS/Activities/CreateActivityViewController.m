@@ -19,7 +19,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
+        [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey] ];
     }
     return self;
 }
