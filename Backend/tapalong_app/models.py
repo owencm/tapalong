@@ -25,6 +25,3 @@ class Activity(models.Model):
 
 
 
-
-
-
