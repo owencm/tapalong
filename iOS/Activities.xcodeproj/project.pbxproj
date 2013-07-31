@@ -25,6 +25,7 @@
 		62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F6B17A886300010A1E9 /* LoginViewController.m */; };
 		62BD2F6E17A886300010A1E9 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 62BD2F6C17A886300010A1E9 /* LoginViewController.xib */; };
 		62BD2F7017A886E70010A1E9 /* lightGrey.png in Resources */ = {isa = PBXBuildFile; fileRef = 62BD2F6F17A886E70010A1E9 /* lightGrey.png */; };
+		62BD2F7917A8BD2B0010A1E9 /* GlobalNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */; };
 		62D6DEDC17A4C35D00EF920F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDB17A4C35D00EF920F /* UIKit.framework */; };
 		62D6DEDE17A4C35D00EF920F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDD17A4C35D00EF920F /* Foundation.framework */; };
 		62D6DEE017A4C35D00EF920F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDF17A4C35D00EF920F /* CoreGraphics.framework */; };
@@ -109,6 +110,8 @@
 		62BD2F6B17A886300010A1E9 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		62BD2F6C17A886300010A1E9 /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
 		62BD2F6F17A886E70010A1E9 /* lightGrey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lightGrey.png; sourceTree = "<group>"; };
+		62BD2F7717A8BD2B0010A1E9 /* GlobalNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalNetwork.h; sourceTree = "<group>"; };
+		62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalNetwork.m; sourceTree = "<group>"; };
 		62D6DED817A4C35D00EF920F /* Activities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Activities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62D6DEDB17A4C35D00EF920F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		62D6DEDD17A4C35D00EF920F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -210,6 +213,15 @@
 			name = Fonts;
 			sourceTree = "<group>";
 		};
+		62BD2F7617A8BD1C0010A1E9 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				62BD2F7717A8BD2B0010A1E9 /* GlobalNetwork.h */,
+				62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */,
+			);
+			name = Network;
+			sourceTree = "<group>";
+		};
 		62D6DECF17A4C35C00EF920F = {
 			isa = PBXGroup;
 			children = (
@@ -250,8 +262,7 @@
 			children = (
 				62D6DEEA17A4C35D00EF920F /* AppDelegate.h */,
 				62D6DEEB17A4C35D00EF920F /* AppDelegate.m */,
-				626C848217A785C10024D105 /* GlobalColors.h */,
-				626C848317A785C10024D105 /* GlobalColors.m */,
+				62BD2F7617A8BD1C0010A1E9 /* Network */,
 				62BD2F7117A894E70010A1E9 /* Model */,
 				62BD2F7317A895120010A1E9 /* ViewsControllers */,
 				62D6DEE217A4C35D00EF920F /* Supporting Files */,
@@ -270,6 +281,8 @@
 				62D6DEED17A4C35D00EF920F /* Default.png */,
 				62D6DEEF17A4C35D00EF920F /* Default@2x.png */,
 				62D6DEF117A4C35D00EF920F /* Default-568h@2x.png */,
+				626C848217A785C10024D105 /* GlobalColors.h */,
+				626C848317A785C10024D105 /* GlobalColors.m */,
 				62BD2F7517A8953B0010A1E9 /* Fonts */,
 				62BD2F7417A895320010A1E9 /* Graphics */,
 			);
@@ -397,6 +410,7 @@
 				626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */,
 				626C848417A785C10024D105 /* GlobalColors.m in Sources */,
 				62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */,
+				62BD2F7917A8BD2B0010A1E9 /* GlobalNetwork.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
