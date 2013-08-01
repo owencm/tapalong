@@ -31,7 +31,7 @@ static GlobalColors *sharedGlobalInstance = nil;
         // Colors for text
         self.darkGreyText = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         self.lightGreyText = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
-        self.linkBlue = [UIColor colorWithRed:0.2 green:0.7 blue:0.89 alpha:1];
+        self.linkBlue = [UIColor colorWithRed:63/255.0f green:172/255.0f blue:221/255.0f alpha:1];
     }
     return self;
 }

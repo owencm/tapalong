@@ -12,6 +12,5 @@
 @interface ActivitesViewController : UITableViewController
 
 @property NSArray *activities;
-@property ActivityTableCell *fakeActivityTableCell;
 
 @end

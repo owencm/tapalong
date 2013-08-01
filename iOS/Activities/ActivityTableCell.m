@@ -15,10 +15,8 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        UIColor *linkBlue = [[GlobalColors sharedGlobal] linkBlue];
-        [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateNormal];
-        [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateHighlighted];
-}
+        //Init here doesn't work
+    }
     return self;
 }
 
@@ -49,12 +47,17 @@
     int buttonOffset = self.tapAlongButton.frame.size.height + self.tapAlongButton.frame.origin.y;
  
     oldFrame = self.cardBackgroundView.frame;
-    [self.cardBackgroundView setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, buttonOffset+padding - oldFrame.origin.y)];
+    [self.cardBackgroundView setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, buttonOffset+padding - oldFrame.origin.y + 1)];
     
-    // TODO: Move me to the init and get me to work!
+    // TODO: Move me to the init
     UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
     self.cardBackgroundView.image = cardBackground;
     
+    // TODO: Move me to the init
+    UIColor *linkBlue = [[GlobalColors sharedGlobal] linkBlue];
+    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateNormal];
+    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateHighlighted];
+//    [self.tapAlongButton setBackgroundImage: forState:]
 }
 
 @end

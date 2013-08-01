@@ -36,9 +36,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    // TODO: Use me or remove me.
-    self.fakeActivityTableCell = [[ActivityTableCell alloc] init];
     
     // Set the background to a pleasant grey
     [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
