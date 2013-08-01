@@ -5,9 +5,6 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	(r'^facebook/', include('django_facebook.urls')),
-	#Don't add this line if you use django registration or userena for registration and auth.
-	(r'^accounts/', include('django_facebook.auth_urls')),
 	url(r'^activities/', include('tapalong_app.urls')),
 
     # Examples:
