@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		625C45D117AA5161005F8A21 /* cardBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 625C45D017AA5161005F8A21 /* cardBackground.png */; };
 		625C45D317AA5584005F8A21 /* backgroundGrey.png in Resources */ = {isa = PBXBuildFile; fileRef = 625C45D217AA5584005F8A21 /* backgroundGrey.png */; };
+		625C45D717AAFDC3005F8A21 /* ActivityDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 625C45D517AAFDC2005F8A21 /* ActivityDetailViewController.m */; };
+		625C45D817AAFDC3005F8A21 /* ActivityDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 625C45D617AAFDC3005F8A21 /* ActivityDetailViewController.xib */; };
 		626C842F17A4EC610024D105 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C842E17A4EC610024D105 /* CFNetwork.framework */; };
 		626C843117A4EC690024D105 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843017A4EC690024D105 /* CoreData.framework */; };
 		626C843317A4EC6F0024D105 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843217A4EC6F0024D105 /* Security.framework */; };
@@ -91,6 +93,9 @@
 /* Begin PBXFileReference section */
 		625C45D017AA5161005F8A21 /* cardBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = cardBackground.png; path = ../cardBackground.png; sourceTree = "<group>"; };
 		625C45D217AA5584005F8A21 /* backgroundGrey.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = backgroundGrey.png; sourceTree = "<group>"; };
+		625C45D417AAFDC2005F8A21 /* ActivityDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityDetailViewController.h; sourceTree = "<group>"; };
+		625C45D517AAFDC2005F8A21 /* ActivityDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityDetailViewController.m; sourceTree = "<group>"; };
+		625C45D617AAFDC3005F8A21 /* ActivityDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ActivityDetailViewController.xib; sourceTree = "<group>"; };
 		626C841F17A4E7790024D105 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		626C842E17A4EC610024D105 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		626C843017A4EC690024D105 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -186,6 +191,9 @@
 				62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */,
 				62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */,
 				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
+				625C45D417AAFDC2005F8A21 /* ActivityDetailViewController.h */,
+				625C45D517AAFDC2005F8A21 /* ActivityDetailViewController.m */,
+				625C45D617AAFDC3005F8A21 /* ActivityDetailViewController.xib */,
 				626C847717A77A300024D105 /* CreateActivityViewController.h */,
 				626C847817A77A300024D105 /* CreateActivityViewController.m */,
 				626C847917A77A310024D105 /* CreateActivityViewController.xib */,
@@ -396,6 +404,7 @@
 				62BD2F6E17A886300010A1E9 /* LoginViewController.xib in Resources */,
 				625C45D117AA5161005F8A21 /* cardBackground.png in Resources */,
 				625C45D317AA5584005F8A21 /* backgroundGrey.png in Resources */,
+				625C45D817AAFDC3005F8A21 /* ActivityDetailViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -415,6 +424,7 @@
 				626C848417A785C10024D105 /* GlobalColors.m in Sources */,
 				62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */,
 				62BD2F7917A8BD2B0010A1E9 /* GlobalNetwork.m in Sources */,
+				625C45D717AAFDC3005F8A21 /* ActivityDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

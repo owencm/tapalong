@@ -10,6 +10,7 @@
 #import "ActivityTableCell.h"
 #import "Activity.h"
 #import "CreateActivityViewController.h"
+#import "ActivityDetailViewController.h"
 #import "GlobalColors.h"
 #import "GlobalNetwork.h"
 #import <CoreText/CoreText.h>
@@ -108,6 +109,8 @@
     [self setTextInCell:cell titleString:titleString userNameString:userNameString descriptionString:descriptionString locationString:locationString dateString:dateString];
     [cell refreshLayout];
     
+    [cell.viewDetailsButton addTarget:self action:@selector(viewDetailsPressed:) forControlEvents:UIControlEventTouchUpInside];
+    
     return cell;
 }
 
@@ -158,7 +161,12 @@
     CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
     CFRelease(framesetter);
     
-    return fitSize.height + 70;
+    return fitSize.height + 77;
+}
+
+- (IBAction) viewDetailsPressed:(id)sender {
+    ActivityDetailViewController *activityDetailViewController = [[ActivityDetailViewController alloc] initWithNibName:@"ActivityDetailViewController" bundle:nil];
+    [self.navigationController pushViewController:activityDetailViewController animated:YES];
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

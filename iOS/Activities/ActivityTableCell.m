@@ -41,6 +41,11 @@
     
     oldFrame = self.divider.frame;
     [self.divider setFrame: CGRectMake(oldFrame.origin.x, titleOffset + padding, oldFrame.size.width, oldFrame.size.height)];
+    
+    oldFrame = self.viewDetailsButton.frame;
+    CGRect dividerFrame = self.divider.frame;
+    [self.viewDetailsButton setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, dividerFrame.origin.y - oldFrame.origin.y)];
+    
     oldFrame = self.tapAlongButton.frame;
     [self.tapAlongButton setFrame: CGRectMake(oldFrame.origin.x, titleOffset + 2*padding, oldFrame.size.width, oldFrame.size.height)];
     
