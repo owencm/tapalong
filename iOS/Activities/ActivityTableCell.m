@@ -27,6 +27,7 @@
     [super setSelected:selected animated:animated];
 }
 
+// For the love of god please tidy me
 -(void)refreshLayout
 {
     [self.activityLabel sizeToFit];
