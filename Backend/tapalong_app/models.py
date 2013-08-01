@@ -27,6 +27,3 @@ class Session(models.Model):
 	user = models.ForeignKey(User)
 	created_at = models.DateTimeField(auto_now_add=True)
 	expires_at = models.DateTimeField()
-
-	def get_token_as_int(self):
-		RAND_bytes

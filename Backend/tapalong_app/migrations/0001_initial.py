@@ -38,6 +38,16 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(m2m_table_name, ['activity_id', 'user_id'])
 
+        # Adding model 'Session'
+        db.create_table(u'tapalong_app_session', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('token', self.gf('django.db.models.fields.IntegerField')()),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['tapalong_app.User'])),
+            ('created_at', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('expires_at', self.gf('django.db.models.fields.DateTimeField')()),
+        ))
+        db.send_create_signal(u'tapalong_app', ['Session'])
+
 
     def backwards(self, orm):
         # Deleting model 'User'
@@ -48,6 +58,9 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field attendees on 'Activity'
         db.delete_table(db.shorten_name(u'tapalong_app_activity_attendees'))
+
+        # Deleting model 'Session'
+        db.delete_table(u'tapalong_app_session')
 
 
     models = {
@@ -62,6 +75,14 @@ class Migration(SchemaMigration):
             'pub_date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'start_time': ('django.db.models.fields.DateTimeField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '30'})
+        },
+        u'tapalong_app.session': {
+            'Meta': {'object_name': 'Session'},
+            'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'expires_at': ('django.db.models.fields.DateTimeField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'token': ('django.db.models.fields.IntegerField', [], {}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['tapalong_app.User']"})
         },
         u'tapalong_app.user': {
             'Meta': {'object_name': 'User'},

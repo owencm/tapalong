@@ -31,6 +31,9 @@ def serialize_activity(activity, user_id):
 # check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
+	token = start_session(1)
+	print(token)
+
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
 	#Sets the authentication token
 	facebook.set_access_token('CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk')
@@ -46,9 +49,6 @@ def get_activities_list(request, user_id):
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
-		system_random = random.SystemRandom()
-		token = system_random.randrange(0,math.pow(2, 64))
-		print (token)
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
@@ -69,14 +69,15 @@ def get_activities_list(request, user_id):
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
 
-# This generates and returns a new session for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
+# This generates and returns a new session token for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
 # It may be modified to take a user rather than the ID.
-# def start_session(user_id):
-# 	user = User.get(id=user_id)
-# 	# Tokens by default last 60 days
-# 	expires_at = datetime.datetime.utcnow().replace(tzinfo=utc) + timedelta(days=60)
-# 	# Generate a 32 byte (256-bit) cryptographically secure random number
-# 	token = int(ssl.RAND_bytes(32))
-# 	print (token)
-# 	session = Session(user=user, expires_at=expires_at, token=token)
-
+def start_session(user_id):
+	user = User.objects.get(id=user_id)
+	# Tokens by default last 60 days
+	expires_at = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(days=60)
+	# Generate a 64-bit random number using SystemRandom. TODO: Security review this and make sure it's cryptographically secure. Ideally would use ssl.RAND_bytes but this is unavailable on Python 2.x
+	system_random = random.SystemRandom()
+	token = system_random.randrange(0, math.pow(2, 64))
+	session = Session(user=user, expires_at=expires_at, token=token)
+	session.save()
+	return token
