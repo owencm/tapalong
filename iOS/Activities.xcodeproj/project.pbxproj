@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		625C45CF17AA4C5C005F8A21 /* cardBackground.png in Resources */ = {isa = PBXBuildFile; fileRef = 625C45CE17AA4C5C005F8A21 /* cardBackground.png */; };
 		626C842F17A4EC610024D105 /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C842E17A4EC610024D105 /* CFNetwork.framework */; };
 		626C843117A4EC690024D105 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843017A4EC690024D105 /* CoreData.framework */; };
 		626C843317A4EC6F0024D105 /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 626C843217A4EC6F0024D105 /* Security.framework */; };
@@ -88,6 +89,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		625C45CE17AA4C5C005F8A21 /* cardBackground.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = cardBackground.png; sourceTree = "<group>"; };
 		626C841F17A4E7790024D105 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = ../RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		626C842E17A4EC610024D105 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		626C843017A4EC690024D105 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -198,6 +200,7 @@
 			isa = PBXGroup;
 			children = (
 				62D6DEF917A4C45E00EF920F /* red.png */,
+				625C45CE17AA4C5C005F8A21 /* cardBackground.png */,
 				62BD2F6F17A886E70010A1E9 /* lightGrey.png */,
 				626C848017A77F690024D105 /* addButton.png */,
 			);
@@ -392,6 +395,7 @@
 				626C848117A77F690024D105 /* addButton.png in Resources */,
 				62BD2F6E17A886300010A1E9 /* LoginViewController.xib in Resources */,
 				62BD2F7017A886E70010A1E9 /* lightGrey.png in Resources */,
+				625C45CF17AA4C5C005F8A21 /* cardBackground.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

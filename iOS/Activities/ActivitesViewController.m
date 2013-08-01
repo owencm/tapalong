@@ -112,8 +112,6 @@
 - (void)setTextInCell:(ActivityTableCell *)cell titleString:(NSString *)titleString userNameString:(NSString *)userNameString descriptionString:(NSString *)descriptionString locationString:(NSString *)locationString dateString:(NSString *)dateString {
     
     cell.activityLabel.attributedText = [self getAttributedActivity:userNameString titleString:titleString dateString:dateString];
-    cell.descriptionLabel.text = descriptionString;
-    cell.locationLabel.text = [@"Location: " stringByAppendingString:locationString];
     
 }
 
@@ -159,7 +157,7 @@
     if (self.selectedCell && self.selectedCell.row == indexPath.row) {
         return 150;
     } else {
-        return 100;
+        return 150;
     }
     
 }

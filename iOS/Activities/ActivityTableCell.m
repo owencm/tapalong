@@ -16,8 +16,6 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-        self.clipsToBounds = YES;
     }
     return self;
 }
@@ -29,6 +27,10 @@
 
 -(void)refreshLayout
 {
+    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
+    self.cardBackgroundView.image = cardBackground;
+
+    
     [self.activityLabel sizeToFit];
     
     int titleBottomPadding = 6;
