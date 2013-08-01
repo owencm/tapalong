@@ -12,7 +12,6 @@
 @interface ActivitesViewController : UITableViewController
 
 @property NSArray *activities;
-@property NSIndexPath *selectedCell;
 @property ActivityTableCell *fakeActivityTableCell;
 
 @end

@@ -153,29 +153,16 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    //TODO: DO ME
-    if (self.selectedCell && self.selectedCell.row == indexPath.row) {
-        return 150;
-    } else {
-        return 150;
-    }
-    
+    return 150;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    self.selectedCell = indexPath;
 //    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-    [tableView beginUpdates];
-    [tableView endUpdates];
 }
 
 -(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-    self.selectedCell = nil;
 //    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-    [tableView beginUpdates];
-    [tableView endUpdates];
-    //Displaying and hiding items is managed by the cell itself
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
