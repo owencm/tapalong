@@ -1,5 +1,5 @@
 # django specific
-
+*.db
 *.pyc
 
 # xcode specific
