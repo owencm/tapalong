@@ -151,7 +151,6 @@ INSTALLED_APPS = (
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
     # For Facebook authentication
-    'django_facebook',
     'tapalong_app',
     # For database migrations
     'south',

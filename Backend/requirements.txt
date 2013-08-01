@@ -1,5 +1,5 @@
 Django==1.5.1
 Pillow==2.1.0
-django-facebook==5.2.6
 wsgiref==0.1.2
 South==0.8.1
+pyfb==0.4.2

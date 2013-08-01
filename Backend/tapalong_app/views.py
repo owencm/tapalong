@@ -3,10 +3,11 @@ from django.utils.timezone import utc
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
-import datetime
 from pyfb import Pyfb
 from django.conf import settings
-import ssl
+import random
+import math
+import datetime
 
 from tapalong_app.models import User, Activity, Session
 
@@ -45,8 +46,8 @@ def get_activities_list(request, user_id):
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
-		print(ssl)
-		token = int(ssl.RAND_bytes(32))
+		system_random = random.SystemRandom()
+		token = system_random.randrange(0,math.pow(2, 64))
 		print (token)
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
