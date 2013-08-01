@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.timezone import utc
+import datetime
 
 class User(models.Model):
 	name = models.CharField(max_length = 20)
@@ -27,3 +29,8 @@ class Session(models.Model):
 	user = models.ForeignKey(User)
 	created_at = models.DateTimeField(auto_now_add=True)
 	expires_at = models.DateTimeField()
+
+	# Use this to check whether it has expired yet
+	def has_expired(self):
+		now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		return (now > self.expires_at and now > self.created_at)

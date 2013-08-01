@@ -1,3 +1,4 @@
+from tapalong_app.models import User, Activity, Session
 from django.utils import simplejson as json
 from django.utils.timezone import utc
 from django.http import HttpResponse
@@ -8,8 +9,7 @@ from django.conf import settings
 import random
 import math
 import datetime
-
-from tapalong_app.models import User, Activity, Session
+import sessions
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
@@ -31,9 +31,6 @@ def serialize_activity(activity, user_id):
 # check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
-	token = start_session(1)
-	print(token)
-
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
 	#Sets the authentication token
 	facebook.set_access_token('CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk')
@@ -68,16 +65,3 @@ def get_activities_list(request, user_id):
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
-
-# This generates and returns a new session token for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
-# It may be modified to take a user rather than the ID.
-def start_session(user_id):
-	user = User.objects.get(id=user_id)
-	# Tokens by default last 60 days
-	expires_at = datetime.datetime.utcnow().replace(tzinfo=utc) + datetime.timedelta(days=60)
-	# Generate a 64-bit random number using SystemRandom. TODO: Security review this and make sure it's cryptographically secure. Ideally would use ssl.RAND_bytes but this is unavailable on Python 2.x
-	system_random = random.SystemRandom()
-	token = system_random.randrange(0, math.pow(2, 64))
-	session = Session(user=user, expires_at=expires_at, token=token)
-	session.save()
-	return token
