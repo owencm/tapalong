@@ -6,9 +6,9 @@ from django.template import RequestContext, loader
 import datetime
 from pyfb import Pyfb
 from django.conf import settings
+import ssl
 
-
-from tapalong_app.models import User, Activity
+from tapalong_app.models import User, Activity, Session
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
@@ -45,13 +45,16 @@ def get_activities_list(request, user_id):
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
+		print(ssl)
+		token = int(ssl.RAND_bytes(32))
+		print (token)
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data
 		activity_info=request.POST
-		activity = Activity(creator_id=1, title=activity_info.get("title"), pub_date=now, start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		activity = Activity(creator_id=1, title=activity_info.get("title"), start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
 		activity.attendees.add(User.objects.get(id=1))
 		activity.save()
@@ -65,6 +68,14 @@ def get_activities_list(request, user_id):
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
 
-
-
+# This generates and returns a new session for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
+# It may be modified to take a user rather than the ID.
+# def start_session(user_id):
+# 	user = User.get(id=user_id)
+# 	# Tokens by default last 60 days
+# 	expires_at = datetime.datetime.utcnow().replace(tzinfo=utc) + timedelta(days=60)
+# 	# Generate a 32 byte (256-bit) cryptographically secure random number
+# 	token = int(ssl.RAND_bytes(32))
+# 	print (token)
+# 	session = Session(user=user, expires_at=expires_at, token=token)
 

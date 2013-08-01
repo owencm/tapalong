@@ -153,6 +153,8 @@ INSTALLED_APPS = (
     # For Facebook authentication
     'django_facebook',
     'tapalong_app',
+    # For database migrations
+    'south',
 )
 
 # A sample logging configuration. The only tangible logging

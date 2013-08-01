@@ -22,6 +22,11 @@ class Activity(models.Model):
 	def __unicode__(self):
 		return self.title
 
+class Session(models.Model):
+	token = models.IntegerField()
+	user = models.ForeignKey(User)
+	created_at = models.DateTimeField(auto_now_add=True)
+	expires_at = models.DateTimeField()
 
-
-
+	def get_token_as_int(self):
+		RAND_bytes
