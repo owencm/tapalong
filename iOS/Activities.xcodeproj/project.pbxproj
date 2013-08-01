@@ -181,9 +181,9 @@
 			children = (
 				62D6DEFF17A4C4DC00EF920F /* ActivitesViewController.h */,
 				62D6DF0017A4C4DC00EF920F /* ActivitesViewController.m */,
-				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
 				62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */,
 				62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */,
+				62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */,
 				626C847717A77A300024D105 /* CreateActivityViewController.h */,
 				626C847817A77A300024D105 /* CreateActivityViewController.m */,
 				626C847917A77A310024D105 /* CreateActivityViewController.xib */,
