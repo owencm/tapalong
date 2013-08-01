@@ -50,6 +50,7 @@
  
     oldFrame = self.cardBackgroundView.frame;
     [self.cardBackgroundView setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, buttonOffset+padding - oldFrame.origin.y)];
+    
     // TODO: Move me to the init and get me to work!
     UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
     self.cardBackgroundView.image = cardBackground;
