@@ -4,6 +4,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 import datetime
+from pyfb import Pyfb
+from django.conf import settings
+
 
 from tapalong_app.models import User, Activity
 
@@ -27,6 +30,14 @@ def serialize_activity(activity, user_id):
 # check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
+	facebook = Pyfb(settings.FACEBOOK_APP_ID)
+	#Sets the authentication token
+	facebook.set_access_token('CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk')
+	#Gets info about myself 
+	me = facebook.get_myself()
+	print "-" * 40
+	print "Name: %s" % me.name
+
 	if request.method == 'GET':
 		# Get all activities for which this user is an attendee of.
 		# (Includes events they created.)
