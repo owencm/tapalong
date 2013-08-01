@@ -17,11 +17,8 @@ FACEBOOK_APP_ID = '416549371775324'
 FACEBOOK_APP_SECRET = 'f29bad19065dfa433ec0b89815e86f64'
 
 AUTHENTICATION_BACKENDS = (
-    'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-
-AUTH_USER_MODEL = 'django_facebook.FacebookCustomUser'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
@@ -32,7 +29,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'django.contrib.messages.context_processors.messages',
-    'django_facebook.context_processors.facebook',
 )
 
 DATABASES = {
