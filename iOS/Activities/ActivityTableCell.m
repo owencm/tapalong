@@ -6,9 +6,8 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
-// TODO: Set colors of buttons programatically
-
 #import "ActivityTableCell.h"
+#import "GlobalColors.h"
 
 @implementation ActivityTableCell
 
@@ -16,7 +15,10 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-    }
+        UIColor *linkBlue = [[GlobalColors sharedGlobal] linkBlue];
+        [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateNormal];
+        [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateHighlighted];
+}
     return self;
 }
 
@@ -27,21 +29,23 @@
 
 -(void)refreshLayout
 {
-    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
-    self.cardBackgroundView.image = cardBackground;
-
-    
     [self.activityLabel sizeToFit];
     
-    int titleBottomPadding = 6;
-    int buttonHeight = 20;
-    int buttonBottomPadding = 10;
+    int padding = 8;
     int titleOffset = self.activityLabel.frame.size.height + self.activityLabel.frame.origin.y;
     
-    CGRect oldFrame = self.tapAlongButton.frame;
-    [self.tapAlongButton setFrame: CGRectMake(oldFrame.origin.x, titleOffset + titleBottomPadding, oldFrame.size.width, oldFrame.size.height)];
+    CGRect oldFrame = self.divider.frame;
+    [self.divider setFrame: CGRectMake(oldFrame.origin.x, titleOffset + padding, oldFrame.size.width, oldFrame.size.height)];
+    oldFrame = self.tapAlongButton.frame;
+    [self.tapAlongButton setFrame: CGRectMake(oldFrame.origin.x, titleOffset + 2*padding, oldFrame.size.width, oldFrame.size.height)];
     
-    self.cellHeight = titleOffset + titleBottomPadding + buttonHeight + buttonBottomPadding;
+    int buttonOffset = self.tapAlongButton.frame.size.height + self.tapAlongButton.frame.origin.y;
+ 
+    oldFrame = self.cardBackgroundView.frame;
+    [self.cardBackgroundView setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, buttonOffset+padding - oldFrame.origin.y)];
+    // TODO: Move me to the init and get me to work!
+    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
+    self.cardBackgroundView.image = cardBackground;
     
 }
 

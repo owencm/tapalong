@@ -13,8 +13,10 @@
 @property (nonatomic, strong) UIColor *red;
 @property (nonatomic, strong) UIImage *redImage;
 @property (nonatomic, strong) UIColor *backgroundGrey;
+@property (nonatomic, strong) UIImage *backgroundGreyImage;
 @property (nonatomic, strong) UIColor *darkGreyText;
 @property (nonatomic, strong) UIColor *lightGreyText;
+@property (nonatomic, strong) UIColor *linkBlue;
 @property (nonatomic, strong) GlobalColors *sharedGlobalInstance;
 
 + (id)sharedGlobal;

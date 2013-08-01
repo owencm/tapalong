@@ -13,7 +13,7 @@
 @property (nonatomic, weak) IBOutlet UILabel *activityLabel;
 @property (weak, nonatomic) IBOutlet UIButton *tapAlongButton;
 @property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
-@property (assign, nonatomic) int cellHeight;
+@property (weak, nonatomic) IBOutlet UIImageView *divider;
 
 -(void)refreshLayout;
 
