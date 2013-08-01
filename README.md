@@ -1,4 +1,7 @@
 Activites
 =========
 
-A fun way to share activities with your friends!
+Run the following to also clone the RestKit submodule:
+
+git submodule init
+git submodule update
