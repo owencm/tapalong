@@ -36,8 +36,12 @@ def get_activities_list(request, user_id):
 	facebook.set_access_token('CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk')
 	#Gets info about myself 
 	me = facebook.get_myself()
+	token = 'CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk'
 	print "-" * 40
 	print "Name: %s" % me.name
+	friends = facebook.get_friends()
+	for friend in friends:
+		print friend.name
 
 	if request.method == 'GET':
 		# Get all activities for which this user is an attendee of.
