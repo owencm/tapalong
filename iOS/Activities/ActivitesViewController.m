@@ -12,6 +12,7 @@
 #import "CreateActivityViewController.h"
 #import "GlobalColors.h"
 #import "GlobalNetwork.h"
+#import <CoreText/CoreText.h>
 
 @interface ActivitesViewController ()
 
@@ -24,6 +25,10 @@
     self = [super init];
     if (self) {
         self.title = @"Activites";
+        // Padd the bottom of the table with 20 pixels
+        self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 20, 0);
+        // Hide the separators
+        self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     }
     return self;
 }
@@ -110,9 +115,7 @@
 }
 
 - (void)setTextInCell:(ActivityTableCell *)cell titleString:(NSString *)titleString userNameString:(NSString *)userNameString descriptionString:(NSString *)descriptionString locationString:(NSString *)locationString dateString:(NSString *)dateString {
-    
     cell.activityLabel.attributedText = [self getAttributedActivity:userNameString titleString:titleString dateString:dateString];
-    
 }
 
 -(NSMutableAttributedString *)getAttributedActivity:(NSString *)userNameString titleString:(NSString *)titleString dateString:(NSString *)dateString
@@ -144,16 +147,21 @@
     [attributedString setAttributes:largeStringAttributes range:titleRange];
     [attributedString setAttributes:smallStringAttributes range:dateRange];
     
-//    CGRect size = [attributedString boundingRectWithSize: CGSizeMake(250, 0.0) options:NSStringDrawingUsesDeviceMetrics context:nil];
-    
-//    NSLog(@"%@", NSStringFromCGRect(size));
-    
     return attributedString;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 150;
+    Activity *activity = [self.activities objectAtIndex:indexPath.row];
+    NSAttributedString *attributedString = [self getAttributedActivity:@"Owen Campbell-Moore" titleString:[activity title] dateString:@" tomorrow at 7pm"];
+
+    // Size the attributed string
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
+    CGSize targetSize = CGSizeMake(217, CGFLOAT_MAX);
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
+    CFRelease(framesetter);
+    
+    return fitSize.height + 70;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

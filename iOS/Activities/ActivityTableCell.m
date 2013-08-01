@@ -32,9 +32,15 @@
     [self.activityLabel sizeToFit];
     
     int padding = 8;
+    
     int titleOffset = self.activityLabel.frame.size.height + self.activityLabel.frame.origin.y;
     
-    CGRect oldFrame = self.divider.frame;
+    CGRect activityFrame = self.activityLabel.frame;
+    
+    CGRect oldFrame = self.userImage.frame;
+    [self.userImage setFrame: CGRectMake(oldFrame.origin.x, activityFrame.origin.y + (activityFrame.size.height/2) - oldFrame.size.height / 2, oldFrame.size.width, oldFrame.size.height)];
+    
+    oldFrame = self.divider.frame;
     [self.divider setFrame: CGRectMake(oldFrame.origin.x, titleOffset + padding, oldFrame.size.width, oldFrame.size.height)];
     oldFrame = self.tapAlongButton.frame;
     [self.tapAlongButton setFrame: CGRectMake(oldFrame.origin.x, titleOffset + 2*padding, oldFrame.size.width, oldFrame.size.height)];

@@ -14,6 +14,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *tapAlongButton;
 @property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
 @property (weak, nonatomic) IBOutlet UIImageView *divider;
+@property (weak, nonatomic) IBOutlet UIImageView *userImage;
 
 -(void)refreshLayout;
 
