@@ -101,12 +101,7 @@
     }
     
     Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    NSString *titleString = [[activity title] capitalizedString];
-    NSString *descriptionString = [activity description];
-    NSString *locationString = [activity location];
-    NSString *dateString = @" tomorrow at 7pm";
-    NSString *userNameString = @"Owen Campbell-Moore";
-    [self setTextInCell:cell titleString:titleString userNameString:userNameString descriptionString:descriptionString locationString:locationString dateString:dateString];
+    [self setTextInCell:cell activity:activity];
     [cell refreshLayout];
     
     [cell.viewDetailsButton addTarget:self action:@selector(viewDetailsPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -114,13 +109,53 @@
     return cell;
 }
 
-- (void)setTextInCell:(ActivityTableCell *)cell titleString:(NSString *)titleString userNameString:(NSString *)userNameString descriptionString:(NSString *)descriptionString locationString:(NSString *)locationString dateString:(NSString *)dateString {
-    cell.activityLabel.attributedText = [self getAttributedActivity:userNameString titleString:titleString dateString:dateString];
+- (void)setTextInCell:(ActivityTableCell *)cell activity:(Activity *)activity {
+    cell.activityLabel.attributedText = [self getAttributedActivity:activity];
 }
 
--(NSMutableAttributedString *)getAttributedActivity:(NSString *)userNameString titleString:(NSString *)titleString dateString:(NSString *)dateString
-{
-    NSString *joinedString = [[[userNameString stringByAppendingString:@" is "] stringByAppendingString:titleString] stringByAppendingString:dateString];
+-(NSMutableAttributedString *)getAttributedActivity:(Activity *)activity {
+    
+    NSDate *baseDate = [activity start_time];
+    
+    // determine the NSDate for midnight of the base date:
+    NSCalendar* calendar = [NSCalendar currentCalendar];
+    NSDateComponents* comps = [calendar components:(NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit)
+                                          fromDate:baseDate];
+    NSDate* theMidnightHour = [calendar dateFromComponents:comps];
+    
+    NSDate *today = [NSDate dateWithTimeIntervalSinceNow:0];
+    NSDate *tomorrow = [NSDate dateWithTimeIntervalSinceNow:24*60*60];
+    
+    NSString *dateString = @"";
+    
+    // Tidy me up plz
+    NSTimeInterval interval = [today timeIntervalSinceDate:theMidnightHour];
+    if (interval >= 0 && interval < 60*60*24) {
+        // It's today
+        dateString = @" Today at ";
+    } else { // If it's not today, continue
+        interval = [tomorrow timeIntervalSinceDate:theMidnightHour];
+        if (interval >= 0 && interval < 60*60*24) {
+            // It's tomorrow
+            dateString = @" Tomorrow at ";
+        } else { // If it's not tomorrow do the general case
+            NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+            [dateFormatter setDateFormat:@"EEEE"];
+            dateString = [[@" on " stringByAppendingString: [dateFormatter stringFromDate:[activity start_time]]] stringByAppendingString: @" at "];
+        }
+    }
+    
+    // Set the formatter tp produce strings of the format 7:30PM
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setDateFormat:@"h:mma"];
+    
+    // Append the date to the time
+    dateString = [dateString stringByAppendingString:[dateFormatter stringFromDate:[activity start_time]]];
+    
+    NSString *titleString = [[activity title] capitalizedString];
+    NSString *userNameString = @"Owen Campbell-Moore";
+    
+    NSString *joinedString = [[[userNameString stringByAppendingString:@" is "] stringByAppendingString:titleString]stringByAppendingString:dateString];
     
     // Define general attributes for the entire String
     NSDictionary *attribs = @{};
@@ -153,7 +188,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    NSAttributedString *attributedString = [self getAttributedActivity:@"Owen Campbell-Moore" titleString:[activity title] dateString:@" tomorrow at 7pm"];
+    NSAttributedString *attributedString = [self getAttributedActivity:activity];
 
     // Size the attributed string
     CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);

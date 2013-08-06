@@ -11,7 +11,7 @@
 @interface Activity : NSObject
 
 @property (strong, nonatomic) NSString *title;
-@property (strong, nonatomic) NSString *start_time;
+@property (strong, nonatomic) NSDate *start_time;
 @property (strong, nonatomic) NSString *location;
 @property (strong, nonatomic) NSString *max_attendees;
 @property (strong, nonatomic) NSString *description;
