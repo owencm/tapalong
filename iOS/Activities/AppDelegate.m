@@ -36,12 +36,11 @@
     
     // See if the app has a valid token for the current state.
     if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        NSLog([@"\nToken: " stringByAppendingString:[[FBSession.activeSession accessTokenData] accessToken]]);
         [self openSession];
     } else {
         [self showLoginView];
     }
-    
-    NSLog([@"\nToken: " stringByAppendingString:[[FBSession.activeSession accessTokenData] accessToken]]);
     
     return YES;
 }
