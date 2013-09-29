@@ -9,7 +9,7 @@
 #import "AppDelegate.h"
 #import "ActivitesViewController.h"
 #import <RestKit/RestKit.h>
-#import "GLobalColors.h"
+#import "GLobalStyles.h"
 #import "LoginViewController.h"
 #import <FacebookSDK/FacebookSDK.h>
 
@@ -28,7 +28,7 @@
     self.window.rootViewController = navigationController;
     
     self.navigationController.navigationBar.translucent = NO;
-    self.navigationController.navigationBar.barTintColor = [[GlobalColors sharedGlobal] redColor];
+    self.navigationController.navigationBar.barTintColor = [[GlobalStyles sharedGlobal] redColor];
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];

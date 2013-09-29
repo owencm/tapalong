@@ -7,7 +7,7 @@
 //
 
 #import "ActivityDetailViewController.h"
-#import "GlobalColors.h"
+#import "GlobalStyles.h"
 
 @interface ActivityDetailViewController ()
 
@@ -27,7 +27,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [[GlobalColors sharedGlobal] backgroundGreyColor];
+    self.view.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
 
 - (void)didReceiveMemoryWarning

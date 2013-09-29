@@ -11,7 +11,7 @@
 #import "Activity.h"
 #import "CreateActivityViewController.h"
 #import "ActivityDetailViewController.h"
-#import "GlobalColors.h"
+#import "GlobalStyles.h"
 #import "GlobalNetwork.h"
 #import <CoreText/CoreText.h>
 
@@ -39,7 +39,7 @@
     [super viewDidLoad];
     
     // Set the background to a pleasant grey
-    [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGreyColor]];
+    [[self view] setBackgroundColor:[[GlobalStyles sharedGlobal] backgroundGreyColor]];
     
     // Add the 'add' button
     UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createButtonPressed:)];
@@ -152,30 +152,26 @@
     
     NSString *joinedString = [[[userNameString stringByAppendingString:@" is "] stringByAppendingString:titleString]stringByAppendingString:dateString];
     
-    // Define general attributes for the entire String
-    NSDictionary *attribs = @{};
-    
-    // Define preset styles we will use
-    UIFont *largeString = [UIFont fontWithName:@"Roboto" size:16];
-    UIFont *smallString = [UIFont fontWithName:@"Roboto-Light" size:14];
-    UIColor *darkGreyText = [[GlobalColors sharedGlobal] textDarkGreyColor];
-    UIColor *lightGreyText = [[GlobalColors sharedGlobal] textLightGreyColor];
-    NSDictionary *largeStringAttributes = @{NSFontAttributeName: largeString,
-                                         NSForegroundColorAttributeName: darkGreyText};
-    NSDictionary *smallStringAttributes = @{NSFontAttributeName: smallString,
-                                          NSForegroundColorAttributeName: lightGreyText};
-    
     NSMutableAttributedString *attributedString =
     [[NSMutableAttributedString alloc] initWithString:joinedString
-                                           attributes:attribs];
+                                           attributes:@{}];
+    
+    // Define preset styles we will use
+    NSDictionary *regularTextAttributes = [[GlobalStyles sharedGlobal] regularTextAttributes];
+    NSDictionary *emphasisTextAttributes = [[GlobalStyles sharedGlobal] emphasisTextAttributes];
+    
+    // Set sections of the text to have the correct styles
     NSRange userNameRange = {0, [userNameString length]};
-    NSRange isRange = {[userNameString length], 4};
+    [attributedString setAttributes:emphasisTextAttributes range:userNameRange];
+    
     NSRange titleRange = {[userNameString length]+4, [titleString length]};
+    [attributedString setAttributes:emphasisTextAttributes range:titleRange];
+    
+    NSRange isRange = {[userNameString length], 4};
+    [attributedString setAttributes:regularTextAttributes range:isRange];
+
     NSRange dateRange = {[userNameString length]+4+[titleString length], [dateString length]};
-    [attributedString setAttributes:largeStringAttributes range:userNameRange];
-    [attributedString setAttributes:smallStringAttributes range:isRange];
-    [attributedString setAttributes:largeStringAttributes range:titleRange];
-    [attributedString setAttributes:smallStringAttributes range:dateRange];
+    [attributedString setAttributes:regularTextAttributes range:dateRange];
     
     return attributedString;
 }
@@ -210,7 +206,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = [[GlobalColors sharedGlobal] backgroundGreyColor];
+    cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
 
 @end

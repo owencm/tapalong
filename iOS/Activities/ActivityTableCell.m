@@ -7,7 +7,7 @@
 //
 
 #import "ActivityTableCell.h"
-#import "GlobalColors.h"
+#import "GlobalStyles.h"
 
 @implementation ActivityTableCell
 
@@ -59,7 +59,7 @@
     self.cardBackgroundView.image = cardBackground;
     
     // TODO: Move me to the init
-    UIColor *textBlueColor = [[GlobalColors sharedGlobal] textBlueColor];
+    UIColor *textBlueColor = [[GlobalStyles sharedGlobal] textBlueColor];
     [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateNormal];
     [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateHighlighted];
 //    [self.tapAlongButton setBackgroundImage: forState:]

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface GlobalColors : NSObject
+@interface GlobalStyles : NSObject
 
 @property (nonatomic, strong) UIColor *redColor;
 @property (nonatomic, strong) UIImage *redImage;
@@ -17,7 +17,11 @@
 @property (nonatomic, strong) UIColor *textDarkGreyColor;
 @property (nonatomic, strong) UIColor *textLightGreyColor;
 @property (nonatomic, strong) UIColor *textBlueColor;
-@property (nonatomic, strong) GlobalColors *sharedGlobalInstance;
+
+@property (nonatomic, strong) NSDictionary *regularTextAttributes;
+@property (nonatomic, strong) NSDictionary *emphasisTextAttributes;
+
+@property (nonatomic, strong) GlobalStyles *sharedGlobalInstance;
 
 + (id)sharedGlobal;
 
