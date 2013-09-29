@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "ActivityTableCell.h"
+#import "Activity.h"
 
 @interface ActivitesViewController : UITableViewController
 
-@property NSArray *activities;
+@property NSMutableArray *activities;
+- (void)addActivity:(Activity*)activity;
 
 @end

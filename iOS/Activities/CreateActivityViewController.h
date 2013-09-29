@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActivitesViewController.h"
 
 @interface CreateActivityViewController : UIViewController <UITextFieldDelegate>
 @property (weak, nonatomic) IBOutlet UILabel *nameIsLabel;
@@ -17,5 +18,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *createButton;
 @property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
 - (IBAction)createActivityPressed:(id)sender;
+
+@property (weak, nonatomic) ActivitesViewController *superController;
 
 @end

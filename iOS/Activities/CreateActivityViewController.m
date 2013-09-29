@@ -31,17 +31,23 @@
 {
     [super viewDidLoad];
     self.datePicker.minimumDate = [NSDate date];
+    [self.datePicker setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
     
     // Handle dismissing keyboard for text input
     self.activityTitle.delegate = self;
+    self.activityLocation.delegate = self;
     
     // TODO: Pull the user's name
     NSString *nameString = @"Owen Campbell-Moore";
     NSString *joinedString = [nameString stringByAppendingString: @" is"];
     NSMutableAttributedString *nameIsString = [[NSMutableAttributedString alloc] initWithString:joinedString attributes:@{}];
     
-    // Set sections of the text to have the correct styles
+    // Set create button's color correctly
+    UIColor *textBlueColor = [[GlobalStyles sharedGlobal] textBlueColor];
+    [self.createButton setTitleColor:textBlueColor forState:UIControlStateNormal];
+    [self.createButton setTitleColor:textBlueColor forState:UIControlStateHighlighted];
     
+    // Set sections of the text to have the correct styles
     NSDictionary *emphasisTextAttributes = [[GlobalStyles sharedGlobal] emphasisTextAttributes];
     NSRange userNameRange = {0, [nameString length]};
     [nameIsString setAttributes:emphasisTextAttributes range:userNameRange];
@@ -61,7 +67,7 @@
 }
 
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
-    if (theTextField == self.activityTitle) {
+    if (theTextField == self.activityLocation || theTextField == self.activityTitle) {
         [theTextField resignFirstResponder];
     }
     return YES;
@@ -81,9 +87,17 @@
     activity.max_attendees = @"-1";
     activity.start_time = [[self datePicker] date];
     
-    [[GlobalNetwork sharedGlobal] createActivity:activity];
+    if (![activity.title isEqualToString:@""] && ![activity.location isEqualToString:@""]) {
+        // Send a request to the server to create the new activity
+        [[GlobalNetwork sharedGlobal] createActivity:activity];
     
-    // Pop this controller
-    [self.navigationController popViewControllerAnimated:YES];
+        // Add the event to the set in the app. TODO: Do this in response to success from the server. TODO: Is this the right way to access Activities data?
+        [[self superController] addActivity:activity];
+        
+        // Pop this controller
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        // Some data was missing
+    }
 }
 @end

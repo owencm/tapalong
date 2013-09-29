@@ -46,12 +46,12 @@
     self.navigationItem.rightBarButtonItem = addBarButton;
     
     // Initialise the activities array
-    self.activities = [[NSArray alloc] init];
+    self.activities = [[NSMutableArray alloc] init];
     
     // Download activities from the server and display them
     [[GlobalNetwork sharedGlobal] getActivities:^(NSArray *result)
         {
-            self.activities = result;
+            self.activities = [result mutableCopy];
             [[self tableView] reloadData];
         }
      ];
@@ -64,6 +64,8 @@
 - (IBAction) createButtonPressed:(id)sender
 {
     CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
+    // TODO: is this the right way the sub view controller should be adding data to Activities?
+    createActivityViewController.superController = self;
     [self.navigationController pushViewController:createActivityViewController animated:YES];
 }
 
@@ -82,6 +84,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
+    NSLog(@"Num check");
     return [self.activities count];
 }
 
@@ -174,6 +177,17 @@
     [attributedString setAttributes:regularTextAttributes range:dateRange];
     
     return attributedString;
+}
+
+- (void) addActivity:(Activity*) activity
+{
+    [self.activities addObject:(activity)];
+    [self activitiesChanged];
+}
+
+-(void) activitiesChanged
+{
+    [self.tableView reloadData];
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
