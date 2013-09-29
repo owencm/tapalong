@@ -33,9 +33,9 @@ static GlobalStyles *sharedGlobalInstance = nil;
         // Colors for text
         self.textDarkGreyColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
         self.textLightGreyColor = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
-        self.textBlueColor= [UIColor colorWithRed:63/255.0f green:172/255.0f blue:221/255.0f alpha:1];
+        self.textBlueColor= [UIColor colorWithRed:63/255.0f green:172/255.0f blue:250/255.0f alpha:1];
         
-        // Font styles
+        // Entire font styles
         UIFont *regularFont = [UIFont fontWithName:@"Roboto-Light" size:14];
         UIColor *lightGreyText = self.textLightGreyColor;
         self.regularTextAttributes = @{NSFontAttributeName: regularFont,

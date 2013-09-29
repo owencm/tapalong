@@ -19,6 +19,8 @@
 @property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
 - (IBAction)createActivityPressed:(id)sender;
 
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
 @property (weak, nonatomic) ActivitesViewController *superController;
 
 @end

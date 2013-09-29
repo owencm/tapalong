@@ -30,7 +30,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    // Enable the scroller
+    self.scrollView.contentSize = CGSizeMake(320, 700);
+    
+    // Restrict events to being created in the next 2 weeks
     self.datePicker.minimumDate = [NSDate date];
+    self.datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:60*60*24*14];
+    
+    // Shrink the datepicker a bit. This is a hack but it is the only option to make it narrow enough to fit on the card (clips otherwise).
     [self.datePicker setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
     
     // Handle dismissing keyboard for text input
