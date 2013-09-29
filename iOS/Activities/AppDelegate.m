@@ -27,11 +27,12 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = navigationController;
     
-    [[navigationController navigationBar] setBackgroundImage:[[GlobalColors sharedGlobal] redImage] forBarMetrics:UIBarMetricsDefault];
-    [navigationController navigationBar].barStyle = UIBarStyleBlackTranslucent;
-//    [[UIBarButtonItem appearance]
-//     setBackButtonBackgroundImage:[UIImage imageNamed:@"backButton.png"]
-//     forState:UIControlStateNormal barMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.barTintColor = [[GlobalColors sharedGlobal] redColor];
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    
     [self.window makeKeyAndVisible];
     
     // See if the app has a valid token for the current state.

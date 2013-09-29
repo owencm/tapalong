@@ -39,15 +39,10 @@
     [super viewDidLoad];
     
     // Set the background to a pleasant grey
-    [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
+    [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGreyColor]];
     
-    // This adds a button with a custom image and no box/border
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [addButton setFrame:CGRectMake(0.0f, 0.0f, 25.0f, 25.0f)];
-    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateNormal];
-    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateHighlighted];
-    [addButton addTarget:self action:@selector(createButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    // Add the 'add' button
+    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createButtonPressed:)];
     self.navigationItem.rightBarButtonItem = addBarButton;
     
     // Initialise the activities array
@@ -163,8 +158,8 @@
     // Define preset styles we will use
     UIFont *largeString = [UIFont fontWithName:@"Roboto" size:16];
     UIFont *smallString = [UIFont fontWithName:@"Roboto-Light" size:14];
-    UIColor *darkGreyText = [[GlobalColors sharedGlobal] darkGreyText];
-    UIColor *lightGreyText = [[GlobalColors sharedGlobal] lightGreyText];
+    UIColor *darkGreyText = [[GlobalColors sharedGlobal] textDarkGreyColor];
+    UIColor *lightGreyText = [[GlobalColors sharedGlobal] textLightGreyColor];
     NSDictionary *largeStringAttributes = @{NSFontAttributeName: largeString,
                                          NSForegroundColorAttributeName: darkGreyText};
     NSDictionary *smallStringAttributes = @{NSFontAttributeName: smallString,
@@ -215,7 +210,7 @@
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    cell.backgroundColor = [[GlobalColors sharedGlobal] backgroundGrey];
+    cell.backgroundColor = [[GlobalColors sharedGlobal] backgroundGreyColor];
 }
 
 @end

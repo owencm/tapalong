@@ -9,5 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface CreateActivityViewController : UIViewController
+@property (weak, nonatomic) IBOutlet UIDatePicker *datePicker;
+- (IBAction)createActivityPressed:(id)sender;
 
 @end

@@ -10,13 +10,13 @@
 
 @interface GlobalColors : NSObject
 
-@property (nonatomic, strong) UIColor *red;
+@property (nonatomic, strong) UIColor *redColor;
 @property (nonatomic, strong) UIImage *redImage;
-@property (nonatomic, strong) UIColor *backgroundGrey;
+@property (nonatomic, strong) UIColor *backgroundGreyColor;
 @property (nonatomic, strong) UIImage *backgroundGreyImage;
-@property (nonatomic, strong) UIColor *darkGreyText;
-@property (nonatomic, strong) UIColor *lightGreyText;
-@property (nonatomic, strong) UIColor *linkBlue;
+@property (nonatomic, strong) UIColor *textDarkGreyColor;
+@property (nonatomic, strong) UIColor *textLightGreyColor;
+@property (nonatomic, strong) UIColor *textBlueColor;
 @property (nonatomic, strong) GlobalColors *sharedGlobalInstance;
 
 + (id)sharedGlobal;

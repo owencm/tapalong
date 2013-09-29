@@ -59,9 +59,9 @@
     self.cardBackgroundView.image = cardBackground;
     
     // TODO: Move me to the init
-    UIColor *linkBlue = [[GlobalColors sharedGlobal] linkBlue];
-    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateNormal];
-    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateHighlighted];
+    UIColor *textBlueColor = [[GlobalColors sharedGlobal] textBlueColor];
+    [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateNormal];
+    [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateHighlighted];
 //    [self.tapAlongButton setBackgroundImage: forState:]
 }
 

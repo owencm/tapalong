@@ -23,15 +23,15 @@ static GlobalColors *sharedGlobalInstance = nil;
 
 - (id)init {
     if (self = [super init]) {
-        self.backgroundGrey = [UIColor colorWithRed:0.94 green:0.94 blue:0.94 alpha:1];
+        self.backgroundGreyColor = [UIColor colorWithRed:0.94 green:0.94 blue:0.94 alpha:1];
         self.backgroundGreyImage = [UIImage imageNamed:@"backgroundGrey.png"];
         self.redImage = [UIImage imageNamed:@"red.png"];
-        self.red = [[UIColor alloc] initWithRed:0.0 / 255 green:204.0 / 255 blue:51.0 / 204 alpha:1.0];
+        self.redColor = [UIColor colorWithRed:231/255.0f green:76/255.0f blue:60/255.0f alpha:1];
         
         // Colors for text
-        self.darkGreyText = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
-        self.lightGreyText = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
-        self.linkBlue = [UIColor colorWithRed:63/255.0f green:172/255.0f blue:221/255.0f alpha:1];
+        self.textDarkGreyColor = [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        self.textLightGreyColor = [UIColor colorWithRed:0.2 green:0.2 blue:0.2 alpha:1];
+        self.textBlueColor= [UIColor colorWithRed:63/255.0f green:172/255.0f blue:221/255.0f alpha:1];
     }
     return self;
 }

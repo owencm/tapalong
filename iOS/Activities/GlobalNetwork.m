@@ -66,6 +66,32 @@ static GlobalNetwork *sharedGlobalInstance = nil;
     [objectRequestOperation start];
 }
 
+- (void)createActivity:(Activity *)activity
+{
+    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://127.0.0.1:8000"]];
+    
+    // Define the object mapping
+    RKObjectMapping *activityMapping = [RKObjectMapping requestMapping];
+    // TODO: These are the symmetric so it doesn't matter, but using the same for requests and responses requires the use of [mapping inverseMapping]
+    [activityMapping addAttributeMappingsFromDictionary:@{
+                                                          @"title": @"title",
+                                                          @"start_time": @"start_time",
+                                                          @"location": @"location",
+                                                          @"max_attendees": @"max_attendees",
+                                                          @"description": @"description"
+                                                          }];
+    
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:activityMapping objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
+    
+    [manager addRequestDescriptor: requestDescriptor];
+    
+    [manager postObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        NSLog(@"\n\nSuccessful Post!\n");
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        NSLog(@"\n\nFail|n");
+    }];
+}
+
 
 
 @end
