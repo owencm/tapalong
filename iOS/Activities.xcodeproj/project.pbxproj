@@ -43,6 +43,7 @@
 		62D6DF0517A4C5A000EF920F /* ActivityTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 62D6DF0417A4C5A000EF920F /* ActivityTableCell.xib */; };
 		62D6DF0817A4C5C100EF920F /* ActivityTableCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */; };
 		62D6DF0A17A4C5EE00EF920F /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = 62D6DF0917A4C5EE00EF920F /* placeholder.png */; };
+		62E6417817F98608007427B2 /* Activities.m in Sources */ = {isa = PBXBuildFile; fileRef = 62E6417717F98608007427B2 /* Activities.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -139,6 +140,9 @@
 		62D6DF0617A4C5C100EF920F /* ActivityTableCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivityTableCell.h; sourceTree = "<group>"; };
 		62D6DF0717A4C5C100EF920F /* ActivityTableCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ActivityTableCell.m; sourceTree = "<group>"; };
 		62D6DF0917A4C5EE00EF920F /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
+		62E6417617F98608007427B2 /* Activities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Activities.h; sourceTree = "<group>"; };
+		62E6417717F98608007427B2 /* Activities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Activities.m; sourceTree = "<group>"; };
+		62E6417917F98BD4007427B2 /* ActivitiesListener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ActivitiesListener.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -179,6 +183,9 @@
 			children = (
 				626C844117A4F2000024D105 /* Activity.h */,
 				626C844217A4F2000024D105 /* Activity.m */,
+				62E6417617F98608007427B2 /* Activities.h */,
+				62E6417717F98608007427B2 /* Activities.m */,
+				62E6417917F98BD4007427B2 /* ActivitiesListener.h */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -418,6 +425,7 @@
 				62D6DEE817A4C35D00EF920F /* main.m in Sources */,
 				62D6DEEC17A4C35D00EF920F /* AppDelegate.m in Sources */,
 				62D6DF0117A4C4DC00EF920F /* ActivitesViewController.m in Sources */,
+				62E6417817F98608007427B2 /* Activities.m in Sources */,
 				62D6DF0817A4C5C100EF920F /* ActivityTableCell.m in Sources */,
 				626C844317A4F2000024D105 /* Activity.m in Sources */,
 				626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */,

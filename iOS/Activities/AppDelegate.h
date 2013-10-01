@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Activities.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -16,6 +17,7 @@
 
 @property (strong, nonatomic) UINavigationController *navigationController;
 @property (strong, nonatomic) UIWindow *window;
+@property (strong, nonatomic) Activities *activities;
 
 - (void)openSession;
 

@@ -12,6 +12,7 @@
 #import "GLobalStyles.h"
 #import "LoginViewController.h"
 #import <FacebookSDK/FacebookSDK.h>
+#import "Activities.h"
 
 @implementation AppDelegate
 
@@ -20,6 +21,8 @@
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 
+    self.activities = [[Activities alloc] init];
+    
     ActivitesViewController *activitiesViewController = [[ActivitesViewController alloc] init];
     navigationController = [[UINavigationController alloc]
                             initWithRootViewController:activitiesViewController];

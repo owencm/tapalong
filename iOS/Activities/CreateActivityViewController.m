@@ -99,7 +99,7 @@
         [[GlobalNetwork sharedGlobal] createActivity:activity];
     
         // Add the event to the set in the app. TODO: Do this in response to success from the server. TODO: Is this the right way to access Activities data?
-        [[self superController] addActivity:activity];
+//        [[self superController] addActivity:activity];
         
         // Pop this controller
         [self.navigationController popViewControllerAnimated:YES];

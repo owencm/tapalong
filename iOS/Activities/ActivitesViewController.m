@@ -6,9 +6,11 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
+#import "AppDelegate.h"
 #import "ActivitesViewController.h"
 #import "ActivityTableCell.h"
 #import "Activity.h"
+#import "Activities.h"
 #import "CreateActivityViewController.h"
 #import "ActivityDetailViewController.h"
 #import "GlobalStyles.h"
@@ -26,6 +28,11 @@
     self = [super init];
     if (self) {
         self.title = @"Activites";
+        // Get a copy of the Activities model from the AppDelegate and register as a listener
+        AppDelegate *appDelegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+        activities = appDelegate.activities;
+        [activities addListener:self];
+        
         // Padd the bottom of the table with 20 pixels
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 20, 0);
         // Hide the separators
@@ -34,6 +41,7 @@
     return self;
 }
 
+// How does this differ from init?
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -45,20 +53,14 @@
     UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createButtonPressed:)];
     self.navigationItem.rightBarButtonItem = addBarButton;
     
-    // Initialise the activities array
-    self.activities = [[NSMutableArray alloc] init];
-    
-    // Download activities from the server and display them
-    [[GlobalNetwork sharedGlobal] getActivities:^(NSArray *result)
-        {
-            self.activities = [result mutableCopy];
-            [[self tableView] reloadData];
-        }
-     ];
-    
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
  
+}
+
+-(void) activitiesChanged
+{
+    [self.tableView reloadData];
 }
 
 - (IBAction) createButtonPressed:(id)sender
@@ -84,8 +86,9 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"Num check");
-    return [self.activities count];
+    NSLog(@"Upcomingl: %i", [activities upcomingCount]);
+    
+    return [activities upcomingCount];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -98,7 +101,7 @@
         cell = [nib objectAtIndex:0];
     }
     
-    Activity *activity = [self.activities objectAtIndex:indexPath.row];
+    Activity *activity = [activities activityAtIndex:indexPath.row];
     [self setTextInCell:cell activity:activity];
     [cell refreshLayout];
     
@@ -179,20 +182,9 @@
     return attributedString;
 }
 
-- (void) addActivity:(Activity*) activity
-{
-    [self.activities addObject:(activity)];
-    [self activitiesChanged];
-}
-
--(void) activitiesChanged
-{
-    [self.tableView reloadData];
-}
-
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    Activity *activity = [self.activities objectAtIndex:indexPath.row];
+    Activity *activity = [activities activityAtIndex:indexPath.row];
     NSAttributedString *attributedString = [self getAttributedActivity:activity];
 
     // Size the attributed string
@@ -222,5 +214,7 @@
 {
     cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
+
+
 
 @end
