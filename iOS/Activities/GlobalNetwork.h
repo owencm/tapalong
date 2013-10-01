@@ -10,11 +10,14 @@
 
 #import <Foundation/Foundation.h>
 #import "Activity.h"
+#import <RestKit/RestKit.h>
 
 // A good guide on blocks: http://pragmaticstudio.com/blog/2010/9/15/ios4-blocks-2
 typedef void (^GetActivitiesCallbackBlock)(NSArray *);
 
-@interface GlobalNetwork : NSObject
+@interface GlobalNetwork : NSObject {
+    RKObjectMapping *activityMapping;
+}
 
 @property (nonatomic, strong) GlobalNetwork *sharedGlobalInstance;
 

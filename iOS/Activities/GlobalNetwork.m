@@ -25,7 +25,15 @@ static GlobalNetwork *sharedGlobalInstance = nil;
 
 - (id)init {
     if (self = [super init]) {
-        // Set properties required in here
+        // Define the mapping from JSON to our model
+        activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
+        [activityMapping addAttributeMappingsFromDictionary:@{
+                                                              @"title": @"title",
+                                                              @"start_time": @"start_time",
+                                                              @"location": @"location",
+                                                              @"max_attendees": @"max_attendees",
+                                                              @"description": @"description"
+                                                              }];
     }
     return self;
 }
@@ -34,16 +42,6 @@ static GlobalNetwork *sharedGlobalInstance = nil;
 {
     // Store a copy of the success callback
     GetActivitiesCallbackBlock _successCallback = [successCallback copy];
-    
-    // Define the object mapping 
-    RKObjectMapping *activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
-    [activityMapping addAttributeMappingsFromDictionary:@{
-         @"title": @"title",
-         @"start_time": @"start_time",
-         @"location": @"location",
-         @"max_attendees": @"max_attendees",
-         @"description": @"description"
-     }];
     
     // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
@@ -70,25 +68,14 @@ static GlobalNetwork *sharedGlobalInstance = nil;
 {
     RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://127.0.0.1:8000"]];
     
-    // Define the object mapping
-    RKObjectMapping *activityMapping = [RKObjectMapping requestMapping];
-    // TODO: These are the symmetric so it doesn't matter, but using the same for requests and responses requires the use of [mapping inverseMapping]
-    [activityMapping addAttributeMappingsFromDictionary:@{
-                                                          @"title": @"title",
-                                                          @"start_time": @"start_time",
-                                                          @"location": @"location",
-                                                          @"max_attendees": @"max_attendees",
-                                                          @"description": @"description"
-                                                          }];
-    
-    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:activityMapping objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
     
     [manager addRequestDescriptor: requestDescriptor];
     
     [manager postObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        NSLog(@"\n\nSuccessful Post!\n");
+        NSLog(@"\n\nSuccessfully posted to server!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"\n\nFail|n");
+        NSLog(@"\n\nFailed to post to server\n");
     }];
 }
 
