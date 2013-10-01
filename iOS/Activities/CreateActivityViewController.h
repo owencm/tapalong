@@ -17,10 +17,8 @@
 @property (weak, nonatomic) IBOutlet UITextField *activityLocation;
 @property (weak, nonatomic) IBOutlet UIButton *createButton;
 @property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
-- (IBAction)createActivityPressed:(id)sender;
-
 @property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
 
-@property (weak, nonatomic) ActivitesViewController *superController;
+- (IBAction)createActivityPressed:(id)sender;
 
 @end

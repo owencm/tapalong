@@ -52,10 +52,6 @@
     // Add the 'add' button
     UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createButtonPressed:)];
     self.navigationItem.rightBarButtonItem = addBarButton;
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
 }
 
 -(void) activitiesChanged
@@ -67,8 +63,6 @@
 - (IBAction) createButtonPressed:(id)sender
 {
     CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
-    // TODO: is this the right way the sub view controller should be adding data to Activities?
-    createActivityViewController.superController = self;
     [self.navigationController pushViewController:createActivityViewController animated:YES];
 }
 

@@ -1,9 +1,12 @@
-    //
+//
 //  Activities.m
 //  Activities
 //
 //  Created by Owen Campbell-Moore on 9/30/13.
 //  Copyright (c) 2013 A&O. All rights reserved.
+//
+//  This class is the Activities model for the app. It encapsulates storing data persistently and on the server. It notifies consumers of data changes via the (Roll-Your-Own(TM)) listener pattern.
+//  TODO: Only show activities happening in the future
 //
 
 #import "Activities.h"

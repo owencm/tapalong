@@ -74,17 +74,13 @@
     [self.createButton setTintColor: [[GlobalStyles sharedGlobal] textBlueColor]];
 }
 
+// Implementing this and assigning this file as the delegate for the text fields allows us to capture the "done" presses here and dismiss the keyboard
 - (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
+    // If the text field in question is either of these, dismiss the keyboard. This code is strictly unneccessary but may be useful 
     if (theTextField == self.activityLocation || theTextField == self.activityTitle) {
         [theTextField resignFirstResponder];
     }
     return YES;
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 - (IBAction)createActivityPressed:(id)sender {
@@ -106,4 +102,12 @@
         // Some data was missing, do nothing and let them enter other data
     }
 }
+
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
 @end
