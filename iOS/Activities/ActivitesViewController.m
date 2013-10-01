@@ -60,6 +60,7 @@
 
 -(void) activitiesChanged
 {
+    NSLog(@"\n\nRefreshing view due to updated data\n\n");
     [self.tableView reloadData];
 }
 
@@ -86,8 +87,6 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    NSLog(@"Upcomingl: %i", [activities upcomingCount]);
-    
     return [activities upcomingCount];
 }
 

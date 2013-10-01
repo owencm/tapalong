@@ -7,6 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
+#import "AppDelegate.h"
 #import "CreateActivityViewController.h"
 #import "GlobalStyles.h"
 #import "GlobalNetwork.h"
@@ -94,17 +95,15 @@
     activity.max_attendees = @"-1";
     activity.start_time = [[self datePicker] date];
     
-    if (![activity.title isEqualToString:@""] && ![activity.location isEqualToString:@""]) {
-        // Send a request to the server to create the new activity
-        [[GlobalNetwork sharedGlobal] createActivity:activity];
-    
-        // Add the event to the set in the app. TODO: Do this in response to success from the server. TODO: Is this the right way to access Activities data?
-//        [[self superController] addActivity:activity];
+    if (![activity.title isEqualToString:@""]) {
+        // Add the event to the set in the app.
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+        [appDelegate.activities addActivity:activity];
         
         // Pop this controller
         [self.navigationController popViewControllerAnimated:YES];
     } else {
-        // Some data was missing
+        // Some data was missing, do nothing and let them enter other data
     }
 }
 @end

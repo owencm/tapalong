@@ -12,7 +12,7 @@
 
 @interface Activities : NSObject {
     NSMutableArray *activitiesArray;
-    NSMutableArray<ActivitiesListener> *listenersArray;
+    NSMutableSet<ActivitiesListener> *listenersSet;
 }
 
 - (void) addActivity: (Activity*)activity;
