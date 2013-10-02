@@ -32,6 +32,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    // Set the screen title
+    self.title = @"Create Activity";
+    
     // Enable the scroller by setting this larger than the screen
     self.scrollView.contentSize = CGSizeMake(320, 700);
     
