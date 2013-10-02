@@ -6,13 +6,14 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
+
+#import <FacebookSDK/FacebookSDK.h>
 #import "AppDelegate.h"
 #import "ActivitesViewController.h"
-#import <RestKit/RestKit.h>
-#import "GLobalStyles.h"
+#import "GlobalStyles.h"
 #import "LoginViewController.h"
-#import <FacebookSDK/FacebookSDK.h>
 #import "Activities.h"
+#import "Network.h"
 
 @implementation AppDelegate
 
@@ -20,8 +21,9 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-
-    self.activities = [[Activities alloc] init];
+    
+    Network *network = [[Network alloc] init];
+    self.activities = [[Activities alloc] initWithNetwork:network];
     
     ActivitesViewController *activitiesViewController = [[ActivitesViewController alloc] init];
     navigationController = [[UINavigationController alloc]

@@ -9,12 +9,15 @@
 #import <Foundation/Foundation.h>
 #import "Activity.h"
 #import "ActivitiesListener.h"
+#import "Network.h"
 
 @interface Activities : NSObject {
     NSMutableArray *activitiesArray;
     NSMutableSet<ActivitiesListener> *listenersSet;
+    Network *network;
 }
 
+- (Activities*) initWithNetwork: (Network*)theNetwork;
 - (void) addActivity: (Activity*)activity;
 - (void) addListener: (id<ActivitiesListener>)listener;
 - (Activity*) activityAtIndex: (NSInteger)index;

@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "Activities.h"
+#import "Network.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

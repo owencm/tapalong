@@ -14,7 +14,7 @@
 #import "CreateActivityViewController.h"
 #import "ActivityDetailViewController.h"
 #import "GlobalStyles.h"
-#import "GlobalNetwork.h"
+#import "Network.h"
 #import <CoreText/CoreText.h>
 
 @interface ActivitesViewController ()

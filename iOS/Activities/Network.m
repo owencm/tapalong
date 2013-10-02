@@ -7,21 +7,10 @@
 //
 
 #import <RestKit/RestKit.h>
-#import "GlobalNetwork.h"
+#import "Network.h"
 #import "Activity.h"
 
-static GlobalNetwork *sharedGlobalInstance = nil;
-
-@implementation GlobalNetwork
-
-#pragma mark Singleton Methods
-+ (id)sharedGlobal {
-    @synchronized(self) {
-        if (sharedGlobalInstance == nil)
-            sharedGlobalInstance = [[self alloc] init];
-    }
-    return sharedGlobalInstance;
-}
+@implementation Network
 
 - (id)init {
     if (self = [super init]) {

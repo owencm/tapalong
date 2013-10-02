@@ -10,7 +10,7 @@
 #import "AppDelegate.h"
 #import "CreateActivityViewController.h"
 #import "GlobalStyles.h"
-#import "GlobalNetwork.h"
+#import "Network.h"
 #import "Activity.h"
 
 @interface CreateActivityViewController ()

@@ -28,7 +28,7 @@
 		62BD2F6717A884830010A1E9 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62BD2F6617A884830010A1E9 /* FacebookSDK.framework */; };
 		62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F6B17A886300010A1E9 /* LoginViewController.m */; };
 		62BD2F6E17A886300010A1E9 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 62BD2F6C17A886300010A1E9 /* LoginViewController.xib */; };
-		62BD2F7917A8BD2B0010A1E9 /* GlobalNetwork.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */; };
+		62BD2F7917A8BD2B0010A1E9 /* Network.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F7817A8BD2B0010A1E9 /* Network.m */; };
 		62D6DEDC17A4C35D00EF920F /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDB17A4C35D00EF920F /* UIKit.framework */; };
 		62D6DEDE17A4C35D00EF920F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDD17A4C35D00EF920F /* Foundation.framework */; };
 		62D6DEE017A4C35D00EF920F /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62D6DEDF17A4C35D00EF920F /* CoreGraphics.framework */; };
@@ -118,8 +118,8 @@
 		62BD2F6A17A886300010A1E9 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		62BD2F6B17A886300010A1E9 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
 		62BD2F6C17A886300010A1E9 /* LoginViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LoginViewController.xib; sourceTree = "<group>"; };
-		62BD2F7717A8BD2B0010A1E9 /* GlobalNetwork.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalNetwork.h; sourceTree = "<group>"; };
-		62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalNetwork.m; sourceTree = "<group>"; };
+		62BD2F7717A8BD2B0010A1E9 /* Network.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Network.h; sourceTree = "<group>"; };
+		62BD2F7817A8BD2B0010A1E9 /* Network.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Network.m; sourceTree = "<group>"; };
 		62D6DED817A4C35D00EF920F /* Activities.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Activities.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		62D6DEDB17A4C35D00EF920F /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		62D6DEDD17A4C35D00EF920F /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -234,8 +234,8 @@
 		62BD2F7617A8BD1C0010A1E9 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				62BD2F7717A8BD2B0010A1E9 /* GlobalNetwork.h */,
-				62BD2F7817A8BD2B0010A1E9 /* GlobalNetwork.m */,
+				62BD2F7717A8BD2B0010A1E9 /* Network.h */,
+				62BD2F7817A8BD2B0010A1E9 /* Network.m */,
 			);
 			name = Network;
 			sourceTree = "<group>";
@@ -431,7 +431,7 @@
 				626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */,
 				626C848417A785C10024D105 /* GlobalStyles.m in Sources */,
 				62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */,
-				62BD2F7917A8BD2B0010A1E9 /* GlobalNetwork.m in Sources */,
+				62BD2F7917A8BD2B0010A1E9 /* Network.m in Sources */,
 				625C45D717AAFDC3005F8A21 /* ActivityDetailViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

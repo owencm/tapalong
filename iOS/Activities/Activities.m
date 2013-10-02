@@ -9,15 +9,17 @@
 //  TODO: Only show activities happening in the future
 //
 
+#import "AppDelegate.h"
 #import "Activities.h"
-#import "GlobalNetwork.h"
+#import "Network.h"
 
 @implementation Activities
 
-- (id)init
+- (id)initWithNetwork:(Network*)theNetwork
 {
     self = [super init];
     if (self) {
+        network = theNetwork;
         activitiesArray = [[NSMutableArray alloc] init];
         listenersSet = (NSMutableSet<ActivitiesListener>*)[[NSMutableSet alloc] init];
         [self addDummyEvents];
@@ -27,7 +29,7 @@
 }
 
 - (void) updateActivitiesFromServer {
-    [[GlobalNetwork sharedGlobal] getActivities:^(NSArray *result)
+    [network getActivities:^(NSArray *result)
       {
           activitiesArray = [result mutableCopy];
           [self notifyListenersActivitiesChanged];
@@ -47,7 +49,7 @@
 // This can be called from anywhere and attempts to add the activity locally and on the server. TODO: respond with a success or fail message.
 - (void) addActivity: (Activity*)activity {
     // Send a request to the server to create the new activity. Currently ignore the response and add it locally hoping all was well.... because success callbacks are for losers.
-    [[GlobalNetwork sharedGlobal] createActivity:activity];
+    [network createActivity:activity];
     [activitiesArray addObject:activity];
     [self notifyListenersActivitiesChanged];
 }
