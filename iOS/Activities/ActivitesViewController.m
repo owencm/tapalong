@@ -27,7 +27,7 @@
 {
     self = [super init];
     if (self) {
-        self.title = @"Activites";
+        self.title = @"Activities";
         // Get a copy of the Activities model from the AppDelegate and register as a listener
         AppDelegate *appDelegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
         activities = appDelegate.activities;

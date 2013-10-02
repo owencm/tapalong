@@ -19,6 +19,7 @@
 
 @implementation CreateActivityViewController
 
+// What's the difference between this and viewDidLoad?
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -31,10 +32,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Enable the scroller
+    // Enable the scroller by setting this larger than the screen
     self.scrollView.contentSize = CGSizeMake(320, 700);
     
-    // Restrict events to being created in the next 2 weeks
+    // Restrict activities to being created in the next 2 weeks
     self.datePicker.minimumDate = [NSDate date];
     self.datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:60*60*24*14];
     
@@ -65,7 +66,6 @@
     [nameIsString setAttributes:regularTextAttributes range:isRange];
     
     self.nameIsLabel.attributedText = nameIsString;
-    
     self.atLabel.attributedText = [[NSAttributedString alloc] initWithString:@"at " attributes:regularTextAttributes];
     
     // Set miscellanious styles

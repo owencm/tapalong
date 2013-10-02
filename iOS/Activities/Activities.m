@@ -20,7 +20,7 @@
     if (self) {
         activitiesArray = [[NSMutableArray alloc] init];
         listenersSet = (NSMutableSet<ActivitiesListener>*)[[NSMutableSet alloc] init];
-//        [self addDummyEvents];
+        [self addDummyEvents];
         [self updateActivitiesFromServer];
     }
     return self;
