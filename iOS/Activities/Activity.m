@@ -10,4 +10,6 @@
 
 @implementation Activity
 
+// TODO ensure that string fields not set are initialised as @""
+
 @end
