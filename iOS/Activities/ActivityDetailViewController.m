@@ -20,6 +20,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = @"Activity Detail";
+        self.view.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
     }
     return self;
 }
@@ -27,13 +28,19 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setActivity:(Activity*)theActivity {
+    NSLog(@"Set");
+    activity = theActivity;
+    self.descriptionLabel.text = activity.description;
+    self.locationLabel.text = [@"Location: " stringByAppendingString:activity.location];
 }
 
 @end

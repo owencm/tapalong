@@ -54,24 +54,6 @@
     self.navigationItem.rightBarButtonItem = addBarButton;
 }
 
--(void) activitiesChanged
-{
-    NSLog(@"\n\nRefreshing view due to updated data\n\n");
-    [self.tableView reloadData];
-}
-
-- (IBAction) createButtonPressed:(id)sender
-{
-    CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
-    [self.navigationController pushViewController:createActivityViewController animated:YES];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -95,7 +77,7 @@
     }
     
     Activity *activity = [activities activityAtIndex:indexPath.row];
-    [self setTextInCell:cell activity:activity];
+    cell.activityLabel.attributedText = [self getAttributedActivity:activity];
     [cell refreshLayout];
     
     [cell.viewDetailsButton addTarget:self action:@selector(viewDetailsPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -103,9 +85,69 @@
     return cell;
 }
 
-- (void)setTextInCell:(ActivityTableCell *)cell activity:(Activity *)activity {
-    cell.activityLabel.attributedText = [self getAttributedActivity:activity];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Activity *activity = [activities activityAtIndex:indexPath.row];
+    NSAttributedString *attributedString = [self getAttributedActivity:activity];
+
+    // Size the attributed string
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
+    CGSize targetSize = CGSizeMake(217, CGFLOAT_MAX);
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
+    CFRelease(framesetter);
+    
+    // Update this whenever you redesign the cell
+    return fitSize.height + 77;
 }
+
+- (IBAction) createButtonPressed:(id)sender
+{
+    CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
+    [self.navigationController pushViewController:createActivityViewController animated:YES];
+}
+
+- (IBAction) viewDetailsPressed:(id)sender {
+    
+    ActivityDetailViewController *activityDetailViewController = [[ActivityDetailViewController alloc] initWithNibName:@"ActivityDetailViewController" bundle:nil];
+    
+    CGPoint buttonPosition = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:buttonPosition];
+    
+    Activity *activity = [activities activityAtIndex:indexPath.row];
+    
+    // TODO: Try and be able to do this within init or viewDidLoad. Struggling right now.
+    [activityDetailViewController setActivity:activity];
+    
+    [self.navigationController pushViewController:activityDetailViewController animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+}
+
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
+}
+
+-(void) activitiesChanged
+{
+    NSLog(@"\n\nRefreshing view due to updated data\n\n");
+    [self.tableView reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+// Misc helpers
 
 -(NSMutableAttributedString *)getAttributedActivity:(Activity *)activity {
     
@@ -168,44 +210,11 @@
     
     NSRange isRange = {[userNameString length], 4};
     [attributedString setAttributes:regularTextAttributes range:isRange];
-
+    
     NSRange dateRange = {[userNameString length]+4+[titleString length], [dateString length]};
     [attributedString setAttributes:regularTextAttributes range:dateRange];
     
     return attributedString;
-}
-
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    Activity *activity = [activities activityAtIndex:indexPath.row];
-    NSAttributedString *attributedString = [self getAttributedActivity:activity];
-
-    // Size the attributed string
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
-    CGSize targetSize = CGSizeMake(217, CGFLOAT_MAX);
-    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
-    CFRelease(framesetter);
-    
-    return fitSize.height + 77;
-}
-
-- (IBAction) viewDetailsPressed:(id)sender {
-    ActivityDetailViewController *activityDetailViewController = [[ActivityDetailViewController alloc] initWithNibName:@"ActivityDetailViewController" bundle:nil];
-    [self.navigationController pushViewController:activityDetailViewController animated:YES];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-}
-
--(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
 
 

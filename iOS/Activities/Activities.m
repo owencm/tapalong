@@ -39,6 +39,8 @@
     Activity *a = [[Activity alloc] init];
     a.title = @"Walking the dog";
     a.start_time = [NSDate date];
+    a.description = @"Meet at the lighthouse Meet at the lighthouse Meet at the lighthouse Meet at the lighthouse Meet at the lighthouse Meet at the lighthouse ";
+    a.location = @"Roath park lake";
     [activitiesArray addObject:a];
 }
 
