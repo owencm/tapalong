@@ -16,10 +16,12 @@ typedef void (^GetActivitiesCallbackBlock)(NSArray *);
 
 @interface Network : NSObject {
     RKObjectMapping *activityMapping;
+    RKObjectManager *manager;
 }
 
-- (void)getActivities:(GetActivitiesCallbackBlock)successHandler;
-- (void)createActivity:(Activity *)activity;
+- (void) getActivities:(GetActivitiesCallbackBlock) successHandler;
+- (void) createActivity:(Activity *) activity;
+- (void) removeActivity:(Activity *) activity;
 
 @end
 

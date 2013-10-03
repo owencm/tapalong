@@ -135,9 +135,10 @@
     cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
 }
 
+// This is part of the ActivitiesListener protocol and is called whenever the underlying data model changes
 -(void) activitiesChanged
 {
-    NSLog(@"\n\nRefreshing view due to updated data\n\n");
+    // This tells the table to requery the activities
     [self.tableView reloadData];
 }
 

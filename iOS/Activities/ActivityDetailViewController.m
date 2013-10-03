@@ -37,7 +37,6 @@
 }
 
 - (void)setActivity:(Activity*)theActivity {
-    NSLog(@"Set");
     activity = theActivity;
     self.descriptionLabel.text = activity.description;
     self.locationLabel.text = [@"Location: " stringByAppendingString:activity.location];

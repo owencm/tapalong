@@ -14,6 +14,9 @@
 
 - (id)init {
     if (self = [super init]) {
+        // Initialise RestKit's manager
+        manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://127.0.0.1:8000"]];
+        
         // Define the mapping from JSON to our model
         activityMapping = [RKObjectMapping mappingForClass:[Activity class]];
         [activityMapping addAttributeMappingsFromDictionary:@{
@@ -54,9 +57,7 @@
 }
 
 - (void)createActivity:(Activity *)activity
-{
-    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://127.0.0.1:8000"]];
-    
+{    
     RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
     
     [manager addRequestDescriptor: requestDescriptor];
@@ -65,6 +66,19 @@
         NSLog(@"\n\nSuccessfully posted to server!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"\n\nFailed to post to server\n");
+    }];
+}
+
+- (void) removeActivity:(Activity *)activity
+{
+    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodDELETE];
+    
+    [manager addRequestDescriptor: requestDescriptor];
+    
+    [manager deleteObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+        NSLog(@"\n\nSuccessfully removed activity from server!\n");
+    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+        NSLog(@"\n\nNetwork fail\n");
     }];
 }
 

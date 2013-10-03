@@ -22,16 +22,24 @@
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Location: blah" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yja-aM-Ta5">
-                    <rect key="frame" x="20" y="52" width="109" height="21"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Location: blah" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="yja-aM-Ta5">
+                    <rect key="frame" x="20" y="52" width="280" height="21"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="DVJ-xf-I09">
+                    <rect key="frame" x="105" y="81" width="111" height="30"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <state key="normal" title="Remove Activity">
+                        <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                    </state>
+                </button>
             </subviews>
             <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="yja-aM-Ta5" firstAttribute="leading" secondItem="cXW-Fl-dQX" secondAttribute="leading" id="MPF-hV-zFZ"/>
+                <constraint firstItem="DVJ-xf-I09" firstAttribute="top" secondItem="yja-aM-Ta5" secondAttribute="bottom" constant="8" symbolic="YES" id="RbI-km-nIc"/>
                 <constraint firstItem="yja-aM-Ta5" firstAttribute="top" secondItem="cXW-Fl-dQX" secondAttribute="bottom" constant="8" symbolic="YES" id="WTP-UK-h3d"/>
                 <constraint firstItem="cXW-Fl-dQX" firstAttribute="top" secondItem="1" secondAttribute="top" constant="18" id="baG-TC-GuR"/>
                 <constraint firstItem="cXW-Fl-dQX" firstAttribute="leading" secondItem="1" secondAttribute="leading" constant="20" symbolic="YES" id="nYO-nS-38z"/>
