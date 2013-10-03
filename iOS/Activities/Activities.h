@@ -18,9 +18,10 @@
 }
 
 - (Activities*) initWithNetwork: (Network*)theNetwork;
-- (void) addActivity: (Activity*)activity;
-- (void) addListener: (id<ActivitiesListener>)listener;
-- (Activity*) activityAtIndex: (NSInteger)index;
 - (NSInteger) upcomingCount;
+- (Activity*) activityAtIndex: (NSInteger)index;
+- (void) addActivity: (Activity*)activity;
+- (void) removeActivity: (Activity*)activity;
+- (void) addListener: (id<ActivitiesListener>)listener;
 
 @end

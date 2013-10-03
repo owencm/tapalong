@@ -7,6 +7,7 @@
 //
 
 #import "ActivityDetailViewController.h"
+#import "AppDelegate.h"
 #import "GlobalStyles.h"
 
 @interface ActivityDetailViewController ()
@@ -34,6 +35,15 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)removeActivityPressed:(id)sender {
+    // Get access to the activities model to request removal
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate.activities removeActivity:activity];
+    
+    // Pop this controller
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)setActivity:(Activity*)theActivity {

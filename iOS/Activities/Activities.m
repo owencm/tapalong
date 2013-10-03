@@ -72,7 +72,7 @@
 - (void) updateActivitiesFromServerInternal {
     [network getActivities:^(NSArray *result)
       {
-          [self addActivitiesFromArrayInternal:[result mutableCopy]];
+          [self addActivitiesFromArrayInternal:[result copy]];
       }
     ];
 }
@@ -101,7 +101,7 @@
 }
 
 - (void) makeConsistent {
-    [self removePastActivitiesInternal];
+//    [self removePastActivitiesInternal];
     [self sortActivitiesInternal];
 }
 

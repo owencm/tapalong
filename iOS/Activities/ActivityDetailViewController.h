@@ -15,6 +15,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property (weak, nonatomic) IBOutlet UILabel *locationLabel;
+- (IBAction)removeActivityPressed:(id)sender;
 
 - (void)setActivity:(Activity*)theActivity;
 

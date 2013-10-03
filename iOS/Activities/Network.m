@@ -48,9 +48,11 @@
     // Set the success and failure callbacks, forwarding the success to successCallback
     [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         // Call success callback with returned data!
+        NSLog(@"Network success");
         _successCallback(mappingResult.array);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        RKLogError(@"Operation failed with error: %@", error);
+        NSLog(@"Network error");
+//        RKLogError(@"Operation failed with error: %@", error);
     }];
     
     [objectRequestOperation start];
