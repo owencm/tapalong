@@ -38,24 +38,17 @@
     // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
-    // Set up the request
-    NSURL *URL = [NSURL URLWithString:@"http://127.0.0.1:8000/activities/1/"];
-    NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+    [manager addResponseDescriptor:responseDescriptor];
     
-    // Associate the descriptor with the request
-    RKObjectRequestOperation *objectRequestOperation = [[RKObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[ responseDescriptor ]];
-    
-    // Set the success and failure callbacks, forwarding the success to successCallback
-    [objectRequestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+    [manager getObjectsAtPath:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         // Call success callback with returned data!
         NSLog(@"Network success");
         _successCallback(mappingResult.array);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"Network error");
-//        RKLogError(@"Operation failed with error: %@", error);
+        // RKLogError(@"Operation failed with error: %@", error);
     }];
     
-    [objectRequestOperation start];
 }
 
 - (void)createActivity:(Activity *)activity
