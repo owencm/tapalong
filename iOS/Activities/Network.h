@@ -16,12 +16,14 @@ typedef void (^GetActivitiesCallbackBlock)(NSArray *);
 
 @interface Network : NSObject {
     RKObjectMapping *activityMapping;
+    RKObjectMapping *userMapping;
     RKObjectManager *manager;
 }
 
 - (void) getActivities:(GetActivitiesCallbackBlock) successHandler;
 - (void) createActivity:(Activity *) activity;
 - (void) removeActivity:(Activity *) activity;
+- (void) login:(NSString*) fbToken;
 
 @end
 

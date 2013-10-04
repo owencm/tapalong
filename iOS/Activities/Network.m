@@ -9,6 +9,7 @@
 #import <RestKit/RestKit.h>
 #import "Network.h"
 #import "Activity.h"
+#import "User.h"
 
 @implementation Network
 
@@ -26,6 +27,13 @@
                                                               @"max_attendees": @"max_attendees",
                                                               @"description": @"description"
                                                               }];
+        
+        userMapping = [RKObjectMapping mappingForClass:[User class]];
+        [userMapping addAttributeMappingsFromDictionary:@{
+                                                              @"name": @"name",
+                                                              @"user_id": @"user_id"
+                                                              }];
+        
     }
     return self;
 }
@@ -42,10 +50,10 @@
     
     [manager getObjectsAtPath:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         // Call success callback with returned data!
-        NSLog(@"Network success");
+        NSLog(@"Get Activities - success");
         _successCallback(mappingResult.array);
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"Network error");
+        NSLog(@"Get Activities- Fail");
         // RKLogError(@"Operation failed with error: %@", error);
     }];
     
@@ -58,9 +66,9 @@
     [manager addRequestDescriptor: requestDescriptor];
     
     [manager postObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        NSLog(@"\n\nSuccessfully posted to server!\n");
+        NSLog(@"\n\nCreate Activity - success!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"\n\nFailed to post to server\n");
+        NSLog(@"\n\nCreate Activity - fail\n");
     }];
 }
 
@@ -71,12 +79,32 @@
     [manager addRequestDescriptor: requestDescriptor];
     
     [manager deleteObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        NSLog(@"\n\nSuccessfully removed activity from server!\n");
+        NSLog(@"\n\nRemove Activity - success!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"\n\nNetwork fail\n");
+        NSLog(@"\n\nRemove Activity - fail\n");
     }];
 }
 
+- (void) login:(NSString*)fbToken {
+    NSDictionary *loginObject = [[NSDictionary alloc] initWithObjectsAndKeys:fbToken, @"fb_token", nil];
+    
+    AFHTTPClient *client = manager.HTTPClient;
+    
+    [client postPath:@"/login/" parameters:loginObject success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        // NSString *authToken = [responseObject objectForKey:@"token"];
+        NSLog(@"Login - success");
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"Login - fail");
+        // Pretend the login was successful and we can now access the user id and the token
+        NSString *userId = @"myId";
+        NSString *token = @"myToken";
+        [self setAuthorizationToken:token userId:userId];
+    }];
+}
 
+- (void) setAuthorizationToken:(NSString*)token userId:(NSString*)userId {
+    [manager.HTTPClient setDefaultHeader:@"user_id" value:userId];
+    [manager.HTTPClient setDefaultHeader:@"token" value:token];
+}
 
 @end

@@ -10,6 +10,12 @@
 
 @implementation Activity
 
-// TODO ensure that string fields not set are initialised as @""
+- (Activity*) init {
+    self = [super init];
+    if (self) {
+        // Do something
+    }
+    return self;
+}
 
 @end

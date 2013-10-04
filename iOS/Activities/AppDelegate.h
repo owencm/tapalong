@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "Activities.h"
 #import "Network.h"
+#import "USer.h"
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
@@ -19,6 +20,7 @@
 @property (strong, nonatomic) UINavigationController *navigationController;
 @property (strong, nonatomic) UIWindow *window;
 @property (strong, nonatomic) Activities *activities;
+@property (strong, nonatomic) User *user;
 
 - (void)openSession;
 

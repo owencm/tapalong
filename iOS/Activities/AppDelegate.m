@@ -14,6 +14,7 @@
 #import "LoginViewController.h"
 #import "Activities.h"
 #import "Network.h"
+#import "USer.h"
 
 @implementation AppDelegate
 
@@ -23,8 +24,10 @@
 {
     
     Network *network = [[Network alloc] init];
+    [network login:@"hello"];
     self.activities = [[Activities alloc] initWithNetwork:network];
-    
+    self.user = [[User alloc] init];
+
     ActivitesViewController *activitiesViewController = [[ActivitesViewController alloc] init];
     navigationController = [[UINavigationController alloc]
                             initWithRootViewController:activitiesViewController];

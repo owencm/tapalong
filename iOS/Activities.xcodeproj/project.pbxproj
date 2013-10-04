@@ -25,6 +25,7 @@
 		626C847B17A77A310024D105 /* CreateActivityViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 626C847917A77A310024D105 /* CreateActivityViewController.xib */; };
 		626C848117A77F690024D105 /* addButton.png in Resources */ = {isa = PBXBuildFile; fileRef = 626C848017A77F690024D105 /* addButton.png */; };
 		626C848417A785C10024D105 /* GlobalStyles.m in Sources */ = {isa = PBXBuildFile; fileRef = 626C848317A785C10024D105 /* GlobalStyles.m */; };
+		6297477E17FDD23A00B422BD /* User.m in Sources */ = {isa = PBXBuildFile; fileRef = 6297477D17FDD23A00B422BD /* User.m */; };
 		62BD2F6717A884830010A1E9 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62BD2F6617A884830010A1E9 /* FacebookSDK.framework */; };
 		62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62BD2F6B17A886300010A1E9 /* LoginViewController.m */; };
 		62BD2F6E17A886300010A1E9 /* LoginViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 62BD2F6C17A886300010A1E9 /* LoginViewController.xib */; };
@@ -114,6 +115,8 @@
 		626C848017A77F690024D105 /* addButton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = addButton.png; sourceTree = "<group>"; };
 		626C848217A785C10024D105 /* GlobalStyles.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GlobalStyles.h; sourceTree = "<group>"; };
 		626C848317A785C10024D105 /* GlobalStyles.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GlobalStyles.m; sourceTree = "<group>"; };
+		6297477C17FDD23A00B422BD /* User.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = User.h; sourceTree = "<group>"; };
+		6297477D17FDD23A00B422BD /* User.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = User.m; sourceTree = "<group>"; };
 		62BD2F6617A884830010A1E9 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
 		62BD2F6A17A886300010A1E9 /* LoginViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoginViewController.h; sourceTree = "<group>"; };
 		62BD2F6B17A886300010A1E9 /* LoginViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoginViewController.m; sourceTree = "<group>"; };
@@ -186,6 +189,8 @@
 				62E6417617F98608007427B2 /* Activities.h */,
 				62E6417717F98608007427B2 /* Activities.m */,
 				62E6417917F98BD4007427B2 /* ActivitiesListener.h */,
+				6297477C17FDD23A00B422BD /* User.h */,
+				6297477D17FDD23A00B422BD /* User.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -430,6 +435,7 @@
 				626C844317A4F2000024D105 /* Activity.m in Sources */,
 				626C847A17A77A310024D105 /* CreateActivityViewController.m in Sources */,
 				626C848417A785C10024D105 /* GlobalStyles.m in Sources */,
+				6297477E17FDD23A00B422BD /* User.m in Sources */,
 				62BD2F6D17A886300010A1E9 /* LoginViewController.m in Sources */,
 				62BD2F7917A8BD2B0010A1E9 /* Network.m in Sources */,
 				625C45D717AAFDC3005F8A21 /* ActivityDetailViewController.m in Sources */,
