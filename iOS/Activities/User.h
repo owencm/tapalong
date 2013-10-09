@@ -13,6 +13,6 @@
 @interface User : NSObject
 
 @property (strong, nonatomic) NSString *name;
-@property (assign, nonatomic) NSInteger *user_id; // NSInteger isn't an object so we need assign instead of strong
+@property (assign, nonatomic) NSInteger user_id; // NSInteger isn't an object so we need assign instead of strong. This is used to work out whether an activity is owned by the current user and display edit options if it is.
 
 @end

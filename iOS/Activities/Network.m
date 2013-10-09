@@ -7,6 +7,7 @@
 //
 
 #import <RestKit/RestKit.h>
+#import "AppDelegate.h"
 #import "Network.h"
 #import "Activity.h"
 #import "User.h"
@@ -43,8 +44,9 @@
     // Store a copy of the success callback
     GetActivitiesCallbackBlock _successCallback = [successCallback copy];
     
-    // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping pathPattern:nil keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+    // TODO: Move this to some kind of init in a nice way. It doesn't need to be called every time.
+    // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping. Path pattern is the URL pattern this should be used to match against
+    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping method:RKRequestMethodGET pathPattern:@"/activities/:userID/" keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
     
     [manager addResponseDescriptor:responseDescriptor];
     
@@ -78,14 +80,14 @@
     
     [manager addRequestDescriptor: requestDescriptor];
     
-    [manager deleteObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+    [manager deleteObject:activity path:@"/activities/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         NSLog(@"\n\nRemove Activity - success!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
         NSLog(@"\n\nRemove Activity - fail\n");
     }];
 }
 
-- (void) login:(NSString*)fbToken {
+- (void) loginWithFbToken:(NSString*)fbToken {
     NSDictionary *loginObject = [[NSDictionary alloc] initWithObjectsAndKeys:fbToken, @"fb_token", nil];
     
     AFHTTPClient *client = manager.HTTPClient;
@@ -96,14 +98,18 @@
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"Login - fail");
         // Pretend the login was successful and we can now access the user id and the token
-        NSString *userId = @"myId";
+        NSInteger userId = 0;
         NSString *token = @"myToken";
+        NSString *name = @"myName";
         [self setAuthorizationToken:token userId:userId];
+        User *me = ((AppDelegate*)[[UIApplication sharedApplication] delegate]).user;
+        me.name = name;
+        me.user_id = userId;
     }];
 }
 
-- (void) setAuthorizationToken:(NSString*)token userId:(NSString*)userId {
-    [manager.HTTPClient setDefaultHeader:@"user_id" value:userId];
+- (void) setAuthorizationToken:(NSString*)token userId:(NSInteger)userId {
+    [manager.HTTPClient setDefaultHeader:@"user_id" value:[NSString stringWithFormat:@"%d", userId]];
     [manager.HTTPClient setDefaultHeader:@"token" value:token];
 }
 

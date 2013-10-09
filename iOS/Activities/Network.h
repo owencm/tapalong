@@ -23,7 +23,7 @@ typedef void (^GetActivitiesCallbackBlock)(NSArray *);
 - (void) getActivities:(GetActivitiesCallbackBlock) successHandler;
 - (void) createActivity:(Activity *) activity;
 - (void) removeActivity:(Activity *) activity;
-- (void) login:(NSString*) fbToken;
+- (void) loginWithFbToken:(NSString*) fbToken;
 
 @end
 
