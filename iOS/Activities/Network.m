@@ -35,6 +35,20 @@
                                                               @"user_id": @"user_id"
                                                               }];
         
+        // Get activities response descriptor
+        // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping. Path pattern is the URL pattern this should be used to match against
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping method:RKRequestMethodGET pathPattern:@"/activities/:userID/" keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+        [manager addResponseDescriptor:responseDescriptor];
+        
+        // Remove activitiy request descriptor
+        RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodDELETE];
+        [manager addRequestDescriptor: requestDescriptor];
+        
+        // Add activity request descriptor
+        requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
+        
+        [manager addRequestDescriptor: requestDescriptor];
+        
     }
     return self;
 }
@@ -43,12 +57,6 @@
 {
     // Store a copy of the success callback
     GetActivitiesCallbackBlock _successCallback = [successCallback copy];
-    
-    // TODO: Move this to some kind of init in a nice way. It doesn't need to be called every time.
-    // This defines a key path for {activity: {...}} objects, connecting activity objects with the activityMapping. Path pattern is the URL pattern this should be used to match against
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:activityMapping method:RKRequestMethodGET pathPattern:@"/activities/:userID/" keyPath:@"activity" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-    
-    [manager addResponseDescriptor:responseDescriptor];
     
     [manager getObjectsAtPath:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         // Call success callback with returned data!
@@ -62,11 +70,7 @@
 }
 
 - (void)createActivity:(Activity *)activity
-{    
-    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
-    
-    [manager addRequestDescriptor: requestDescriptor];
-    
+{
     [manager postObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         NSLog(@"\n\nCreate Activity - success!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
@@ -76,10 +80,6 @@
 
 - (void) removeActivity:(Activity *)activity
 {
-    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:[activityMapping inverseMapping] objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodDELETE];
-    
-    [manager addRequestDescriptor: requestDescriptor];
-    
     [manager deleteObject:activity path:@"/activities/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
         NSLog(@"\n\nRemove Activity - success!\n");
     } failure:^(RKObjectRequestOperation *operation, NSError *error) {
@@ -105,6 +105,8 @@
         User *me = ((AppDelegate*)[[UIApplication sharedApplication] delegate]).user;
         me.name = name;
         me.user_id = userId;
+        // Let the AppDelegate know we've finished so it can hide the FB modal and alert Activities it can now poll the server
+        [((AppDelegate*)[[UIApplication sharedApplication] delegate]) doneLoginToOurServer];
     }];
 }
 

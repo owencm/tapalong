@@ -22,7 +22,8 @@
         activitiesArray = [[NSMutableArray alloc] init];
         listenersSet = (NSMutableSet<ActivitiesListener>*)[[NSMutableSet alloc] init];
         [self addDummyEvents];
-        [self updateActivitiesFromServerInternal];
+        // It makes sense to call this here but activities is initialised before we login so wait for the doneLogIn call
+        //        [self updateActivitiesFromServerInternal];
     }
     return self;
 }
@@ -65,6 +66,10 @@
     }
 }
 
+- (void) doneLogIn {
+    [self updateActivitiesFromServerInternal];
+}
+
 
 
 #pragma Internal methods
@@ -93,7 +98,7 @@
     [self notifyListenersActivitiesChanged];
 }
 
-// This doesn't post new activities to the network, it is the internal implementation of adding activities to the internal array and checking consistency
+// This doesn't post remove requests activities to the network, it is the internal implementation of removing activities from the internal array and checking consistency
 - (void) removeActivitiesFromArrayInternal:(NSArray *)newActivities {
     [activitiesArray removeObjectsInArray:newActivities];
     [self makeConsistent];

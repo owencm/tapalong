@@ -20,28 +20,15 @@
 
 @synthesize navigationController;
 
+// Todo: display FB login screen first and then do the rest. This is ugggly right now.
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-    
-    // See if the app has a valid token for the current state.
-    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
-        [self openSession];
-    } else {
-        [self showLoginView];
-    }
-    
-    return YES;
-}
-
-- (void)loginComplete {
-    
-    Network *network = [[Network alloc] init];
-    self.activities = [[Activities alloc] initWithNetwork:network];
+    self.network = [[Network alloc] init];
+    self.activities = [[Activities alloc] initWithNetwork:self.network];
     self.user = [[User alloc] init];
     
     ActivitesViewController *activitiesViewController = [[ActivitesViewController alloc] init];
-    navigationController = [[UINavigationController alloc]
-                            initWithRootViewController:activitiesViewController];
+    self.navigationController = [[UINavigationController alloc] initWithRootViewController:activitiesViewController];
     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.rootViewController = navigationController;
@@ -52,13 +39,28 @@
     self.navigationController.navigationBar.titleTextAttributes = [NSDictionary dictionaryWithObject:[UIColor whiteColor] forKey:NSForegroundColorAttributeName];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     
+    [self.window makeKeyAndVisible];
+    
+    // See if the app has a valid token for the current state.
+    if (FBSession.activeSession.state == FBSessionStateCreatedTokenLoaded) {
+        [self openSession];
+    } else {
+        NSLog(@"Not logged in");
+        [self showLoginView];
+    }
+    
+    return YES;
+}
+
+- (void) doneLoginToOurServer {
+    
+    [self.activities doneLogIn];
     // Dismiss the login modal if it's still visible
     UIViewController *topViewController = [self.navigationController topViewController];
     if ([[topViewController modalViewController] isKindOfClass:[LoginViewController class]]) {
         [topViewController dismissModalViewControllerAnimated:YES];
     }
     
-    [self.window makeKeyAndVisible];
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -122,7 +124,8 @@
     switch (state) {
         case FBSessionStateOpen: {
             
-            [self loginComplete];
+            // This will do the login and call doneLoginWithOurServer when it's done
+            [self.network loginWithFbToken:@"TODO: Token here"];
             
         }
             break;

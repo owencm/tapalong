@@ -23,5 +23,6 @@
 - (void) addActivity: (Activity*)activity;
 - (void) removeActivity: (Activity*)activity;
 - (void) addListener: (id<ActivitiesListener>)listener;
+- (void) doneLogIn;
 
 @end
