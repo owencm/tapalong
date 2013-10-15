@@ -5,6 +5,7 @@ import datetime
 class User(models.Model):
 	name = models.CharField(max_length = 20)
 	password = models.CharField(max_length = 30)
+	fb_id = models.IntegerField(default=0)
 
 	def __unicode__(self):
 		return self.name
