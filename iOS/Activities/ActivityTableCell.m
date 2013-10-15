@@ -7,22 +7,17 @@
 //
 
 #import "ActivityTableCell.h"
-#import "GlobalColors.h"
+#import "GlobalStyles.h"
 
 @implementation ActivityTableCell
 
-- (id)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (self) {
-        //Init here doesn't work
-    }
-    return self;
-}
-
-- (void)setSelected:(BOOL)selected animated:(BOOL)animated
-{
-    [super setSelected:selected animated:animated];
+-(void) awakeFromNib {
+    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
+    self.cardBackgroundView.image = cardBackground;
+    UIColor *textBlueColor = [[GlobalStyles sharedGlobal] textBlueColor];
+    [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateNormal];
+    [self.tapAlongButton setTitleColor:textBlueColor forState:UIControlStateHighlighted];
+    return;
 }
 
 // For the love of god please tidy me
@@ -53,16 +48,11 @@
  
     oldFrame = self.cardBackgroundView.frame;
     [self.cardBackgroundView setFrame: CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width, buttonOffset+padding - oldFrame.origin.y + 1)];
-    
-    // TODO: Move me to the init
-    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
-    self.cardBackgroundView.image = cardBackground;
-    
-    // TODO: Move me to the init
-    UIColor *linkBlue = [[GlobalColors sharedGlobal] linkBlue];
-    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateNormal];
-    [self.tapAlongButton setTitleColor:linkBlue forState:UIControlStateHighlighted];
-//    [self.tapAlongButton setBackgroundImage: forState:]
+}
+
+// Implementing ths allows custom UITableViewCells to be reused
+- (NSString *) reuseIdentifier {
+    return @"activityTableCell";
 }
 
 @end

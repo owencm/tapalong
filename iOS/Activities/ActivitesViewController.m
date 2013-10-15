@@ -6,13 +6,15 @@
 //  Copyright (c) 2013 A&O. All rights reserved.
 //
 
+#import "AppDelegate.h"
 #import "ActivitesViewController.h"
 #import "ActivityTableCell.h"
 #import "Activity.h"
+#import "Activities.h"
 #import "CreateActivityViewController.h"
 #import "ActivityDetailViewController.h"
-#import "GlobalColors.h"
-#import "GlobalNetwork.h"
+#import "GlobalStyles.h"
+#import "Network.h"
 #import <CoreText/CoreText.h>
 
 @interface ActivitesViewController ()
@@ -25,7 +27,12 @@
 {
     self = [super init];
     if (self) {
-        self.title = @"Activites";
+        self.title = @"Activities";
+        // Get a copy of the Activities model from the AppDelegate and register as a listener
+        AppDelegate *appDelegate = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+        activities = appDelegate.activities;
+        [activities addListener:self];
+        
         // Padd the bottom of the table with 20 pixels
         self.tableView.contentInset = UIEdgeInsetsMake(0, 0, 20, 0);
         // Hide the separators
@@ -34,48 +41,17 @@
     return self;
 }
 
+// How does this differ from init?
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
     // Set the background to a pleasant grey
-    [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
+    [[self view] setBackgroundColor:[[GlobalStyles sharedGlobal] backgroundGreyColor]];
     
-    // This adds a button with a custom image and no box/border
-    UIButton *addButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    [addButton setFrame:CGRectMake(0.0f, 0.0f, 25.0f, 25.0f)];
-    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateNormal];
-    [addButton setImage:[UIImage imageNamed:@"addButton.png"] forState:UIControlStateHighlighted];
-    [addButton addTarget:self action:@selector(createButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithCustomView:addButton];
+    // Add the 'add' button
+    UIBarButtonItem *addBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(createButtonPressed:)];
     self.navigationItem.rightBarButtonItem = addBarButton;
-    
-    // Initialise the activities array
-    self.activities = [[NSArray alloc] init];
-    
-    // Download activities from the server and display them
-    [[GlobalNetwork sharedGlobal] getActivities:^(NSArray *result)
-        {
-            self.activities = result;
-            [[self tableView] reloadData];
-        }
-     ];
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-}
-
-- (IBAction) createButtonPressed:(id)sender
-{
-    CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
-    [self.navigationController pushViewController:createActivityViewController animated:YES];
-}
-
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -87,7 +63,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.activities count];
+    return [activities upcomingCount];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -100,8 +76,8 @@
         cell = [nib objectAtIndex:0];
     }
     
-    Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    [self setTextInCell:cell activity:activity];
+    Activity *activity = [activities activityAtIndex:indexPath.row];
+    cell.activityLabel.attributedText = [self getAttributedActivity:activity];
     [cell refreshLayout];
     
     [cell.viewDetailsButton addTarget:self action:@selector(viewDetailsPressed:) forControlEvents:UIControlEventTouchUpInside];
@@ -109,9 +85,70 @@
     return cell;
 }
 
-- (void)setTextInCell:(ActivityTableCell *)cell activity:(Activity *)activity {
-    cell.activityLabel.attributedText = [self getAttributedActivity:activity];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    Activity *activity = [activities activityAtIndex:indexPath.row];
+    NSAttributedString *attributedString = [self getAttributedActivity:activity];
+
+    // Size the attributed string
+    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
+    CGSize targetSize = CGSizeMake(217, CGFLOAT_MAX);
+    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
+    CFRelease(framesetter);
+    
+    // Update this whenever you redesign the cell
+    return fitSize.height + 77;
 }
+
+- (IBAction) createButtonPressed:(id)sender
+{
+    CreateActivityViewController *createActivityViewController = [[CreateActivityViewController alloc] initWithNibName:@"CreateActivityViewController" bundle:nil];
+    [self.navigationController pushViewController:createActivityViewController animated:YES];
+}
+
+- (IBAction) viewDetailsPressed:(id)sender {
+    
+    ActivityDetailViewController *activityDetailViewController = [[ActivityDetailViewController alloc] initWithNibName:@"ActivityDetailViewController" bundle:nil];
+    
+    CGPoint buttonPosition = [sender convertPoint:CGPointZero toView:self.tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:buttonPosition];
+    
+    Activity *activity = [activities activityAtIndex:indexPath.row];
+    
+    // TODO: Try and be able to do this within init or viewDidLoad. Struggling right now.
+    [activityDetailViewController setActivity:activity];
+    
+    [self.navigationController pushViewController:activityDetailViewController animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+}
+
+-(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
+//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
+}
+
+- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    cell.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
+}
+
+// This is part of the ActivitiesListener protocol and is called whenever the underlying data model changes
+-(void) activitiesChanged
+{
+    // This tells the table to requery the activities
+    [self.tableView reloadData];
+}
+
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+// Misc helpers
 
 -(NSMutableAttributedString *)getAttributedActivity:(Activity *)activity {
     
@@ -157,65 +194,30 @@
     
     NSString *joinedString = [[[userNameString stringByAppendingString:@" is "] stringByAppendingString:titleString]stringByAppendingString:dateString];
     
-    // Define general attributes for the entire String
-    NSDictionary *attribs = @{};
-    
-    // Define preset styles we will use
-    UIFont *largeString = [UIFont fontWithName:@"Roboto" size:16];
-    UIFont *smallString = [UIFont fontWithName:@"Roboto-Light" size:14];
-    UIColor *darkGreyText = [[GlobalColors sharedGlobal] darkGreyText];
-    UIColor *lightGreyText = [[GlobalColors sharedGlobal] lightGreyText];
-    NSDictionary *largeStringAttributes = @{NSFontAttributeName: largeString,
-                                         NSForegroundColorAttributeName: darkGreyText};
-    NSDictionary *smallStringAttributes = @{NSFontAttributeName: smallString,
-                                          NSForegroundColorAttributeName: lightGreyText};
-    
     NSMutableAttributedString *attributedString =
     [[NSMutableAttributedString alloc] initWithString:joinedString
-                                           attributes:attribs];
+                                           attributes:@{}];
+    
+    // Define preset styles we will use
+    NSDictionary *regularTextAttributes = [[GlobalStyles sharedGlobal] regularTextAttributes];
+    NSDictionary *emphasisTextAttributes = [[GlobalStyles sharedGlobal] emphasisTextAttributes];
+    
+    // Set sections of the text to have the correct styles
     NSRange userNameRange = {0, [userNameString length]};
-    NSRange isRange = {[userNameString length], 4};
+    [attributedString setAttributes:emphasisTextAttributes range:userNameRange];
+    
     NSRange titleRange = {[userNameString length]+4, [titleString length]};
+    [attributedString setAttributes:emphasisTextAttributes range:titleRange];
+    
+    NSRange isRange = {[userNameString length], 4};
+    [attributedString setAttributes:regularTextAttributes range:isRange];
+    
     NSRange dateRange = {[userNameString length]+4+[titleString length], [dateString length]};
-    [attributedString setAttributes:largeStringAttributes range:userNameRange];
-    [attributedString setAttributes:smallStringAttributes range:isRange];
-    [attributedString setAttributes:largeStringAttributes range:titleRange];
-    [attributedString setAttributes:smallStringAttributes range:dateRange];
+    [attributedString setAttributes:regularTextAttributes range:dateRange];
     
     return attributedString;
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    Activity *activity = [self.activities objectAtIndex:indexPath.row];
-    NSAttributedString *attributedString = [self getAttributedActivity:activity];
 
-    // Size the attributed string
-    CTFramesetterRef framesetter = CTFramesetterCreateWithAttributedString((__bridge CFAttributedStringRef)attributedString);
-    CGSize targetSize = CGSizeMake(217, CGFLOAT_MAX);
-    CGSize fitSize = CTFramesetterSuggestFrameSizeWithConstraints(framesetter, CFRangeMake(0, [attributedString length]), NULL, targetSize, NULL);
-    CFRelease(framesetter);
-    
-    return fitSize.height + 77;
-}
-
-- (IBAction) viewDetailsPressed:(id)sender {
-    ActivityDetailViewController *activityDetailViewController = [[ActivityDetailViewController alloc] initWithNibName:@"ActivityDetailViewController" bundle:nil];
-    [self.navigationController pushViewController:activityDetailViewController animated:YES];
-}
-
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-}
-
--(void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
-//    ActivityTableCell *cell = (ActivityTableCell *)[tableView cellForRowAtIndexPath:indexPath];
-}
-
-- (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    cell.backgroundColor = [[GlobalColors sharedGlobal] backgroundGrey];
-}
 
 @end

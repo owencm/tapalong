@@ -7,7 +7,18 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ActivitesViewController.h"
 
-@interface CreateActivityViewController : UIViewController
+@interface CreateActivityViewController : UIViewController <UITextFieldDelegate>
+@property (weak, nonatomic) IBOutlet UILabel *nameIsLabel;
+@property (weak, nonatomic) IBOutlet UILabel *atLabel;
+@property (weak, nonatomic) IBOutlet UITextField *activityTitle;
+@property (weak, nonatomic) IBOutlet UIDatePicker *datePicker;
+@property (weak, nonatomic) IBOutlet UITextField *activityLocation;
+@property (weak, nonatomic) IBOutlet UIButton *createButton;
+@property (weak, nonatomic) IBOutlet UIImageView *cardBackgroundView;
+@property (weak, nonatomic) IBOutlet UIScrollView *scrollView;
+
+- (IBAction)createActivityPressed:(id)sender;
 
 @end

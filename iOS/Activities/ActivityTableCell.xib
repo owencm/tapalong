@@ -28,17 +28,11 @@
                         <rect key="frame" x="31" y="41" width="32" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </imageView>
-                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="44">
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="44">
                         <rect key="frame" x="28" y="96" width="90" height="21"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <fontDescription key="fontDescription" name="Helvetica" family="Helvetica" pointSize="14"/>
-                        <state key="normal" title="Tap Along">
-                            <color key="titleColor" red="0.0" green="0.84763932959999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            <color key="titleShadowColor" red="1" green="1" blue="1" alpha="0.0" colorSpace="calibratedRGB"/>
-                        </state>
-                        <state key="highlighted">
-                            <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        </state>
+                        <state key="normal" title="Tap Along"/>
                     </button>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" image="backgroundGrey.png" id="373">
                         <rect key="frame" x="28" y="92" width="264" height="1"/>

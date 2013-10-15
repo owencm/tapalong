@@ -7,8 +7,10 @@
 //
 
 #import <RestKit/RestKit.h>
+#import "AppDelegate.h"
 #import "CreateActivityViewController.h"
-#import "GlobalColors.h"
+#import "GlobalStyles.h"
+#import "Network.h"
 #import "Activity.h"
 
 @interface CreateActivityViewController ()
@@ -17,11 +19,12 @@
 
 @implementation CreateActivityViewController
 
+// What's the difference between this and viewDidLoad?
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        [[self view] setBackgroundColor:[[GlobalColors sharedGlobal] backgroundGrey]];
+        [[self view] setBackgroundColor:[[GlobalStyles sharedGlobal] backgroundGreyColor]];
     }
     return self;
 }
@@ -30,41 +33,80 @@
 {
     [super viewDidLoad];
     
-    Activity *activity = [[Activity alloc] init];
-    activity.title = @"title";
-    activity.description = @"description";
-    activity.location = @"location";
-    activity.max_attendees = @"1";
-    activity.start_time = @"today";
+    // Set the screen title
+    self.title = @"Create Activity";
     
-    [self requestCreateActivity:activity];
+    // Enable the scroller by setting this larger than the screen
+    self.scrollView.contentSize = CGSizeMake(320, 700);
+    
+    // Restrict activities to being created in the next 2 weeks
+    self.datePicker.minimumDate = [NSDate date];
+    self.datePicker.maximumDate = [NSDate dateWithTimeIntervalSinceNow:60*60*24*14];
+    
+    // Shrink the datepicker a bit. This is a hack but it is the only option to make it narrow enough to fit on the card (clips otherwise).
+    [self.datePicker setTransform:CGAffineTransformMakeScale(0.8, 0.8)];
+    
+    // Handle dismissing keyboard for text input
+    self.activityTitle.delegate = self;
+    self.activityLocation.delegate = self;
+    
+    // TODO: Pull the user's name
+    NSString *nameString = @"Owen Campbell-Moore";
+    NSString *joinedString = [nameString stringByAppendingString: @" is"];
+    NSMutableAttributedString *nameIsString = [[NSMutableAttributedString alloc] initWithString:joinedString attributes:@{}];
+    
+    // Set create button's color correctly
+    UIColor *textBlueColor = [[GlobalStyles sharedGlobal] textBlueColor];
+    [self.createButton setTitleColor:textBlueColor forState:UIControlStateNormal];
+    [self.createButton setTitleColor:textBlueColor forState:UIControlStateHighlighted];
+    
+    // Set sections of the text to have the correct styles
+    NSDictionary *emphasisTextAttributes = [[GlobalStyles sharedGlobal] emphasisTextAttributes];
+    NSRange userNameRange = {0, [nameString length]};
+    [nameIsString setAttributes:emphasisTextAttributes range:userNameRange];
+    
+    NSDictionary *regularTextAttributes = [[GlobalStyles sharedGlobal] regularTextAttributes];
+    NSRange isRange = {[nameString length], 3};
+    [nameIsString setAttributes:regularTextAttributes range:isRange];
+    
+    self.nameIsLabel.attributedText = nameIsString;
+    self.atLabel.attributedText = [[NSAttributedString alloc] initWithString:@"at " attributes:regularTextAttributes];
+    
+    // Set miscellanious styles
+    UIImage *cardBackground = [[UIImage imageNamed:@"cardBackground.png"] resizableImageWithCapInsets:UIEdgeInsetsMake(2.0, 2.0, 3.0, 2.0)];
+    self.cardBackgroundView.image = cardBackground;
+    [self.createButton setTintColor: [[GlobalStyles sharedGlobal] textBlueColor]];
 }
 
-- (void)requestCreateActivity:(Activity *)activity
-{
-    RKObjectManager *manager = [RKObjectManager managerWithBaseURL:[NSURL URLWithString:@"http://127.0.0.1:8000"]];
-    
-    // Define the object mapping
-    RKObjectMapping *activityMapping = [RKObjectMapping requestMapping];
-    // TODO: These are the symmetric so it doesn't matter, but using the same for requests and responses requires the use of [mapping inverseMapping]
-    [activityMapping addAttributeMappingsFromDictionary:@{
-         @"title": @"title",
-         @"start_time": @"start_time",
-         @"location": @"location",
-         @"max_attendees": @"max_attendees",
-         @"description": @"description"
-     }];
-    
-    RKRequestDescriptor *requestDescriptor = [RKRequestDescriptor requestDescriptorWithMapping:activityMapping objectClass:[Activity class] rootKeyPath:nil method:RKRequestMethodPOST];
-    
-    [manager addRequestDescriptor: requestDescriptor];
-    
-    [manager postObject:activity path:@"/activities/1/" parameters:nil success:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        NSLog(@"\n\nSuccessful Post!\n");
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        NSLog(@"\n\nFail|n");
-    }];
+// Implementing this and assigning this file as the delegate for the text fields allows us to capture the "done" presses here and dismiss the keyboard
+- (BOOL)textFieldShouldReturn:(UITextField *)theTextField {
+    // If the text field in question is either of these, dismiss the keyboard. This code is strictly unneccessary but may be useful 
+    if (theTextField == self.activityLocation || theTextField == self.activityTitle) {
+        [theTextField resignFirstResponder];
+    }
+    return YES;
 }
+
+- (IBAction)createActivityPressed:(id)sender {
+    Activity *activity = [[Activity alloc] init];
+    activity.title = [[self activityTitle] text];
+    activity.description = @"";
+    activity.location = [[self activityLocation] text];
+    activity.max_attendees = @"-1";
+    activity.start_time = [[self datePicker] date];
+    
+    if (![activity.title isEqualToString:@""]) {
+        // Add the event to the set in the app.
+        AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+        [appDelegate.activities addActivity:activity];
+        
+        // Pop this controller
+        [self.navigationController popViewControllerAnimated:YES];
+    } else {
+        // Some data was missing, do nothing and let them enter other data
+    }
+}
+
 
 - (void)didReceiveMemoryWarning
 {

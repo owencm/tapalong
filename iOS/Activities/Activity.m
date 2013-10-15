@@ -10,4 +10,12 @@
 
 @implementation Activity
 
+- (Activity*) init {
+    self = [super init];
+    if (self) {
+        // Do something
+    }
+    return self;
+}
+
 @end

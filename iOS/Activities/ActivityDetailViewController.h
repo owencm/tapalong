@@ -7,7 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Activity.h"
 
-@interface ActivityDetailViewController : UIViewController
+@interface ActivityDetailViewController : UIViewController {
+    Activity *activity;
+}
+
+@property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
+@property (weak, nonatomic) IBOutlet UILabel *locationLabel;
+- (IBAction)removeActivityPressed:(id)sender;
+
+- (void)setActivity:(Activity*)theActivity;
 
 @end

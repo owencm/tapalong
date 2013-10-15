@@ -38,13 +38,12 @@ def serialize_activity(activity, user_id):
 def get_activities_list(request, user_id):
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
 	#Sets the authentication token
-	facebook.set_access_token('CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk')
+	facebook.set_access_token('CAACff4vZA7iEBAGZA7eEsJ2FrofgeexbjQfGRUH7DCUdSUcBxd6utfVLMCWz1Q9odH7y6XwZCkImToRJZAru1ub1bmNNVrmjjRZAJZBcPAVFokAVnXlQbfVEFXQp0stSFu4QwL7ORmoIN2s7n937xZBo02QNYOWf7ED0l1ma97F1fcRyw51cjDZBF0HNQ7HgLptzcZB2CYhADDsdo7Ly1S4AUkTn8mhDqxwYZD')
 	#Gets info about myself 
 	me = facebook.get_myself()
-	token = 'CAACff4vZA7iEBAPHLyn1rUCfTAo37ZAVbSOovDOLNeY5WTLbttvmh6tiMElyZAdfYrKtx3RWEOvFtWTe6yZCZBYdERMvduzzW73QCWYKsz0xI8B75slb3rgZBwZCYKez5cSWOGdkIFpLMkG9ZAd03oULo5wOfMBkZA84irsPv4DUQQQrDGB9C9eCk'
-	print "-" * 40
-	print "Name: %s" % me.name
-	friends = facebook.get_friends()
+	#print "-" * 40
+	#print "Name: %s" % me.name
+	#friends = facebook.get_friends()
 	#for friend in friends:
 		#print friend.name
 

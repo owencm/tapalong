@@ -7,7 +7,8 @@
 //
 
 #import "ActivityDetailViewController.h"
-#import "GlobalColors.h"
+#import "AppDelegate.h"
+#import "GlobalStyles.h"
 
 @interface ActivityDetailViewController ()
 
@@ -19,7 +20,8 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        self.title = @"Details";
+        self.title = @"Activity Detail";
+        self.view.backgroundColor = [[GlobalStyles sharedGlobal] backgroundGreyColor];
     }
     return self;
 }
@@ -27,13 +29,27 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.view.backgroundColor = [[GlobalColors sharedGlobal] backgroundGrey];
 }
 
 - (void)didReceiveMemoryWarning
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (IBAction)removeActivityPressed:(id)sender {
+    // Get access to the activities model to request removal
+    AppDelegate *appDelegate = (AppDelegate*)[[UIApplication sharedApplication] delegate];
+    [appDelegate.activities removeActivity:activity];
+    
+    // Pop this controller
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (void)setActivity:(Activity*)theActivity {
+    activity = theActivity;
+    self.descriptionLabel.text = activity.description;
+    self.locationLabel.text = [@"Location: " stringByAppendingString:activity.location];
 }
 
 @end
