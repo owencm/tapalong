@@ -9,6 +9,7 @@ from django.conf import settings
 import random
 import math
 import datetime
+import dateutil.parser
 import sessions
 
 # Serializes a single activity into JSON, passing along the following:
@@ -57,11 +58,11 @@ def get_activities_list(request, user_id):
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
-		now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		#now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data
 		activity_info = request.POST
 		#FIX THIS CREATOR_ID=1; ID=1
-		activity = Activity(creator_id=1, creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		activity = Activity(creator_id=1, creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
 		activity.attendees.add(User.objects.get(id=1))
 		activity.save()

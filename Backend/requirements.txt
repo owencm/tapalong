@@ -3,3 +3,4 @@ Pillow==2.1.0
 wsgiref==0.1.2
 South==0.8.1
 pyfb==0.4.2
+python-dateutil==2.1
