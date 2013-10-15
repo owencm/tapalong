@@ -13,6 +13,8 @@ import sessions
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
+
+#attendees names
 def serialize_activity(activity, user_id):
 	print activity.creator_id, user_id
 	# No idea why user_id is acting as a str here.
@@ -20,8 +22,11 @@ def serialize_activity(activity, user_id):
 		is_creator = "true"
 	else:
 		is_creator = "false"
+
+	attendees_names = map(lambda user: user.name, activity.attendees)
+	serialized_attendees_names = json.dumps(attendees_names)
 	
-	return {"activity": {"is_creator": is_creator, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees}}
+	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": serialized_attendees_names}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
@@ -40,8 +45,8 @@ def get_activities_list(request, user_id):
 	print "-" * 40
 	print "Name: %s" % me.name
 	friends = facebook.get_friends()
-	for friend in friends:
-		print friend.name
+	#for friend in friends:
+		#print friend.name
 
 	if request.method == 'GET':
 		# Get all activities for which this user is an attendee of.
@@ -55,8 +60,9 @@ def get_activities_list(request, user_id):
 		# Get current time for activity creation timestamp
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data
-		activity_info=request.POST
-		activity = Activity(creator_id=1, title=activity_info.get("title"), start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		activity_info = request.POST
+		#FIX THIS CREATOR_ID=1; ID=1
+		activity = Activity(creator_id=1, creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=now, description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
 		activity.attendees.add(User.objects.get(id=1))
 		activity.save()
