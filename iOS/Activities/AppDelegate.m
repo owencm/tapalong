@@ -121,11 +121,15 @@
                       state:(FBSessionState) state
                       error:(NSError *)error
 {
+    
+    // This dumps the FB token
+    // NSLog([session accessTokenData].accessToken);
+    
     switch (state) {
         case FBSessionStateOpen: {
             
             // This will do the login and call doneLoginWithOurServer when it's done
-            [self.network loginWithFbToken:@"TODO: Token here"];
+            [self.network loginWithFbToken:[session accessTokenData].accessToken];
             
         }
             break;

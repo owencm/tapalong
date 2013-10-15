@@ -33,7 +33,7 @@ def serialize_activity(activity, user_id):
 def get_activities_list(request, user_id):
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
 	#Sets the authentication token
-	facebook.set_access_token('CAACff4vZA7iEBAPu0uEKg8WQZABLW3xCcoCFRObfZCvQcBYXA5ItmsmzESTU4KfNRZBnxpA7fjjrGxRSQCFNx6DX7nNFGKbskQU67SLCYAoqvj0zaWZAKTzuf6RCImG3aIQoRgPwZCGDntxzVb9faO9CJ2Kva5MrMIiBuUJK99uLxlCgoOcbIaoCpkdoeMoUJRstIzs1FQyAbtZAFgCP40h')
+	facebook.set_access_token('CAACff4vZA7iEBAGZA7eEsJ2FrofgeexbjQfGRUH7DCUdSUcBxd6utfVLMCWz1Q9odH7y6XwZCkImToRJZAru1ub1bmNNVrmjjRZAJZBcPAVFokAVnXlQbfVEFXQp0stSFu4QwL7ORmoIN2s7n937xZBo02QNYOWf7ED0l1ma97F1fcRyw51cjDZBF0HNQ7HgLptzcZB2CYhADDsdo7Ly1S4AUkTn8mhDqxwYZD')
 	#Gets info about myself 
 	me = facebook.get_myself()
 	
