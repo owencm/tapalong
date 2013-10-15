@@ -62,7 +62,7 @@ def get_activities_list(request, user_id):
 		# Get request data
 		activity_info = request.POST
 		#FIX THIS CREATOR_ID=1; ID=1
-		activity = Activity(creator_id=1, creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		activity = Activity(creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
 		activity.attendees.add(User.objects.get(id=1))
 		activity.save()
