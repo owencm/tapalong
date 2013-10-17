@@ -10,7 +10,7 @@ import datetime
 import dateutil.parser
 import sessions
 
-return user id and session token
+# return user id and session token
 def login_user(request, fb_token):
 	print('id to follow\n')
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
