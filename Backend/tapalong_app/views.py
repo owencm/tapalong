@@ -18,16 +18,13 @@ def login_user(request, fb_token):
 	facebook.set_access_token(fb_token)
 	#Gets info about myself 
 	me = facebook.get_myself()
-	print('my id: ')
-	print(me.id)
-	for user in User.objects.all():
-		print('cur id')
-		print (user.fb_id)
-		if user.fb_id == int(me.id):
-			session_token = sessions.start_session(user.id)
-			json_output = json.dumps({"user_id": User.id, "session token": session_token})
-			return HttpResponse(json_output, mimetype='application/json')
-	return HttpResponse('<p> hi </p>')
+	try:
+		user = User.objects.get(fb_id=me.id)
+		session_token = sessions.start_session(user.id)
+		json_output = json.dumps({"user_id": User.id, "session token": session_token})
+		return HttpResponse(json_output, mimetype='application/json')
+	except User.DoesNotExist:
+		return HttpResponse('<p> User doesn\'t exist </p>')
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
