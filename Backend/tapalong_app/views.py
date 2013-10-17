@@ -6,13 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 from pyfb import Pyfb
 from django.conf import settings
-import random
-import math
 import datetime
 import dateutil.parser
 import sessions
 
-# return user id and session token
+return user id and session token
 def login_user(request, fb_token):
 	print('id to follow\n')
 	facebook = Pyfb(settings.FACEBOOK_APP_ID)
@@ -30,7 +28,6 @@ def login_user(request, fb_token):
 			json_output = json.dumps({"user_id": User.id, "session token": session_token})
 			return HttpResponse(json_output, mimetype='application/json')
 	return HttpResponse('<p> hi </p>')
-
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees

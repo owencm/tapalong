@@ -34,4 +34,5 @@ class Session(models.Model):
 	# Use this to check whether it has expired yet
 	def has_expired(self):
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
-		return (now > self.expires_at and now > self.created_at)
+		assert (self.created_at < now);
+		return (now > self.expires_at)
