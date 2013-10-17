@@ -1,4 +1,5 @@
 from tapalong_app.models import User, Activity, Session
+import datetime
 
 # This generates and returns a new session token for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
 # It may be modified to take a user rather than the ID.

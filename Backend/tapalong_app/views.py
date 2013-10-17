@@ -12,6 +12,26 @@ import datetime
 import dateutil.parser
 import sessions
 
+# return user id and session token
+def login_user(request, fb_token):
+	print('id to follow\n')
+	facebook = Pyfb(settings.FACEBOOK_APP_ID)
+	#Sets the authentication token
+	facebook.set_access_token(fb_token)
+	#Gets info about myself 
+	me = facebook.get_myself()
+	print('my id: ')
+	print(me.id)
+	for user in User.objects.all():
+		print('cur id')
+		print (user.fb_id)
+		if user.fb_id == int(me.id):
+			session_token = sessions.start_session(user.id)
+			json_output = json.dumps({"user_id": User.id, "session token": session_token})
+			return HttpResponse(json_output, mimetype='application/json')
+	return HttpResponse('<p> hi </p>')
+
+
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
 
@@ -37,11 +57,7 @@ def serialize_activity(activity, user_id):
 # check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
-	facebook = Pyfb(settings.FACEBOOK_APP_ID)
-	#Sets the authentication token
-	facebook.set_access_token('CAACff4vZA7iEBAGZA7eEsJ2FrofgeexbjQfGRUH7DCUdSUcBxd6utfVLMCWz1Q9odH7y6XwZCkImToRJZAru1ub1bmNNVrmjjRZAJZBcPAVFokAVnXlQbfVEFXQp0stSFu4QwL7ORmoIN2s7n937xZBo02QNYOWf7ED0l1ma97F1fcRyw51cjDZBF0HNQ7HgLptzcZB2CYhADDsdo7Ly1S4AUkTn8mhDqxwYZD')
-	#Gets info about myself 
-	me = facebook.get_myself()
+
 	#print "-" * 40
 	#print "Name: %s" % me.name
 	#friends = facebook.get_friends()
