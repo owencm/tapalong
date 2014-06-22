@@ -34,9 +34,9 @@ def serialize_activity(activity, user_id):
 	print activity.creator_id, user_id
 	# No idea why user_id is acting as a str here.
 	if activity.creator_id == int(user_id):
-		is_creator = "true"
+		is_creator = True
 	else:
-		is_creator = "false"
+		is_creator = False
 
 	attendees_names = map(lambda user: user.name, activity.attendees.all())
 	#serialized_attendees_names = json.dumps(attendees_names)
@@ -70,7 +70,7 @@ def get_activities_list(request, user_id):
 		# Get current time for activity creation timestamp
 		#now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data
-		activity_info = request.POST
+		activity_info = json.loads(request.POST)
 		#FIX THIS CREATOR_ID=1; ID=1
 		activity = Activity(creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
