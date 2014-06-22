@@ -2,11 +2,13 @@ from tapalong_app.models import User, Activity, Session
 from django.utils import simplejson as json
 from django.utils.timezone import utc
 from django.http import HttpResponse
+from django.http import QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
 from pyfb import Pyfb
 from django.conf import settings
 import datetime
+from datetime import date, timedelta
 import dateutil.parser
 import sessions
 
@@ -21,14 +23,13 @@ def login_user(request, fb_token):
 	try:
 		user = User.objects.get(fb_id=me.id)
 		session_token = sessions.start_session(user.id)
-		json_output = json.dumps({"user_id": User.id, "session token": session_token})
+		json_output = json.dumps({"user_id": User.id, "user_name": User.name, "session_token": session_token})
 		return HttpResponse(json_output, mimetype='application/json')
 	except User.DoesNotExist:
 		return HttpResponse('<p> User doesn\'t exist </p>')
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
-
 #attendees names
 def serialize_activity(activity, user_id):
 	print activity.creator_id, user_id
@@ -51,17 +52,25 @@ def serialize_activity(activity, user_id):
 # check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
-
+	# Check auth token sent with request
+	# THIS IS FUCKING UGLY. CHANGE IF POSSIBLE.
+	if request.method == 'GET':
+		token = request.GET.get("session_token")
+	elif request.method == "POST":
+		token = request.POST.get("session_token")
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p> Suspicious Operation </p>')
 	#print "-" * 40
 	#print "Name: %s" % me.name
 	#friends = facebook.get_friends()
 	#for friend in friends:
 		#print friend.name
-
 	if request.method == 'GET':
+		# Get yesterday's date:
+		yesterday = date.today() - timedelta(1)
 		# Get all activities for which this user is an attendee of.
 		# (Includes events they created.)
-		user_activities_list = Activity.objects.filter(attendees=user_id).order_by('-pub_date')
+		user_activities_list = Activity.objects.filter(attendees=user_id).exclude(start_time__lt=yesterday).order_by('-pub_date')
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
