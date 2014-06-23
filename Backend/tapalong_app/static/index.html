@@ -1,29 +1,30 @@
 <!DOCTYPE>
 <html>
   <head>
-    <link rel="stylesheet" href="reset.css"></style>
-    <link rel="stylesheet" href="main.css"></style>
+    <link rel='stylesheet' href='reset.css'></style>
+    <link rel='stylesheet' href='main.css'></style>
   </head>
   <body>
     <header>
-      <img src="back.png" id="backButton"></img>
-      <h1 id="title">
+      <img src='back.png' id='backButton'></img>
+      <h1 id='title'>
         Title
       </h1>
     </header>
-    <div id="container">
-      <section id="activitiesList"></section>
-      <section id="activityDetails"></section>
-      <section id="editActivity"></section>
+    <div id='container'>
+      <section id='activitiesList'></section>
+      <section id='activityDetails'></section>
+      <section id='editActivity'></section>
     </div>
-    <div id="addButton"></div>
+    <div id='addButton'></div>
+    <div id='status'></div>
 
-    <script id="activity-summary-template" type="text/x-handlebars-template">
-      <section class="card {{#if activity.attending}}attending{{/if}}" id="activity-{{activity.activity_id}}">
-        <img src="friend.jpg" class="friendIcon"></img>
+    <script id='activity-summary-template' type='text/x-handlebars-template'>
+      <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
+        <img src='friend.jpg' class='friendIcon'></img>
         <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> {{datetimeString activity.start_time}}.
-        <div class="optionContainer">
-          <span class="option">
+        <div class='optionContainer'>
+          <span class='option'>
             {{#if activity.is_creator}}
               Edit
             {{else}}
@@ -37,249 +38,36 @@
         </div>
       </section>
     </script>
-    <script id="activity-details-template" type="text/x-handlebars-template">
-      <section class="card">
+    <script id='activity-details-template' type='text/x-handlebars-template'>
+      <section class='card'>
         <p><b>{{title}}</b></p>
         <p>{{datetimeString start_time}}</p>
         <p>Host: {{creator_name}}</p>
+        <p>Description: {{description}}</p>
+        <p>Attendees:</p>
+        {{#list attendees}}
+          {{attendee}}
+        {{/list}}
       </section>
     </script>
-    <script id="edit-activity-template" type="text/x-handlebars-template">
-      <section class="card">
+    <script id='edit-activity-template' type='text/x-handlebars-template'>
+      <section class='card'>
         <b>{{name}}</b> is<br />
-        <input type="text" value="{{title}}" id="title"></input> on<br />
+        <input type='text' value='{{title}}' id='title'></input> on<br />
         <!-- TODO(owen): Put existing values in here -->
-        <input type="date" id="date"></input> at<br />
-        <input type="time" id="time"></input><br />
-        <div class="optionContainer">
-        <span class="option">Create</span>
+        <input type='date' id='date' min='2014-06-23' max='2014-06-30'></input> at<br />
+        <input type='time' id='time' step="900" value='13:00'></input><br />
+        <div class='optionContainer'>
+        <span class='option'>Create</span>
         </div>
       </section>
     </script>
-    <script type="text/javascript" src="handlebars-v1.3.0.js"></script>
-    <script type="text/javascript">
-      var ListenerModule = function () {
-        return (function () {
-          var listeners = [];
-          var change = function () {
-            listeners.map(function (listener){
-              listener();
-            });
-          };
-          var addListener = function (listener) {
-            listeners.push(listener);
-          };
-          return {
-            addListener: addListener,
-            change: change
-          }
-        })();
-      };
-
-      var models = (function () {
-        // TODO(owen): Sort out current user id
-        var local_user_id = 2;
-        var activities = (function () {
-          var activities = [];
-          var listenerModule = ListenerModule();
-          var getActivity = function (id) { 
-            return activities.filter(function (activity) { return activity.activity_id == id; } )[0];
-          };
-          var getActivities = function () {
-            return activities;
-          };
-          var setActivities = function (newActivities) {
-            activities = newActivities;
-            listenerModule.change();
-          };
-          var createActivity = function (newActivity) {
-            var validity = validate(newActivity);
-            if (validity.isValid) {
-              network.requestCreateActivity(newActivity);
-            }
-          };
-          var toggleAttendance = function (id) {
-            // TODO(owen): This should go via the server
-            var activity = getActivity(id);
-            activity.attending = !activity.attending;
-            listenerModule.change();
-          };
-          var validate = function (activity) {
-            return {isValid: true};
-          }
-          return {
-            createActivity: createActivity,
-            setActivities: setActivities,
-            getActivities: getActivities,
-            getActivity: getActivity,
-            toggleAttendance: toggleAttendance,
-            addListener: listenerModule.addListener
-          }
-        })();
-        return {
-          activities: activities,
-          local_user_id: local_user_id
-        }
-      })();
-
-      var view = (function (models) {
-        var STATE = {add: 0, list: 1, detail: 2};
-        var currentState = STATE.list;
-        var selectedActivity;
-        var changeState = function (newState) {
-          var lastState = currentState;
-          currentState = newState;
-          if (currentState == STATE.list) {
-            setTitle('Upcoming Activities');
-            hideAddActivityForm();
-            hideDetails();
-            hideBackButton();
-            redrawActivities();
-            showActivities();
-            showAddButton();
-          } else if (currentState == STATE.add) {
-            setTitle('Create');
-            hideAddButton();
-            hideActivities();
-            hideDetails();
-            showAddActivityForm();
-            showBackButton();
-          } if (currentState == STATE.detail) {
-            setTitle('View details');
-            hideAddActivityForm();
-            hideAddButton();
-            hideActivities();
-            showBackButton();
-            showDetails();
-          }
-        };
-        var activitiesSection = document.querySelector("section#activitiesList");
-        var detailSection = document.querySelector('section#activityDetails');
-        var editSection = document.querySelector('section#editActivity');
-        var addButton = document.querySelector("#addButton");
-        var backButton = document.querySelector("#backButton");
-        var title = document.querySelector("#title");
-        var setTitle = function (newTitle) {
-          title.innerHTML = newTitle;
-        }
-        var showBackButton = function () {
-          backButton.style.display = '';
-        };
-        var hideBackButton = function () {
-          backButton.style.display = 'none';
-        };
-        var showAddActivityForm = function () {
-          var source = document.querySelector('#edit-activity-template').innerHTML;
-          var template = Handlebars.compile(source);
-          var config = {name: "Owen Campbell-Moore"};
-          editSection.innerHTML = template(config);
-          var title = editSection.querySelector('input#title').value;
-          var date = editSection.querySelector('input#date').valueAsDate;
-          var time = editSection.querySelector('input#time').value.split(',');
-          editSection.querySelector('.option').onclick = function () {
-            var dateTime = new Date(date);
-            dateTime.setHours(time[0]);
-            dateTime.setMinutes(time[1]);
-            models.activities.createActivity({title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''});
-          }
-          editSection.style.display = '';
-        };
-
-        var showDetails = function () {
-          if (selectedActivity === undefined) {
-            throw "No activity selected";
-          };
-          var source = document.querySelector('#activity-details-template').innerHTML;
-          var template = Handlebars.compile(source);
-          var activity = models.activities.getActivity(selectedActivity);
-          detailSection.innerHTML = template(activity);
-          detailSection.style.display = '';
-        }
-        hideDetails = function () {
-          detailSection.style.display = 'none';
-        } 
-        var hideAddActivityForm = function () {
-          editSection.style.display = 'none';
-        }
-        var showAddButton = function () {
-          addButton.style.display = '';
-        }
-        var hideAddButton = function () {
-          addButton.style.display = 'none';
-        }
-        var showActivities = function () {
-          activitiesSection.style.display = '';
-        }
-        var hideActivities = function () {
-          activitiesSection.style.display = 'none';
-        }
-        var redrawActivities = function () {
-          var source = document.querySelector('#activity-summary-template').innerHTML;
-          var template = Handlebars.compile(source);
-          activitiesSection.innerHTML = '';
-          models.activities.getActivities().map(function (activity) {
-            var config = {activity: activity};
-            var activityHTML = template(config);
-            activitiesSection.insertAdjacentHTML('beforeend', activityHTML);
-            // Make this specific to each activity
-            var activityElem = document.querySelector('#activity-'+activity.activity_id);
-            activityElem.onclick = function () {
-              selectedActivity = activity.activity_id;
-              changeState(STATE.detail);
-            };
-            activityElem.querySelector('.option').onclick = function (e) {
-              models.activities.toggleAttendance(activity.activity_id);
-              e.stopPropagation();
-            }
-          });
-        };
-        models.activities.addListener(redrawActivities);
-        addButton.onclick = function () {
-          changeState(STATE.add);
-        };
-        backButton.onclick = function () {
-          changeState(STATE.list);
-        };
-        changeState(STATE.list);
-      })(models);
-
-      var network = (function() {
-        var processActivitiesFromServer = function (responseText) {
-          // Strip activity label for each item
-          console.log(responseText);
-          var activities = JSON.parse(responseText).map(function (activity) {
-              return activity.activity;
-          });
-          models.activities.setActivities(activities);
-        };
-        var getActivitiesFromServer = function () {
-          var req = new XMLHttpRequest();
-          req.onload = function () {
-            console.log(this.responseText);
-            processActivitiesFromServer(this.responseText);
-          }
-          req.open('get', '/../activities/2/', true);
-          req.send();
-        };
-        var requestCreateActivity = function (activity) {
-          var req = new XMLHttpRequest();
-          req.onload = function () {
-            document.body.innerHTML = this.responseText;
-            // models.activities.addActivity(JSON.parse(this.responseText));
-          }
-          req.setRequestHeader("Content-type", "application/json");
-          req.open('post', '/../activities/2/', true);
-          req.send(activity);
-        }
-        return {
-          getActivitiesFromServer: getActivitiesFromServer,
-          requestCreateActivity: requestCreateActivity
-        };
-      })();
-
-      Handlebars.registerHelper('datetimeString', function(string) {
-        return (new Date(string).toDateString());
-      });
+    <script type='text/javascript' src='handlebars-v1.3.0.js'></script>
+    <script type='text/javascript' src='models.js'></script>
+    <script type='text/javascript' src='view.js'></script>
+    <script type='text/javascript' src='network.js'></script>
+    <!-- <script type='text/javascript' src='facebook.js'></script> -->
+    <script type='text/javascript'>
       network.getActivitiesFromServer();
     </script>
   </body>

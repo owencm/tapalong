@@ -55,6 +55,10 @@ section.card .optionContainer .option {
 	color: #0AE;
 }
 
+section.card .optionContainer .option.disabled {
+	color: #CCC;
+}
+
 section.card .friendIcon {
 	border-radius: 7px;
 	width: 14px;
