@@ -55,7 +55,13 @@ var models = (function () {
       listenerModule.change();
     };
     var validate = function (activity) {
-      return {isValid: true};
+      // TODO: Validate values of the properties
+      // TODO: Validate client generated ones separately to server given ones
+      var properties = ['max_attendees', 'description', 'start_time', 'title', 'location'];
+      var hasProperties = properties.reduce(function(previous, property) { 
+        return (previous && activity.hasOwnProperty(property)); 
+      }, true);
+      return {isValid: hasProperties};
     };
     return {
       tryCreateActivity: tryCreateActivity,
@@ -65,7 +71,7 @@ var models = (function () {
       getActivities: getActivities,
       getActivity: getActivity,
       addActivity: addActivity,
-      addListener: listenerModule.addListener
+      addListener: listenerModule.addListener,
     }
   })();
   return {

@@ -18,25 +18,23 @@ var network = (function() {
   var getActivitiesFromServer = function () {
     var req = new XMLHttpRequest();
     req.onload = function () {
-      console.log(this.responseText);
       processActivitiesFromServer(this.responseText);
     }
-    req.open('get', '/../activities/2/', true);
+    req.open('get', '/../activities/'+models.local_user_id+'/', true);
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.send();
   };
   var requestCreateActivity = function (activity, success, failure) {
     var req = new XMLHttpRequest();
     req.onload = function () {
-      setTimeout(function() { success(); }, 500);
-      // models.activities.addActivity(JSON.parse(this.responseText));
-      // if(request succeeds) {
-      //    success();
-      // } else {
-      //  failure();
-      //}
+      if(req.status >= 200 && req.status < 400) {
+        models.activities.addActivity(JSON.parse(this.responseText).activity);
+        success();
+      } else {
+        failure();
+      }
     }
-    req.open('post', '/../activities/2/', true);
+    req.open('post', '/../activities/'+models.local_user_id+'/', true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify(activity));
@@ -52,7 +50,7 @@ var network = (function() {
       //  failure();
       //}
     }
-    req.open('post', '/../activities/2/'+activity_id, true);
+    req.open('post', '/../activities/'+models.local_user_id+'/'+activity_id, true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify({attending: attending}));          

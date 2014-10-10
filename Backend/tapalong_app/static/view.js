@@ -54,8 +54,6 @@ var view = (function (models) {
       var date = editSection.querySelector('input#date').valueAsDate;
       var time = editSection.querySelector('input#time').value.split(':');
       var dateTime = new Date(date);
-      console.log(dateTime);
-      console.log(time);
       dateTime.setHours(time[0]);
       dateTime.setMinutes(time[1]);
       var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};

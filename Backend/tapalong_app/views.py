@@ -13,20 +13,25 @@ import dateutil.parser
 import sessions
 
 # return user id and session token
-def login_user(request, fb_token):
-	print('id to follow\n')
-	facebook = Pyfb(settings.FACEBOOK_APP_ID)
-	#Sets the authentication token
-	facebook.set_access_token(fb_token)
-	#Gets info about myself 
-	me = facebook.get_myself()
-	try:
-		user = User.objects.get(fb_id=me.id)
-		session_token = sessions.start_session(user.id)
-		json_output = json.dumps({"user_id": User.id, "user_name": User.name, "session_token": session_token})
-		return HttpResponse(json_output, mimetype='application/json')
-	except User.DoesNotExist:
-		return HttpResponse('<p> User doesn\'t exist </p>')
+@csrf_exempt
+def login_user(request):
+	if request.method == 'POST':
+		request_contents = json.loads(request.body)
+		fb_token = request_contents.get('fb_token')
+		facebook = Pyfb(settings.FACEBOOK_APP_ID)
+		#Sets the authentication token
+		facebook.set_access_token(fb_token)
+		#Gets info about myself 
+		me = facebook.get_myself()
+		try:
+			user = User.objects.get(fb_id=me.id)
+			session_token = sessions.start_session(user.id)
+			json_output = json.dumps({"user_id": User.id, "user_name": User.name, "session_token": session_token})
+			return HttpResponse(json_output, mimetype='application/json')
+		except User.DoesNotExist:
+			return HttpResponse('<p> User doesn\'t exist </p>')
+	else:
+		raise Exception('Requests to /login/ must be post, not get.')
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
@@ -48,29 +53,22 @@ def serialize_activity(activity, user_id):
 # returned in order of creation; youngest to oldest.
 # On POST: Accepts and stores a new activity
 # TODO @allygale: Will need to convert start time from str 
-# to datetime, fix creator_id always being 1 (post fb-auth),
-# check to make sure user exists?
+# to datetime, check to make sure user exists?
 @csrf_exempt
 def get_activities_list(request, user_id):
 	# Check auth token sent with request
-	# THIS IS FUCKING UGLY. CHANGE IF POSSIBLE.
-	if request.method == 'GET':
-		token = request.GET.get("session_token")
-	elif request.method == "POST":
-		token = request.POST.get("session_token")
+	token = request.META.get('HTTP_SESSION_TOKEN')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p> Suspicious Operation </p>')
-	#print "-" * 40
-	#print "Name: %s" % me.name
+		return HttpResponse('<p>Suspicious Operation</p>')
+
 	#friends = facebook.get_friends()
 	#for friend in friends:
 		#print friend.name
+
 	if request.method == 'GET':
-		# Get yesterday's date:
-		yesterday = date.today() - timedelta(1)
-		# Get all activities for which this user is an attendee of.
-		# (Includes events they created.)
-		user_activities_list = Activity.objects.filter(attendees=user_id).exclude(start_time__lt=yesterday).order_by('-pub_date')
+		# Get all activities
+		# user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
+		user_activities_list = Activity.objects.order_by('-pub_date')
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
@@ -78,19 +76,11 @@ def get_activities_list(request, user_id):
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		#now = datetime.datetime.utcnow().replace(tzinfo=utc)
-		# Get request data
-		activity_info = json.loads(request.POST)
-		#FIX THIS CREATOR_ID=1; ID=1
-		activity = Activity(creator=User.objects.get(id=1), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		# Get request data and parse it from JSON
+		activity_info = json.loads(request.body)
+		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		print(activity.start_time)
 		activity.save()
-		activity.attendees.add(User.objects.get(id=1))
-		activity.save()
-		# Go through each activity and populate its attendees set
-		# activity_attendees = activity_info.get("attendees")
-		# for user_id in activity_attendees:
-		# 	user = User.objects.get(id=user_id)
-		# 	activity.attendees.add(user)
-		# activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
