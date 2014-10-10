@@ -27,6 +27,8 @@ var models = (function () {
         throw Error('Invalid activity attempted to be added');
       }
       activities.push(activity);
+      // TODO(owen): insert at the right point to maintain date sort
+      listenerModule.change();
     }
     var getActivity = function (activity_id) { 
       return activities.filter(function (activity) { return activity.activity_id == activity_id; } )[0];

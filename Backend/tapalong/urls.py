@@ -5,7 +5,7 @@ from django.conf.urls import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
-	url(r'^activities/', include('tapalong_app.urls')),
+	url(r'', include('tapalong_app.urls')),
 
     # Examples:
     # url(r'^$', 'tapalong.views.home', name='home'),

@@ -60,6 +60,8 @@ var view = (function (models) {
       this.className += ' disabled';
       models.activities.tryCreateActivity(newActivity, function () {
         changeState(STATE.list);
+      }, function () {
+        console.log("Adding to server failed. Help the user understand why");
       });
     }
     editSection.style.display = '';

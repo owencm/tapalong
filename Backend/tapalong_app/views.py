@@ -61,12 +61,14 @@ def get_activities_list(request, user_id):
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponse('<p>Suspicious Operation</p>')
 
+	# TODO, only return activities where creator_id is a friend and attendees.length < max_attendees or current user is in attendees
 	#friends = facebook.get_friends()
 	#for friend in friends:
 		#print friend.name
 
 	if request.method == 'GET':
 		# Get all activities
+		# Currently showing things from the past while debugging
 		# user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
 		user_activities_list = Activity.objects.order_by('-pub_date')
 		# Serialized and output to json.

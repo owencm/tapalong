@@ -4,7 +4,7 @@ var network = (function() {
     req.onload = function () {
       console.log(this.responseText);
     }
-    req.open('post', '/../activities/login/', true);
+    req.open('post', '/../v1/login/', true);
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify({fb_token: fb_token}));
   }
@@ -20,7 +20,7 @@ var network = (function() {
     req.onload = function () {
       processActivitiesFromServer(this.responseText);
     }
-    req.open('get', '/../activities/'+models.local_user_id+'/', true);
+    req.open('get', '/../v1/'+models.local_user_id+'/', true);
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.send();
   };
@@ -34,7 +34,7 @@ var network = (function() {
         failure();
       }
     }
-    req.open('post', '/../activities/'+models.local_user_id+'/', true);
+    req.open('post', '/../v1/'+models.local_user_id+'/', true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify(activity));
@@ -50,7 +50,7 @@ var network = (function() {
       //  failure();
       //}
     }
-    req.open('post', '/../activities/'+models.local_user_id+'/'+activity_id, true);
+    req.open('post', '/../v1/'+activity_id+'/'+models.local_user_id, true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify({attending: attending}));          
