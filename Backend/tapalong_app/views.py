@@ -94,6 +94,7 @@ def attending(request, activity_id, user_id):	# Check auth token sent with reque
 	activity = Activity.objects.get(id=activity_id)
 	# TODO: Ensure the user is allowed to see this activity
 	# TODO: Ensure the activity is in the future
+	# TODO: Ensure the user doesn't own this event
 	# Toggle attendance based on whether they are already attending
 	if activity.attendees.filter(id=user_id).exists():
 		activity.attendees.remove(user)
