@@ -12,7 +12,7 @@ var ListenerModule = function () {
     return {
       addListener: addListener,
       change: change
-    }
+    };
   })();
 };
 
@@ -29,7 +29,13 @@ var models = (function () {
       activities.push(activity);
       // TODO(owen): insert at the right point to maintain date sort
       listenerModule.change();
-    }
+    };
+    var removeActivity = function (activity_id) {
+      activities = activities.filter(function(activity) {
+        return (activity.activity_id !== activity_id);
+      });
+      listenerModule.change();
+    };
     var getActivity = function (activity_id) { 
       return activities.filter(function (activity) { return activity.activity_id == activity_id; } )[0];
     };
@@ -52,8 +58,9 @@ var models = (function () {
       network.requestSetAttending(activity_id, attending, success, failure);
     };
     var setAttending = function (activity_id, attending) {
+      throw('Should not be changing is_attending on client side');
       var activity = getActivity(activity_id);
-      activity.attending = !activity.attending;
+      activity.is_attending = !activity.is_attending;
       listenerModule.change();
     };
     var validate = function (activity) {
@@ -73,6 +80,7 @@ var models = (function () {
       getActivities: getActivities,
       getActivity: getActivity,
       addActivity: addActivity,
+      removeActivity: removeActivity,
       addListener: listenerModule.addListener,
     }
   })();

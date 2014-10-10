@@ -110,9 +110,12 @@ var view = (function (models) {
       };
       activityElem.querySelector('.option').onclick = function (e) {
         // Note no callback since the list will automatically redraw when this changes
-        models.activities.trySetAttending(activity.activity_id, !activity.attending, function () {});
+        models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {}, function () {});
         this.className += ' disabled';
         e.stopPropagation();
+      }
+      if (activity.is_attending) {
+        activityElem.className += ' attending';
       }
     });
   };

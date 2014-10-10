@@ -37,17 +37,14 @@ def login_user(request):
 # Title, start time, description, location, max attendees
 #attendees names
 def serialize_activity(activity, user_id):
-	print activity.creator_id, user_id
 	# No idea why user_id is acting as a str here.
-	if activity.creator_id == int(user_id):
-		is_creator = True
-	else:
-		is_creator = False
+	is_creator = activity.creator_id == int(user_id)
+	is_attending = activity.attendees.filter(id=user_id).exists()
 
 	attendees_names = map(lambda user: user.name, activity.attendees.all())
 	#serialized_attendees_names = json.dumps(attendees_names)
 	
-	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names}}
+	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
@@ -55,7 +52,8 @@ def serialize_activity(activity, user_id):
 # TODO @allygale: Will need to convert start time from str 
 # to datetime, check to make sure user exists?
 @csrf_exempt
-def get_activities_list(request, user_id):
+def activities_list(request, user_id):
+	# TODO: factor out auth check to somewhere higher that covers all APIs
 	# Check auth token sent with request
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
@@ -81,8 +79,36 @@ def get_activities_list(request, user_id):
 		# Get request data and parse it from JSON
 		activity_info = json.loads(request.body)
 		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
-		print(activity.start_time)
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
+
+@csrf_exempt
+def attending(request, activity_id, user_id):	# Check auth token sent with request
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p>Suspicious Operation</p>')
+
+	user = User.objects.get(id=user_id)
+	activity = Activity.objects.get(id=activity_id)
+	# TODO: Ensure the user is allowed to see this activity
+	# TODO: Ensure the activity is in the future
+	# Toggle attendance based on whether they are already attending
+	if activity.attendees.filter(id=user_id).exists():
+		activity.attendees.remove(user)
+	else:
+		# If the activity has more space
+		if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
+			activity.attendees.add(user)
+		else:
+			print("No room for user at activity")
+			# Return an error
+	activity.save()
+	serialized_activity = serialize_activity(activity, user_id)
+	json_output = json.dumps(serialized_activity)
+	return HttpResponse(json_output, mimetype='application/json')
+
+
+
+

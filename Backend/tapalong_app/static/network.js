@@ -20,7 +20,7 @@ var network = (function() {
     req.onload = function () {
       processActivitiesFromServer(this.responseText);
     }
-    req.open('get', '/../v1/'+models.local_user_id+'/', true);
+    req.open('get', '/../v1/activities/visible_to_user/'+models.local_user_id+'/', true);
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.send();
   };
@@ -34,27 +34,29 @@ var network = (function() {
         failure();
       }
     }
-    req.open('post', '/../v1/'+models.local_user_id+'/', true);
+    req.open('post', '/../v1/activities/visible_to_user/'+models.local_user_id+'/', true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify(activity));
-  }
+  };
   var requestSetAttending = function (activity_id, attending, success, failure) {
     var req = new XMLHttpRequest();
     req.onload = function () {
-      setTimeout(function() { models.activities.setAttending(activity_id, attending); success(); }, 500);
-      // if(request succeeds) {
-      //   models.activities.setAttending(activity_id, attending);
-      //   success();
-      // } else {
-      //  failure();
-      //}
-    }
-    req.open('post', '/../v1/'+activity_id+'/'+models.local_user_id, true);
+      if(req.status >= 200 && req.status < 400) {
+        var updatedActivity = JSON.parse(this.responseText).activity;
+        console.log(updatedActivity);
+        models.activities.removeActivity(updatedActivity.activity_id);
+        models.activities.addActivity(updatedActivity);
+        success();
+      } else {
+        failure();
+      }
+    };
+    req.open('post', '/../v1/activities/'+activity_id+'/attend/'+models.local_user_id+'/', true);
     req.setRequestHeader('Session-Token', 'letmein');
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify({attending: attending}));          
-  }
+  };
   return {
     getActivitiesFromServer: getActivitiesFromServer,
     requestCreateActivity: requestCreateActivity,
