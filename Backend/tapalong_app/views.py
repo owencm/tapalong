@@ -59,10 +59,11 @@ def serialize_activity(activity, user_id):
 # TODO @allygale: Will need to convert start time from str 
 # to datetime, check to make sure user exists?
 @csrf_exempt
-def activities_list(request, user_id):
+def activities_list(request):
 	# TODO: factor out auth check to somewhere higher that covers all APIs
 	# Check auth token sent with request
 	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponse('<p>Suspicious Operation</p>')
 
@@ -95,9 +96,10 @@ def activities_list(request, user_id):
 		return HttpResponse(json_output, mimetype='application/json')
 
 @csrf_exempt
-def attending(request, activity_id, user_id):
+def attending(request, activity_id):
 	# Check auth token sent with request
 	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponse('<p>Suspicious Operation</p>')
 
@@ -125,8 +127,9 @@ def attending(request, activity_id, user_id):
 		return HttpResonse('This URL does not support non-post requests');
 
 @csrf_exempt
-def activity(request, activity_id, user_id):
+def activity(request, activity_id):
 	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponse('<p>Suspicious Operation</p>')
 
