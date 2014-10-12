@@ -20,7 +20,8 @@ var network = (function() {
     req.onload = function () {
       processActivitiesFromServer(this.responseText);
     }
-    req.open('get', '/../v1/activities/visible_to_user/'+models.local_user_id+'/', true);
+    req.open('get', '/../v1/activities/visible_to_user/', true);
+    req.setRequestHeader('USER_ID', models.local_user_id);
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.send();
   };
@@ -34,9 +35,10 @@ var network = (function() {
         failure();
       }
     }
-    req.open('post', '/../v1/activities/visible_to_user/'+models.local_user_id+'/', true);
-    req.setRequestHeader('Session-Token', 'letmein');
-    req.setRequestHeader('Content-type', 'application/json');
+    req.open('post', '/../v1/activities/visible_to_user/', true);
+    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify(activity));
   };
   var requestSetAttending = function (activity_id, attending, success, failure) {
@@ -51,9 +53,10 @@ var network = (function() {
         failure();
       }
     };
-    req.open('post', '/../v1/activities/'+activity_id+'/attend/'+models.local_user_id+'/', true);
-    req.setRequestHeader('Session-Token', 'letmein');
-    req.setRequestHeader('Content-type', 'application/json');
+    req.open('post', '/../v1/activities/'+activity_id+'/attend/', true);
+    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify({attending: attending}));          
   };
   var requestUpdateActivity = function(activity_id, activityChanges, success, failure) {
@@ -68,9 +71,10 @@ var network = (function() {
         failure();
       }
     };
-    req.open('post', '/../v1/activities/'+activity_id+'/'+models.local_user_id+'/', true);
-    req.setRequestHeader('Session-Token', 'letmein');
-    req.setRequestHeader('Content-type', 'application/json');
+    req.open('post', '/../v1/activities/'+activity_id+'/', true);
+    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify(activityChanges)); 
   };
   return {
