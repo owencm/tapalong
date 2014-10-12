@@ -1,8 +1,26 @@
 body {
-	background-color: #fafafa;
+	background-color: #eee;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 300;
 	margin-bottom: 100px;
+}
+
+input {
+	font-family: inherit;
+	font-size: inherit;
+}
+
+.clear {
+	clear: both;
+}
+
+.noselect {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 header {
@@ -34,12 +52,15 @@ div#container {
 }
 
 section.card {
+	/* This puts the border inside the edge */
+	box-sizing: border-box;
 	max-width: 600px;
 	padding: 16px;
 	margin: 0 auto;
-	border-bottom: 1px solid #e6e6e6;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	color: #444;
 	line-height: 1.5em;
+	background-color: #fafafa;
 }
 
 section.card.attending {
@@ -80,21 +101,54 @@ section.card .cardTitleContainer {
 	overflow: hidden;
 }
 
+section.card input {
+	padding: 10px 10px 10px 2px;
+	border: none;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	background-color: rgba(0,0,0,0);
+	width: 100%;
+	display: block;
+	margin: 10px 0;
+		box-sizing: border-box;
+}
+
+section.card input#title {
+	font-size: 1.2em;
+}
+
+section.card input#date {
+	float: left;
+	width: auto;
+	font-size: 1em;
+}
+
+section.card input#time {
+	float: right;
+	font-size: 1em;
+	width: 150px;
+}
+
+section.card input:focus {
+	outline: none;
+	border-bottom: 1px solid #2196f3;
+	box-shadow: 0 1px 0 0px #2196f3;
+}
+
 b {
 	font-weight: 400;
 }
 
 div#addbutton {
-	width: 66px;
-	height: 66px;
-	border-radius: 33px;
+	width: 60px;
+	height: 60px;
+	border-radius: 30px;
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
 	background-image: url('plus.png');
 	background-position: center;
 	background-repeat: no-repeat;
-	background-size: 33px;
+	background-size: 16px;
 	background-color: #F44;
 	box-shadow: 0px 2px 3px rgba(0,0,0,0.1);
 }

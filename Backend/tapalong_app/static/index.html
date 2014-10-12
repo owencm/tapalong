@@ -5,7 +5,7 @@
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
   </head>
-  <body>
+  <body class="noselect">
     <header>
       <img src='back.png' id='backButton'></img>
       <h1 id='title'>
@@ -25,7 +25,7 @@
       <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
         <img src='friend.jpg' class='friendIcon'></img>
         <div class='cardTitleContainer'>
-          <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> {{datetimeString activity.start_time}}.
+          <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> on {{datetimeString activity.start_time}}.
           <div class='optionContainer'>
             <span class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
               {{#if activity.is_creator}}
@@ -57,10 +57,11 @@
     <script id='edit-activity-template' type='text/x-handlebars-template'>
       <section class='card'>
         <b>{{name}}</b> is<br />
-        <input type='text' value='{{activity.title}}' id='title'></input> on<br />
+        <input type='text' value='{{activity.title}}' id='title'></input>
         <!-- TODO(owen): Put existing values in here -->
-        <input type='date' id='date' min='2014-11-10' max='2014-11-17'></input> at<br />
-        <input type='time' id='time' step="900" value='13:00'></input><br />
+        <input type='date' id='date' min='2014-11-10' max='2014-11-17'></input>
+        <input type='time' id='time' step="900" value='13:00'></input>
+        <div class='clear'></div>
         <div class='optionContainer'>
         <span class='option'>
           {{#if editing}}
