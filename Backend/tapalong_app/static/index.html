@@ -1,7 +1,7 @@
 <!DOCTYPE>
 <html>
   <head>
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
   </head>
@@ -23,19 +23,21 @@
     <script id='activity-summary-template' type='text/x-handlebars-template'>
       <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
         <img src='friend.jpg' class='friendIcon'></img>
-        <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> {{datetimeString activity.start_time}}.
-        <div class='optionContainer'>
-          <span class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-            {{#if activity.is_creator}}
-              Edit
-            {{else}}
-              {{#if activity.is_attending}}
-                Unattend
+        <div class='cardTitleContainer'>
+          <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> {{datetimeString activity.start_time}}.
+          <div class='optionContainer'>
+            <span class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
+              {{#if activity.is_creator}}
+                Edit
               {{else}}
-                Attend
+                {{#if activity.is_attending}}
+                  Unattend
+                {{else}}
+                  Attend
+                {{/if}}
               {{/if}}
-            {{/if}}
-          </span>
+            </span>
+          </div>
         </div>
       </section>
     </script>
