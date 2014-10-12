@@ -44,7 +44,6 @@ var network = (function() {
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
-        console.log(updatedActivity);
         models.activities.removeActivity(updatedActivity.activity_id);
         models.activities.addActivity(updatedActivity);
         success();
@@ -57,10 +56,28 @@ var network = (function() {
     req.setRequestHeader('Content-type', 'application/json');
     req.send(JSON.stringify({attending: attending}));          
   };
+  var requestUpdateActivity = function(activity_id, activityChanges, success, failure) {
+    var req = new XMLHttpRequest();
+    req.onload = function () {
+      if(req.status >= 200 && req.status < 400) {
+        var updatedActivity = JSON.parse(this.responseText).activity;
+        models.activities.removeActivity(updatedActivity.activity_id);
+        models.activities.addActivity(updatedActivity);
+        success();
+      } else {
+        failure();
+      }
+    };
+    req.open('post', '/../v1/activities/'+activity_id+'/'+models.local_user_id+'/', true);
+    req.setRequestHeader('Session-Token', 'letmein');
+    req.setRequestHeader('Content-type', 'application/json');
+    req.send(JSON.stringify(activityChanges)); 
+  };
   return {
     getActivitiesFromServer: getActivitiesFromServer,
     requestCreateActivity: requestCreateActivity,
     requestSetAttending: requestSetAttending,
+    requestUpdateActivity: requestUpdateActivity,
     login: login
   };
 })();

@@ -27,7 +27,8 @@ var models = (function () {
         throw Error('Invalid activity attempted to be added');
       }
       activities.push(activity);
-      // TODO(owen): insert at the right point to maintain date sort
+      // TODO(owen): insert at the right point to maintain date sort rather than this hack
+      fixActivitiesOrder();
       listenerModule.change();
     };
     var removeActivity = function (activity_id) {
@@ -54,6 +55,9 @@ var models = (function () {
         failure();
       }
     };
+    var tryUpdateActivity = function (activity_id, activityChanges, success, failure) {
+      network.requestUpdateActivity(activity_id, activityChanges, success, failure);
+    };
     var trySetAttending = function (activity_id, attending, success, failure) {
       network.requestSetAttending(activity_id, attending, success, failure);
     };
@@ -63,6 +67,21 @@ var models = (function () {
       activity.is_attending = !activity.is_attending;
       listenerModule.change();
     };
+    // TODO: Make me much more efficient plz!
+    var fixActivitiesOrder = function () {
+      activities.sort(function(activityA, activityB) {
+        a = new Date(activityA.start_time).getTime();
+        b = new Date(activityB.start_time).getTime();
+        if (a < b) {
+          return -1;
+        } else if (b < a) {
+          return 1;
+        } else {
+          return (activityA.activity_id < activityB.activity_id) ? -1 : 1;
+        }
+      });
+      activities.reverse();
+    }
     var validate = function (activity) {
       // TODO: Validate values of the properties
       // TODO: Validate client generated ones separately to server given ones
@@ -74,6 +93,7 @@ var models = (function () {
     };
     return {
       tryCreateActivity: tryCreateActivity,
+      tryUpdateActivity: tryUpdateActivity,
       trySetAttending: trySetAttending,
       setAttending: setAttending,
       setActivities: setActivities,

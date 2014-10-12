@@ -1,5 +1,5 @@
 var view = (function (models) {
-  var STATE = {add: 0, list: 1, detail: 2};
+  var STATE = {add: 0, list: 1, detail: 2, edit: 3};
   var currentState = STATE.list;
   var selectedActivity;
   var changeState = function (newState) {
@@ -20,6 +20,13 @@ var view = (function (models) {
       hideDetails();
       showCreateActivityForm();
       showBackButton();
+    } else if (currentState == STATE.edit) {
+      setTitle('Edit');
+      hideAddButton();
+      hideActivitiesList();
+      hideDetails();
+      showCreateActivityForm();
+      showBackButton();      
     } if (currentState == STATE.detail) {
       setTitle('View details');
       hideCreateActivityForm();
@@ -48,6 +55,12 @@ var view = (function (models) {
     var source = document.querySelector('#edit-activity-template').innerHTML;
     var template = Handlebars.compile(source);
     var config = {name: 'Owen Campbell-Moore'};
+    if (currentState == STATE.edit) {
+      // Get the selected activity if we're editing
+      var activity = models.activities.getActivity(selectedActivity);
+      config.activity = activity;
+      config.editing = true;
+    }
     editSection.innerHTML = template(config);
     editSection.querySelector('.option').onclick = function () {
       var title = editSection.querySelector('input#title').value;
@@ -56,13 +69,22 @@ var view = (function (models) {
       var dateTime = new Date(date);
       dateTime.setHours(time[0]);
       dateTime.setMinutes(time[1]);
-      var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
-      this.className += ' disabled';
-      models.activities.tryCreateActivity(newActivity, function () {
-        changeState(STATE.list);
-      }, function () {
-        console.log("Adding to server failed. Help the user understand why");
-      });
+      var activityChanges = {title: title, start_time: dateTime};
+      if (currentState == STATE.edit) {
+        models.activities.tryUpdateActivity(selectedActivity, activityChanges, function () {
+          changeState(STATE.list);
+        }, function () {
+          throw('Editing the activity failed. Help the user understand why.');
+        });
+      } else {
+        var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
+        this.className += ' disabled';
+        models.activities.tryCreateActivity(newActivity, function () {
+          changeState(STATE.list);
+        }, function () {
+          throw("Adding to server failed. Help the user understand why");
+        });        
+      }
     }
     editSection.style.display = '';
   };
@@ -109,8 +131,17 @@ var view = (function (models) {
         changeState(STATE.detail);
       };
       activityElem.querySelector('.option').onclick = function (e) {
-        // Note no callback since the list will automatically redraw when this changes
-        models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {}, function () {});
+        // Creators edit, non creators attend
+        if (activity.is_creator) {
+          selectedActivity = activity.activity_id;
+          changeState(STATE.edit);
+        } else {
+          // Note no callback since the list will automatically redraw when this changes
+          models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
+          }, function () {
+            alert('An unexpected error occurred. Please refresh.');
+          });
+        }
         this.classList.add('disabled');
         e.stopPropagation();
       }

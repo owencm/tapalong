@@ -1,6 +1,7 @@
 <!DOCTYPE>
 <html>
   <head>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,500' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
   </head>
@@ -24,7 +25,7 @@
         <img src='friend.jpg' class='friendIcon'></img>
         <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> {{datetimeString activity.start_time}}.
         <div class='optionContainer'>
-          <span class='option'>
+          <span class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
             {{#if activity.is_creator}}
               Edit
             {{else}}
@@ -53,12 +54,18 @@
     <script id='edit-activity-template' type='text/x-handlebars-template'>
       <section class='card'>
         <b>{{name}}</b> is<br />
-        <input type='text' value='{{title}}' id='title'></input> on<br />
+        <input type='text' value='{{activity.title}}' id='title'></input> on<br />
         <!-- TODO(owen): Put existing values in here -->
-        <input type='date' id='date' min='2014-07-23' max='2014-07-30'></input> at<br />
+        <input type='date' id='date' min='2014-11-10' max='2014-11-17'></input> at<br />
         <input type='time' id='time' step="900" value='13:00'></input><br />
         <div class='optionContainer'>
-        <span class='option'>Create</span>
+        <span class='option'>
+          {{#if editing}}
+            Save
+          {{else}}
+            Create
+          {{/if}}
+        </span>
         </div>
       </section>
     </script>

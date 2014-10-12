@@ -85,31 +85,67 @@ def activities_list(request, user_id):
 		return HttpResponse(json_output, mimetype='application/json')
 
 @csrf_exempt
-def attending(request, activity_id, user_id):	# Check auth token sent with request
+def attending(request, activity_id, user_id):
+	# Check auth token sent with request
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponse('<p>Suspicious Operation</p>')
 
-	user = User.objects.get(id=user_id)
-	activity = Activity.objects.get(id=activity_id)
-	# TODO: Ensure the user is allowed to see this activity
-	# TODO: Ensure the activity is in the future
-	# TODO: Ensure the user doesn't own this event
-	# Toggle attendance based on whether they are already attending
-	if activity.attendees.filter(id=user_id).exists():
-		activity.attendees.remove(user)
-	else:
-		# If the activity has more space
-		if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
-			activity.attendees.add(user)
+	if request.method == 'POST':
+		user = User.objects.get(id=user_id)
+		activity = Activity.objects.get(id=activity_id)
+		# TODO: Ensure the user is allowed to see this activity
+		# TODO: Ensure the activity is in the future
+		# TODO: Ensure the user doesn't own this event
+		# Toggle attendance based on whether they are already attending
+		if activity.attendees.filter(id=user_id).exists():
+			activity.attendees.remove(user)
 		else:
-			print("No room for user at activity")
-			# Return an error
+			# If the activity has more space
+			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
+				activity.attendees.add(user)
+			else:
+				print('No room for user at activity')
+				# Return an error
+		activity.save()
+		serialized_activity = serialize_activity(activity, user_id)
+		json_output = json.dumps(serialized_activity)
+		return HttpResponse(json_output, mimetype='application/json')
+	else:
+		return HttpResonse('This URL does not support non-post requests');
+
+@csrf_exempt
+def activity(request, activity_id, user_id):
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p>Suspicious Operation</p>')
+
+	if request.method == 'POST':
+		user = User.objects.get(id=user_id)
+		activity = Activity.objects.get(id=activity_id)
+		if activity.creator != user:
+			print('Someone tried to modify an activity they did not own:')
+			print(request)
+			return HttpResponse('You aren\'t permitted to modify this event')
+		# Get fields of the activity the client wants to change
+		activity_info = json.loads(request.body)
+		print(activity_info)
+		# Get all fields into the format they will be needed
+		if hasattr(activity_info, 'start_time'):
+			activity_info.start_time = dateutil.parser.parse(activity_info.get('start_time'))
+		updateActivity(activity, activity_info)
+		serialized_activity = serialize_activity(activity, user_id)
+		json_output = json.dumps(serialized_activity)
+		return HttpResponse(json_output, mimetype='application/json')
+	else:
+		return HttpResonse('This URL does not support non-post requests');
+
+
+def updateActivity(activity, activity_info):
+	known_attributes = ['title', 'start_time', 'description', 'location', 'max_attendees']
+	for attr in activity_info:
+		if attr in known_attributes:
+			setattr(activity, attr, activity_info[attr])
+	# Todo: validate before we save
 	activity.save()
-	serialized_activity = serialize_activity(activity, user_id)
-	json_output = json.dumps(serialized_activity)
-	return HttpResponse(json_output, mimetype='application/json')
-
-
-
-
+	return
