@@ -25,6 +25,13 @@ def login_user(request):
 		me = facebook.get_myself()
 		try:
 			user = User.objects.get(fb_id=me.id)
+			# Set up the list of the users' facebook friends' ids
+			friends = facebook.get_friends()
+			friend_ids = map(lambda friend: friend.id, friends)
+			friend_ids_str = ','.join(friends_ids)
+			user.friends=friends_ids_str
+			user.save()
+			# Start dat session
 			session_token = sessions.start_session(user.id)
 			json_output = json.dumps({"user_id": User.id, "user_name": User.name, "session_token": session_token})
 			return HttpResponse(json_output, mimetype='application/json')
@@ -35,7 +42,7 @@ def login_user(request):
 
 # Serializes a single activity into JSON, passing along the following:
 # Title, start time, description, location, max attendees
-#attendees names
+# attendees names
 def serialize_activity(activity, user_id):
 	# No idea why user_id is acting as a str here.
 	is_creator = activity.creator_id == int(user_id)
@@ -68,7 +75,10 @@ def activities_list(request, user_id):
 		# Get all activities
 		# Currently showing things from the past while debugging
 		# user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
-		user_activities_list = Activity.objects.order_by('-pub_date')
+		# Get all activities
+		all_activities = Activity.objects.order_by('-pub_date')
+		# Get all activities that are created by friends of the user
+
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		json_output = json.dumps(serialized_activities)
