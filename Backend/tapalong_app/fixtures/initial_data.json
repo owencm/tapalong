@@ -8,9 +8,9 @@
       "start_time": "2013-03-16 20:30:00",
       "title": "Walking My Dogs Around Green Lake",
       "description": "I'm walking my dogs and would love some company! We can go get dessert after!",
-      "attendees": [1, 2, 3, 4],
+      "attendees": [2, 3, 4],
       "location": "Green Lake Park, Seattle , WA",
-      "max_attendees": 3
+      "max_attendees": 10
     }
   },
 
@@ -23,9 +23,9 @@
       "start_time": "2013-05-06 19:30:00",
       "title": "Perfecting my Pie Baking Skills",
       "description": "I'm trying to become a better baker! Help me make pies and get some tasty smaples!",
-      "attendees": [1, 2, 3, 4],
+      "attendees": [2, 3, 4],
       "location": "4004 SW Hinds St, Seattle , WA 98116",
-      "max_attendees": 2
+      "max_attendees": 10
     }
   },
     {
@@ -37,9 +37,9 @@
       "start_time": "2013-07-28 14:30:00",
       "title": "Thrift Shopping",
       "description": "I'm gonna pop some tags, only got $20 in my pocket! Come get some crazy outfits with me!",
-      "attendees": [1, 2, 3],
+      "attendees": [1, 3],
       "location": "Goodwill on Dearborn St.",
-      "max_attendees": 2
+      "max_attendees": 10
     }
   },
     {
@@ -51,9 +51,9 @@
       "start_time": "2013-03-16 17:30:00",
       "title": "Doing Math Homework and Watching Community",
       "description": "I procrastinated hard-core on this assignment so I'm going to be up late. Come over and do homework with me!",
-      "attendees": [1, 2, 3, 4],
+      "attendees": [1, 3, 4],
       "location": "300 25th Ave S, Seattle , WA",
-      "max_attendees": 4
+      "max_attendees": 10
     }
   },
     {
@@ -65,9 +65,9 @@
       "start_time": "2013-06-24 10:20:00",
       "title": "Teaching My First CSE 142 Lecture!",
       "description": "I'm the lecturer for CSE 142 for UW this summer and am teaching my first class today. Come root me on!",
-      "attendees": [1, 2, 3, 4],
+      "attendees": [1, 2, 4],
       "location": "University of Washington, GUG 120, Seattle , WA",
-      "max_attendees": 0
+      "max_attendees": 10
     }
   },
     {
@@ -79,9 +79,9 @@
       "start_time": "2013-03-16 17:40:00",
       "title": "Cinco de Mayo Party",
       "description": "Drink cerveza and hit a pinata!",
-      "attendees": [1, 2, 3, 4],
+      "attendees": [1, 2, 4],
       "location": "The Tree House, Palo Alto, CA",
-      "max_attendees": 0
+      "max_attendees": 10
     }
   },
   {

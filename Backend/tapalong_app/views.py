@@ -80,7 +80,7 @@ def activities_list(request, user_id):
 		# Get all activities that are created by friends of the user
 
 		# Serialized and output to json.
-		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
+		serialized_activities = [serialize_activity(a, user_id) for a in all_activities]
 		json_output = json.dumps(serialized_activities)
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':

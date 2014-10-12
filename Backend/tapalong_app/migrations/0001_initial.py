@@ -13,6 +13,8 @@ class Migration(SchemaMigration):
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=20)),
             ('password', self.gf('django.db.models.fields.CharField')(max_length=30)),
+            ('fb_id', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('friends', self.gf('django.db.models.fields.TextField')()),
         ))
         db.send_create_signal(u'tapalong_app', ['User'])
 
@@ -86,6 +88,8 @@ class Migration(SchemaMigration):
         },
         u'tapalong_app.user': {
             'Meta': {'object_name': 'User'},
+            'fb_id': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
+            'friends': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
             'password': ('django.db.models.fields.CharField', [], {'max_length': '30'})
