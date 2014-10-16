@@ -1,13 +1,17 @@
 var network = (function() {
   var sessionToken;
   var login = function (fb_token, success, failure) {
+    console.log("loggin in");
     var req = new XMLHttpRequest();
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
         console.log(this.responseText);
         response = JSON.parse(this.responseText);
-        if (response.success) {
+        if (response.success === "true") {
           success(response.user_id, response.session_token);
+        } else {
+          failure();
+          throw('unexpected app login failure');
         }
       } else {
         // Request failed

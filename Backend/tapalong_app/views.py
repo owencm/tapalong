@@ -28,11 +28,14 @@ def login_user(request):
 			refreshFriends(facebook, user)
 			# Start dat session
 			session_token = sessions.start_session(user.id)
-			json_output = json.dumps({'success': 'true', "user_id": User.id, "user_name": User.name, "session_token": session_token})
+			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": session_token, "first_login": "false"})
 			return HttpResponse(json_output, mimetype='application/json')
 		except User.DoesNotExist:
-			# TODO: don't fail here, just create the user and then return them
-			json_output = json.dumps({'success': 'false', 'reason': 'User doesn\'t exist'})
+			# TODO: catch errors here
+			user = User(name=me.name, fb_id=me.id)
+			user.save()
+			refreshFriends(facebook, user)
+			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": session_token, "first_login": "true"})
 			return HttpResponse(json_output, mimetype='application/json')
 	else:
 		raise Exception('Requests to /login/ must be post, not get.')
@@ -41,8 +44,8 @@ def refreshFriends(facebook, user):
 	# Set up the list of the users' facebook friends' ids
 	friends = facebook.get_friends()
 	friend_ids = map(lambda friend: friend.id, friends)
-	friend_ids_str = ','.join(friends_ids)
-	user.friends=friends_ids_str
+	friend_ids_str = ','.join(friend_ids)
+	user.friends=friend_ids_str
 	user.save()
 
 # Serializes a single activity into JSON, passing along the following:

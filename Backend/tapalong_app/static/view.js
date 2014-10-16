@@ -195,8 +195,7 @@ var view = (function (models) {
       });
   };
   var fbLoginSuccess = function (fbToken) {
-    models.startLogin(fbToken, function () {
-    }, function () {
+    models.startLogin(fbToken, appLoginSuccess, function () {
       throw('login to app failed');
     });
   };
