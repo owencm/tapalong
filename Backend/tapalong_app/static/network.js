@@ -1,8 +1,18 @@
 var network = (function() {
-  var login = function (fb_token) {
+  var sessionToken;
+  var login = function (fb_token, success, failure) {
     var req = new XMLHttpRequest();
     req.onload = function () {
-      console.log(this.responseText);
+      if(req.status >= 200 && req.status < 400) {
+        console.log(this.responseText);
+        response = JSON.parse(this.responseText);
+        if (response.success) {
+          success(response.user_id, response.session_token);
+        }
+      } else {
+        // Request failed
+        throw ('login request failed');
+      }
     }
     req.open('post', '/../v1/login/', true);
     req.setRequestHeader('Content-type', 'application/json');
@@ -15,13 +25,15 @@ var network = (function() {
     });
     models.activities.setActivities(activities);
   };
-  var getActivitiesFromServer = function () {
+  var getActivitiesFromServer = function (success, failure) {
     var req = new XMLHttpRequest();
     req.onload = function () {
+      // TODO: Check this actually succeeded
       processActivitiesFromServer(this.responseText);
+      success();
     }
     req.open('get', '/../v1/activities/visible_to_user/', true);
-    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('USER_ID', models.getUserId());
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.send();
   };
@@ -36,7 +48,7 @@ var network = (function() {
       }
     }
     req.open('post', '/../v1/activities/visible_to_user/', true);
-    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('USER_ID', models.getUserId());
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify(activity));
@@ -55,13 +67,12 @@ var network = (function() {
     };
     req.open('post', '/../v1/activities/'+activity_id+'/attend/', true);
     req.setRequestHeader('SESSION_TOKEN', 'letmein');
-    req.setRequestHeader('USER_ID', models.local_user_id);
+    req.setRequestHeader('USER_ID', models.getUserId());
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify({attending: attending}));          
   };
   var requestUpdateActivity = function(activity_id, activityChanges, success, failure) {
-    var req = new XMLHttpRequest();
-    req.onload = function () {
+    sendRequest('/../v1/activities/'+activity_id+'/', 'post', JSON.stringify(activityChanges), function () {
       if(req.status >= 200 && req.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
         models.activities.removeActivity(updatedActivity.activity_id);
@@ -70,18 +81,26 @@ var network = (function() {
       } else {
         failure();
       }
-    };
-    req.open('post', '/../v1/activities/'+activity_id+'/', true);
-    req.setRequestHeader('SESSION_TOKEN', 'letmein');
-    req.setRequestHeader('USER_ID', models.local_user_id);
-    req.setRequestHeader('CONTENT_TYPE', 'application/json');
-    req.send(JSON.stringify(activityChanges)); 
+    });
   };
+  var sendRequest = function (url, method, body, onload) {
+    var req = new XMLHttpRequest();
+    req.onload = onload;
+    req.open(method, url, true);
+    req.setRequestHeader('SESSION_TOKEN', sessionToken);
+    req.setRequestHeader('USER_ID', models.userId);
+    req.setRequestHeader('CONTENT_TYPE', 'application/json');
+    req.send(body);
+  }
+  var setSessionToken = function (newSessionToken) {
+    sessionToken = newSessionToken;
+  }
   return {
     getActivitiesFromServer: getActivitiesFromServer,
     requestCreateActivity: requestCreateActivity,
     requestSetAttending: requestSetAttending,
     requestUpdateActivity: requestUpdateActivity,
-    login: login
+    login: login,
+    setSessionToken: setSessionToken
   };
 })();

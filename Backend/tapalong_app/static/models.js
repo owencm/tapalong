@@ -17,8 +17,20 @@ var ListenerModule = function () {
 };
 
 var models = (function () {
-  // TODO(owen): Sort out current user id
-  var local_user_id = 2;
+  var userId;
+  var setUserId = function (newUserId) {
+    userId = newUserId;
+  };
+  var getUserId = function () {
+    return userId;
+  }
+  var setSessionToken = function (sessionToken) {
+    network.setSessionToken(sessionToken);
+  };
+  var startLogin = function (fbToken, success, failure) {
+    network.login(fbToken, success, failure);
+  };
+
   var activities = (function () {
     var activities = [];
     var listenerModule = ListenerModule();
@@ -81,7 +93,7 @@ var models = (function () {
         }
       });
       activities.reverse();
-    }
+    };
     var validate = function (activity) {
       // TODO: Validate values of the properties
       // TODO: Validate client generated ones separately to server given ones
@@ -91,7 +103,11 @@ var models = (function () {
       }, true);
       return {isValid: hasProperties};
     };
+    var tryRefreshActivities = function (success, failure) {
+      network.getActivitiesFromServer(success, failure);
+    }
     return {
+      tryRefreshActivities: tryRefreshActivities,
       tryCreateActivity: tryCreateActivity,
       tryUpdateActivity: tryUpdateActivity,
       trySetAttending: trySetAttending,
@@ -106,6 +122,9 @@ var models = (function () {
   })();
   return {
     activities: activities,
-    local_user_id: local_user_id
+    getUserId: getUserId,
+    setUserId: setUserId,
+    setSessionToken: setSessionToken,
+    startLogin: startLogin
   }
 })();

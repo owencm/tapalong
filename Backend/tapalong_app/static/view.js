@@ -1,9 +1,16 @@
+var skipLogin = true;
+
 var view = (function (models) {
-  var STATE = {add: 0, list: 1, detail: 2, edit: 3};
-  var currentState = STATE.list;
+  var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5};
+  var currentState = STATE.uninitialized;
   var selectedActivity;
   var changeState = function (newState) {
+    console.log('Changing state to '+newState);
     var lastState = currentState;
+    if (lastState == STATE.loggedOut) {
+      showHeader();
+      hideLogin();
+    }
     currentState = newState;
     if (currentState == STATE.list) {
       setTitle('Upcoming Activities');
@@ -27,13 +34,19 @@ var view = (function (models) {
       hideDetails();
       showCreateActivityForm();
       showBackButton();      
-    } if (currentState == STATE.detail) {
+    } else if (currentState == STATE.detail) {
       setTitle('View details');
       hideCreateActivityForm();
       hideAddButton();
       hideActivitiesList();
       showBackButton();
       showDetails();
+    } else if (currentState == STATE.loggedOut) {
+      hideHeader();
+      hideAddButton();
+      showLogin();
+    } else {
+      throw('Unknown state');
     }
   };
   var activitiesSection = document.querySelector('section#activitiesList');
@@ -44,7 +57,27 @@ var view = (function (models) {
   var title = document.querySelector('#title');
   var setTitle = function (newTitle) {
     title.innerHTML = newTitle;
-  }
+  };
+  var showHeader = function () {
+    var headerElem = document.querySelector('header');
+    var headerSpacerElem = document.querySelector('#headerSpacer');
+    headerElem.style.display = '';
+    headerSpacerElem.style.display = '';
+  };
+  var hideHeader = function () {
+    var headerElem = document.querySelector('header');
+    var headerSpacerElem = document.querySelector('#headerSpacer');
+    headerElem.style.display = 'none';
+    headerSpacerElem.style.display = 'none';
+  };
+  var showLogin = function () {
+    var loginElem = document.querySelector('#login');
+    loginElem.style.display = '';
+  };
+  var hideLogin = function () {
+    var loginElem = document.querySelector('#login');
+    loginElem.style.display = 'none';
+  };
   var showBackButton = function () {
     backButton.style.display = '';
   };
@@ -150,6 +183,24 @@ var view = (function (models) {
       }
     });
   };
+  var setLoginButtonCallback = function (callback) {
+    var loginElem = document.querySelector('#login');
+    loginElem.onclick = callback;
+  };
+  var appLoginSuccess = function (userId, sessionToken) {
+      models.setUserId(userId);
+      models.setSessionToken(sessionToken);
+      models.activities.tryRefreshActivities(function () {
+        changeState(STATE.list);
+      });
+  };
+  var fbLoginSuccess = function (fbToken) {
+    models.startLogin(fbToken, function () {
+    }, function () {
+      throw('login to app failed');
+    });
+  };
+
   addButton.onclick = function () {
     changeState(STATE.add);
   };
@@ -157,7 +208,14 @@ var view = (function (models) {
     changeState(STATE.list);
   };
   models.activities.addListener(redrawActivitiesList);
-  changeState(STATE.list);
+
+  changeState(STATE.loggedOut);
+
+  return {
+    setLoginButtonCallback: setLoginButtonCallback,
+    fbLoginSuccess: fbLoginSuccess,
+    debugSkipLogin: appLoginSuccess
+  };
 })(models);
 
 Handlebars.registerHelper('datetimeString', function(string) {
