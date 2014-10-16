@@ -23,7 +23,7 @@
 
     <script id='activity-summary-template' type='text/x-handlebars-template'>
       <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
-        <img src='friend.jpg' class='friendIcon'></img>
+        <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
         <div class='cardTitleContainer'>
           <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> on {{datetimeString activity.start_time}}.
           <div class='optionContainer'>

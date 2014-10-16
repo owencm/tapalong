@@ -59,7 +59,7 @@ def serialize_activity(activity, user_id):
 	attendees_names = map(lambda user: user.name, activity.attendees.all())
 	#serialized_attendees_names = json.dumps(attendees_names)
 	
-	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending}}
+	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "http://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
