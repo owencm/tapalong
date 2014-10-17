@@ -77,7 +77,7 @@ var network = (function() {
   };
   var requestUpdateActivity = function(activity_id, activityChanges, success, failure) {
     sendRequest('/../v1/activities/'+activity_id+'/', 'post', JSON.stringify(activityChanges), function () {
-      if(req.status >= 200 && req.status < 400) {
+      if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
         models.activities.removeActivity(updatedActivity.activity_id);
         models.activities.addActivity(updatedActivity);
@@ -92,7 +92,7 @@ var network = (function() {
     req.onload = onload;
     req.open(method, url, true);
     req.setRequestHeader('SESSION_TOKEN', sessionToken);
-    req.setRequestHeader('USER_ID', models.userId);
+    req.setRequestHeader('USER_ID', models.getUserId());
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(body);
   }

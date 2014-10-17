@@ -28,14 +28,17 @@ def login_user(request):
 			refreshFriends(facebook, user)
 			# Start dat session
 			session_token = sessions.start_session(user.id)
-			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": session_token, "first_login": "false"})
+			# Stringify the session token since if JS reads it as an int it doesn't have enough precision
+			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": str(session_token), "first_login": "false"})
 			return HttpResponse(json_output, mimetype='application/json')
 		except User.DoesNotExist:
 			# TODO: catch errors here
 			user = User(name=me.name, fb_id=me.id)
 			user.save()
 			refreshFriends(facebook, user)
-			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": session_token, "first_login": "true"})
+			session_token = sessions.start_session(user.id)
+			# Stringify the session token since if JS reads it as an int it doesn't have enough precision
+			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": str(session_token), "first_login": "true"})
 			return HttpResponse(json_output, mimetype='application/json')
 	else:
 		raise Exception('Requests to /login/ must be post, not get.')

@@ -188,11 +188,11 @@ var view = (function (models) {
     loginElem.onclick = callback;
   };
   var appLoginSuccess = function (userId, sessionToken) {
-      models.setUserId(userId);
-      models.setSessionToken(sessionToken);
-      models.activities.tryRefreshActivities(function () {
-        changeState(STATE.list);
-      });
+    models.setUserId(userId);
+    models.setSessionToken(sessionToken);
+    models.activities.tryRefreshActivities(function () {
+      changeState(STATE.list);
+    });
   };
   var fbLoginSuccess = function (fbToken) {
     models.startLogin(fbToken, appLoginSuccess, function () {

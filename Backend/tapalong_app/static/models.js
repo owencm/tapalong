@@ -57,6 +57,7 @@ var models = (function () {
     };
     var setActivities = function (newActivities) {
       activities = newActivities;
+      fixActivitiesOrder();
       listenerModule.change();
     };
     var tryCreateActivity = function (newActivity, success, failure) {
