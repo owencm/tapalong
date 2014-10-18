@@ -23,54 +23,62 @@
 
     <script id='activity-summary-template' type='text/x-handlebars-template'>
       <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
-        <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
-        <div class='cardTitleContainer'>
-          <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> on {{datetimeString activity.start_time}}.
-          <div class='optionContainer'>
-            <span class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-              {{#if activity.is_creator}}
-                Edit
-              {{else}}
-                {{#if activity.is_attending}}
-                  Unattend
-                {{else}}
-                  Tag Along
-                {{/if}}
-              {{/if}}
-            </span>
+        <div class='contentContainer'>
+          <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
+          <div class='cardTitleContainer'>
+            <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> on {{datetimeString activity.start_time}}.
           </div>
         </div>
+        <div class='optionContainer'>
+          <div class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
+            {{#if activity.is_creator}}
+              Edit
+            {{else}}
+              {{#if activity.is_attending}}
+                Unattend
+              {{else}}
+                Tag Along
+              {{/if}}
+            {{/if}}
+          </div>
+        </div>
+        <div class="clear"></div>
       </section>
     </script>
     <script id='activity-details-template' type='text/x-handlebars-template'>
       <section class='card'>
-        <p><b>{{title}}</b></p>
-        <p>{{datetimeString start_time}}</p>
-        <p>Shared by: {{creator_name}}</p>
-        <p>Description: {{description}}</p>
-        <p>Also going:</p>
-        {{#each attendees}}
-          {{this}},
-        {{/each}}
-      </section>
+        <div class='contentContainer'>
+          <p><b>{{title}}</b></p>
+          <p>{{datetimeString start_time}}</p>
+          <p>Created by: {{creator_name}}</p>
+          <p>Description: {{description}}</p>
+          <p>Also going:</p>
+          {{#each attendees}}
+            {{this}},
+          {{/each}}
+        </section>
+      </div>
     </script>
     <script id='edit-activity-template' type='text/x-handlebars-template'>
       <section class='card'>
-        <b>{{name}}</b> is<br />
-        <input type='text' value='{{activity.title}}' id='title'></input>
-        <!-- TODO(owen): Put existing values in here -->
-        <input type='date' id='date' min='2014-11-10' max='2014-11-17'  {{#if editing}}value='{{activityExtras.date}}'{{/if}}></input>
-        <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}}></input>
-        <div class='clear'></div>
-        <div class='optionContainer'>
-        <span class='option'>
-          {{#if editing}}
-            Save
-          {{else}}
-            Create
-          {{/if}}
-        </span>
+        <div class='contentContainer'>
+          <b>{{name}}</b> is<br />
+          <input type='text' value='{{activity.title}}' id='title'></input>
+          <!-- TODO(owen): Put existing values in here -->
+          <input type='date' id='date' min='2014-11-10' max='2014-11-17'  {{#if editing}}value='{{activityExtras.date}}'{{/if}}></input>
+          <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}}></input>
+          <div class='clear'></div>
         </div>
+        <div class='optionContainer'>
+          <div class='option'>
+            {{#if editing}}
+              Save
+            {{else}}
+              Create
+            {{/if}}
+          </div>
+        </div>
+        <div class="clear"></div>
       </section>
     </script>
     <script type='text/javascript' src='handlebars-v1.3.0.js'></script>

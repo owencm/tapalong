@@ -55,12 +55,15 @@ section.card {
 	/* This puts the border inside the edge */
 	box-sizing: border-box;
 	max-width: 600px;
-	padding: 16px;
 	margin: 0 auto;
 	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 	color: #444;
 	line-height: 1.5em;
 	background-color: #fafafa;
+}
+
+section.card .contentContainer {
+	padding: 16px;
 }
 
 section.card.attending {
@@ -72,8 +75,6 @@ section.card p {
 }
 
 section.card .optionContainer {
-	margin-top: 10px;
-	text-align: right;
 }
 
 section.card .optionContainer .option {
@@ -85,6 +86,12 @@ section.card .optionContainer .option {
 
 section.card .optionContainer .option.disabled {
 	color: #CCC;
+}
+
+/* Put the padding and margin on the options so the click targets are larger */
+section.card .option {
+	padding: 15px 20px;
+	float: right;
 }
 
 section.card .friendIcon {
