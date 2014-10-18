@@ -1,5 +1,3 @@
-var skipLogin = true;
-
 var view = (function (models) {
   var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5};
   var currentState = STATE.uninitialized;
@@ -92,6 +90,13 @@ var view = (function (models) {
       // Get the selected activity if we're editing
       var activity = models.activities.getActivity(selectedActivity);
       config.activity = activity;
+      var dateTime = new Date(activity.start_time);
+      var twoDigitString = function (digit) {
+        return (digit < 10) ? '0' + digit : '' + digit;
+      }
+      var timeString = twoDigitString(dateTime.getHours()) + ':' + twoDigitString(dateTime.getMinutes());
+      var dateString = [(1900 + dateTime.getYear()),twoDigitString(dateTime.getMonth()+1),twoDigitString(dateTime.getDate())].join('-');
+      config.activityExtras = {time: timeString, date: dateString};
       config.editing = true;
     }
     editSection.innerHTML = template(config);

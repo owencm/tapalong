@@ -34,7 +34,7 @@
                 {{#if activity.is_attending}}
                   Unattend
                 {{else}}
-                  Attend
+                  Tag Along
                 {{/if}}
               {{/if}}
             </span>
@@ -46,7 +46,7 @@
       <section class='card'>
         <p><b>{{title}}</b></p>
         <p>{{datetimeString start_time}}</p>
-        <p>Host: {{creator_name}}</p>
+        <p>Shared by: {{creator_name}}</p>
         <p>Description: {{description}}</p>
         <p>Also going:</p>
         {{#each attendees}}
@@ -59,8 +59,8 @@
         <b>{{name}}</b> is<br />
         <input type='text' value='{{activity.title}}' id='title'></input>
         <!-- TODO(owen): Put existing values in here -->
-        <input type='date' id='date' min='2014-11-10' max='2014-11-17'></input>
-        <input type='time' id='time' step="900" value='13:00'></input>
+        <input type='date' id='date' min='2014-11-10' max='2014-11-17'  {{#if editing}}value='{{activityExtras.date}}'{{/if}}></input>
+        <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}}></input>
         <div class='clear'></div>
         <div class='optionContainer'>
         <span class='option'>
