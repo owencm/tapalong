@@ -22,7 +22,7 @@
     <div id='login' style='display: none'>Login</div>
 
     <script id='activity-summary-template' type='text/x-handlebars-template'>
-      <section class='card {{#if activity.attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
+      <section class='card {{#if activity.is_attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
         <div class='contentContainer'>
           <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
           <div class='cardTitleContainer'>
@@ -46,7 +46,7 @@
       </section>
     </script>
     <script id='activity-details-template' type='text/x-handlebars-template'>
-      <section class='card'>
+      <section class='card{{#if is_attending}} attending{{/if}}'>
         <div class='contentContainer'>
           <p><b>{{title}}</b></p>
           <p>{{datetimeString start_time}}</p>
@@ -56,8 +56,22 @@
           {{#each attendees}}
             {{this}},
           {{/each}}
-        </section>
-      </div>
+        </div>
+        <div class='optionContainer'>
+          <div class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
+            {{#if is_creator}}
+              Edit
+            {{else}}
+              {{#if is_attending}}
+                Unattend
+              {{else}}
+                Tag Along
+              {{/if}}
+            {{/if}}
+          </div>
+        </div>
+        <div class="clear"></div>
+      </section>
     </script>
     <script id='edit-activity-template' type='text/x-handlebars-template'>
       <section class='card'>
@@ -70,13 +84,7 @@
           <div class='clear'></div>
         </div>
         <div class='optionContainer'>
-          <div class='option'>
-            {{#if editing}}
-              Save
-            {{else}}
-              Create
-            {{/if}}
-          </div>
+          <div class='option'>{{#if editing}}Save{{else}}Create{{/if}}</div>
         </div>
         <div class="clear"></div>
       </section>

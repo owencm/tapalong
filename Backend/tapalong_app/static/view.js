@@ -137,9 +137,25 @@ var view = (function (models) {
     var template = Handlebars.compile(source);
     var activity = models.activities.getActivity(selectedActivity);
     detailSection.innerHTML = template(activity);
+    detailSection.querySelector('.option').onclick = function (e) {
+      // Creators edit, non creators attend
+      if (activity.is_creator) {
+        selectedActivity = activity.activity_id;
+        changeState(STATE.edit);
+      } else {
+        // Note no callback since the list will automatically redraw when this changes
+        models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
+        }, function () {
+          alert('An unexpected error occurred. Please refresh.');
+        });
+      }
+      this.classList.add('disabled');
+      e.stopPropagation();
+    }
     detailSection.style.display = '';
   }
-  hideDetails = function () {
+  var redrawDetails = showDetails;
+  var hideDetails = function () {
     detailSection.style.display = 'none';
   } 
   var showAddButton = function () {
@@ -153,6 +169,13 @@ var view = (function (models) {
   }
   var hideActivitiesList = function () {
     activitiesSection.style.display = 'none';
+  }
+  var redrawCurrentView = function () {
+    if (currentState == STATE.list) {
+      redrawActivitiesList();
+    } else if (currentState == STATE.detail) {
+      redrawDetails();
+    }
   }
   var redrawActivitiesList = function () {
     var source = document.querySelector('#activity-summary-template').innerHTML;
@@ -211,7 +234,7 @@ var view = (function (models) {
   backButton.onclick = function () {
     changeState(STATE.list);
   };
-  models.activities.addListener(redrawActivitiesList);
+  models.activities.addListener(redrawCurrentView);
 
   changeState(STATE.loggedOut);
 
