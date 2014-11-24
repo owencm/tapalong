@@ -86,13 +86,14 @@ def activities_list(request):
 	if request.method == 'GET':
 		# Get all activities
 		# Currently showing things from the past while debugging
-		# user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
+		user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
 		# Get all activities
-		all_activities = Activity.objects.order_by('-pub_date')
-		# Get all activities that are created by friends of the user
+		# user_activities_list = Activity.objects.order_by('-pub_date')
+		# TODO: Get all activities that are created by friends of the user
 
 		# Serialized and output to json.
-		serialized_activities = [serialize_activity(a, user_id) for a in all_activities]
+		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
+		# serialized_activities = []
 		json_output = json.dumps(serialized_activities)
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
@@ -134,6 +135,25 @@ def attending(request, activity_id):
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
+	else:
+		return HttpResonse('This URL does not support non-post requests');
+
+@csrf_exempt
+def cancel(request, activity_id):
+	# Check auth token sent with request
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p>Suspicious Operation</p>')
+
+	if request.method == 'POST':
+		user = User.objects.get(id=user_id)
+		activity = Activity.objects.get(id=activity_id)
+		# TODO: Ensure the user owns this event
+		# TODO: Just mark it as cancelled, don't actually delete it
+		# TODO: Try/catch this in case it fails
+		activity.delete()
+		return HttpResponse('', mimetype='application/json')
 	else:
 		return HttpResonse('This URL does not support non-post requests');
 

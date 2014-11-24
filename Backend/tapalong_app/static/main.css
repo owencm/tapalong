@@ -1,8 +1,10 @@
+html, body {margin:0;padding:0;height:100%;}
+
 body {
 	background-color: #eee;
 	font-family: 'Roboto', sans-serif;
 	font-weight: 300;
-	margin-bottom: 100px;
+	overflow: auto;
 }
 
 input {
@@ -24,31 +26,35 @@ input {
 }
 
 header {
-	background-color: #4b8af0;
-	height: 20px;
+	background-color: #00BAD2;
+	height: 56px;
 	padding: 18px;
 	box-shadow: 0 2px 5px rgba(0,0,0,.26);
+	position: fixed;
 	width: 100%;
 	z-index: 1;
-	position: fixed;
+	box-sizing: border-box;
 }
 
 header h1 {
 	font-size: 1.1em;
 	text-align: center;
 	color: white;
+	font-weight: bold;
 }
 
 header #backButton {
-	width: 30px;
+	width: 20px;
 	position: absolute;
 }
 
-div#headerSpacer {
-	height: 56px;
-}
-
 div#container {
+    position: absolute;
+    top: 56px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    overflow-y: visible;
 }
 
 section.card {
@@ -60,6 +66,8 @@ section.card {
 	color: #444;
 	line-height: 1.5em;
 	background-color: #fafafa;
+	/* For fading into 'attending' */
+	/*-webkit-transition: background-color 0.5s;*/
 }
 
 section.card .contentContainer {
@@ -67,7 +75,7 @@ section.card .contentContainer {
 }
 
 section.card.attending {
-	background-color: #AFA;
+	background-color: #cdf9c9;
 }
 
 section.card p {
@@ -79,19 +87,29 @@ section.card .optionContainer {
 
 section.card .optionContainer .option {
 	text-transform: uppercase;
-	font-weight: bold;
+	font-weight: 600;
 	font-size: 0.8em;
-	color: #0AE;
+	/* Put the padding and margin on the options so the click targets are larger */
+	padding: 15px 20px;
+	color: #00BAD2;
+	/* A default position */
+	float: right;
+}
+
+section.card .optionContainer .option.left {
+	float: left;
+}
+
+section.card .optionContainer .option.right {
+	float: right;
 }
 
 section.card .optionContainer .option.disabled {
 	color: #CCC;
 }
 
-/* Put the padding and margin on the options so the click targets are larger */
-section.card .option {
-	padding: 15px 20px;
-	float: right;
+section.card .optionContainer .option.bad {
+	color: #D55;
 }
 
 section.card .friendIcon {
@@ -116,11 +134,16 @@ section.card input {
 	width: 100%;
 	display: block;
 	margin: 10px 0;
-		box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 section.card input#title {
 	font-size: 1.2em;
+	text-transform: capitalize;
+}
+
+section.card input#title::-webkit-input-placeholder {
+	font-weight: lighter;
 }
 
 section.card input#date {
@@ -141,6 +164,15 @@ section.card input:focus {
 	box-shadow: 0 1px 0 0px #2196f3;
 }
 
+section.card.detail {
+	-webkit-animation: fadeIn 0.5s;
+}
+
+@-webkit-keyframes fadeIn {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
 b {
 	font-weight: 400;
 }
@@ -152,10 +184,39 @@ div#addbutton {
 	position: fixed;
 	bottom: 20px;
 	right: 20px;
-	background-image: url('plus.png');
+	background-image: url('images/plus-grey.png');
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 16px;
-	background-color: #F44;
-	box-shadow: 0px 2px 3px rgba(0,0,0,0.1);
+	background-color: #eeff41;
+	box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
+}
+
+#loginButton {
+	bottom: 0;
+	position: fixed;
+}
+
+img#loginButtonImg {
+	width: 100%;
+}
+
+#splash {
+	width: 100%;
+	height: 100%;
+	background-image: url('images/background-mobile.jpg');
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	/* TODO: Work me out */
+	background-position: center center; 
+	background-size: 100% 100%;
+}
+
+#slogan {
+	bottom: 20%;
+	position: fixed;
+}
+
+#slogan img {
+	width: 80%;
 }

@@ -1,41 +1,58 @@
 <!DOCTYPE>
 <html>
   <head>
+    <title>Up Dog</title>
+    <meta name="theme-color" content="#00BAD2"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
   </head>
   <body class='noselect'>
     <header style='display: none'>
-      <img src='back.png' id='backButton'></img>
+      <img src='images/back-icon.svg' id='backButton'></img>
       <h1 id='title'>
         Title
       </h1>
     </header>
-    <div id='headerSpacer' style='display: none'></div>
     <div id='container'>
+      <section id='infoCards' style='text-align: center'>
+        <div style='margin: 20px 0; display: none' id='noActivitiesCard'>
+          Got any plans this week?
+        </div>
+      </section>
+      <section id='editActivity'></section>
       <section id='activitiesList'></section>
       <section id='activityDetails'></section>
-      <section id='editActivity'></section>
+      <div style='height: 100px'></div>
     </div>
     <div id='addButton' style='display: none'></div>
-    <div id='login' style='display: none'>Login</div>
+    <div id='login' style='display: none'>
+      <div id='splash'>
+      </div>
+      <div id='slogan'>
+        <img src='images/slogan.png'></img>
+      </div>
+      <div id='loginButton'>
+        <img src='images/login-button.png' id='loginButtonImg'></img>
+      </div>
+    </div>
 
     <script id='activity-summary-template' type='text/x-handlebars-template'>
       <section class='card {{#if activity.is_attending}}attending{{/if}}' id='activity-{{activity.activity_id}}'>
         <div class='contentContainer'>
           <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
           <div class='cardTitleContainer'>
-            <b>{{activity.creator_name}}</b> is <b>{{activity.title}}</b> on {{datetimeString activity.start_time}}.
+            {{#if activity.is_creator}}<b>You</b> are {{else}}<b>{{activity.creator_name}}</b> is {{/if}}<b>{{activity.title}}</b> {{dateInString activity.start_time}}.
           </div>
         </div>
         <div class='optionContainer'>
-          <div class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
+          <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
             {{#if activity.is_creator}}
               Edit
             {{else}}
               {{#if activity.is_attending}}
-                Unattend
+                Cancel Attending
               {{else}}
                 Tag Along
               {{/if}}
@@ -46,24 +63,28 @@
       </section>
     </script>
     <script id='activity-details-template' type='text/x-handlebars-template'>
-      <section class='card{{#if is_attending}} attending{{/if}}'>
+      <section class='card detail{{#if activity.is_attending}} attending{{/if}}'>
         <div class='contentContainer'>
-          <p><b>{{title}}</b></p>
-          <p>{{datetimeString start_time}}</p>
-          <p>Created by: {{creator_name}}</p>
-          <p>Description: {{description}}</p>
-          <p>Also going:</p>
-          {{#each attendees}}
-            {{this}},
-          {{/each}}
+          <p><b>{{activity.title}}</b></p>
+          <p>{{datetimeString activity.start_time}}</p>
+          <p>Created by: {{activity.creator_name}}</p>
+          <p>Description: {{activity.description}}</p>
+          {{#if hasAttendees}}
+            <p>
+              Also going:
+              {{#each activity.attendees}}
+                {{this}},
+              {{/each}}.
+            </p>
+          {{/if}}
         </div>
         <div class='optionContainer'>
-          <div class='option {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
+          <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
             {{#if is_creator}}
               Edit
             {{else}}
-              {{#if is_attending}}
-                Unattend
+              {{#if activity.is_attending}}
+                Cancel Attending
               {{else}}
                 Tag Along
               {{/if}}
@@ -74,17 +95,17 @@
       </section>
     </script>
     <script id='edit-activity-template' type='text/x-handlebars-template'>
-      <section class='card'>
+      <section class='card detail'>
         <div class='contentContainer'>
           <b>{{name}}</b> is<br />
-          <input type='text' value='{{activity.title}}' id='title'></input>
-          <!-- TODO(owen): Put existing values in here -->
-          <input type='date' id='date' min='2014-11-10' max='2014-11-17'  {{#if editing}}value='{{activityExtras.date}}'{{/if}}></input>
-          <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}}></input>
+          <input type='text' value='{{activity.title}}' id='title' placeholder='Watching Frozen' required></input>
+          <input type='date' id='date' min='{{todaysDate}}' max='{{nextWeeksDate}}' value='{{#if editing}}{{activityExtras.date}}{{else}}{{tomorrowsDate}}{{/if}}' required></input>
+          <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}} required></input>
           <div class='clear'></div>
         </div>
         <div class='optionContainer'>
-          <div class='option'>{{#if editing}}Save{{else}}Create{{/if}}</div>
+          {{#if editing}}<div class='option left bad cancel'>Cancel plan</div>{{/if}}
+          <div class='option right save'>{{#if editing}}Save{{else}}Create{{/if}}</div>
         </div>
         <div class="clear"></div>
       </section>

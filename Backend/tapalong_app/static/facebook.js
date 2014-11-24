@@ -1,7 +1,9 @@
 var skipLogin = true;
 
-if (skipLogin) {
-  view.debugSkipLogin(1, 'letmein');
+if (skipLogin) {  
+  // view.debugSkipLogin(1, 'Ally Gale', 'letmein');
+  view.debugSkipLogin(2, 'Owen Campbell-Moore', 'letmein');
+  // view.debugSkipLogin(3, 'Tyler Rigsby', 'letmein');
 } else {
   // This loads the facebook SDK async, then calls window.fbAsyncInit. FB.getLoginStatus does the logging in, and statusChangeCallback is as expected.
 

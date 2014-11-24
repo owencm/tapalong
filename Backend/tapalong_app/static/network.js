@@ -1,3 +1,5 @@
+// TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
+
 var network = (function() {
   var sessionToken;
   var login = function (fb_token, success, failure) {
@@ -8,7 +10,7 @@ var network = (function() {
         console.log(this.responseText);
         response = JSON.parse(this.responseText);
         if (response.success === "true") {
-          success(response.user_id, response.session_token);
+          success(response.user_id, response.user_name, response.session_token);
         } else {
           failure();
           throw('unexpected app login failure');
@@ -26,6 +28,10 @@ var network = (function() {
     // Strip activity label for each item
     var activities = JSON.parse(responseText).map(function (activity) {
         return activity.activity;
+    });
+    // Convert every date from a string into a date object
+    activities.forEach(function (activity) {
+      activity.start_time = new Date(activity.start_time);
     });
     models.activities.setActivities(activities);
   };
@@ -45,9 +51,13 @@ var network = (function() {
     var req = new XMLHttpRequest();
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
-        models.activities.addActivity(JSON.parse(this.responseText).activity);
+        var activity = JSON.parse(this.responseText).activity;
+        activity.start_time = new Date(activity.start_time);
+        models.activities.addActivity(activity);
         success();
       } else {
+        console.log("Error:");
+        console.log(this.responseText)
         failure();
       }
     }
@@ -62,8 +72,8 @@ var network = (function() {
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
-        models.activities.removeActivity(updatedActivity.activity_id);
-        models.activities.addActivity(updatedActivity);
+        updatedActivity.start_time = new Date(updatedActivity.start_time);
+        models.activities.updateActivity(updatedActivity, updatedActivity.activity_id);
         success();
       } else {
         failure();
@@ -79,14 +89,24 @@ var network = (function() {
     sendRequest('/../v1/activities/'+activity_id+'/', 'post', JSON.stringify(activityChanges), function () {
       if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
-        models.activities.removeActivity(updatedActivity.activity_id);
-        models.activities.addActivity(updatedActivity);
+        updatedActivity.start_time = new Date(updatedActivity.start_time);
+        models.activities.updateActivity(updatedActivity, updatedActivity.activity_id);
         success();
       } else {
         failure();
       }
     });
   };
+  var requestCancelActivity = function (activity_id, success, failure) {
+    sendRequest('/../v1/activities/'+activity_id+'/cancel/', 'post', '', function () {
+      if(this.status >= 200 && this.status < 400) {
+        models.activities.removeActivity(activity_id);
+        success();
+      } else {
+        failure();
+      }
+    })
+  }
   var sendRequest = function (url, method, body, onload) {
     var req = new XMLHttpRequest();
     req.onload = onload;
@@ -104,6 +124,7 @@ var network = (function() {
     requestCreateActivity: requestCreateActivity,
     requestSetAttending: requestSetAttending,
     requestUpdateActivity: requestUpdateActivity,
+    requestCancelActivity: requestCancelActivity,
     login: login,
     setSessionToken: setSessionToken
   };
