@@ -90,7 +90,8 @@ section.card .optionContainer .option {
 	font-weight: 600;
 	font-size: 0.8em;
 	/* Put the padding and margin on the options so the click targets are larger */
-	padding: 15px 20px;
+	padding: 5px 5px;
+	margin: 3px 8px;
 	color: #00BAD2;
 	/* A default position */
 	float: right;
@@ -104,12 +105,12 @@ section.card .optionContainer .option.right {
 	float: right;
 }
 
-section.card .optionContainer .option.disabled {
-	color: #CCC;
-}
-
 section.card .optionContainer .option.bad {
 	color: #D55;
+}
+
+section.card .optionContainer .option.disabled {
+	color: #CCC;
 }
 
 section.card .friendIcon {

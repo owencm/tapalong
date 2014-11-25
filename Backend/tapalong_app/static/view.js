@@ -10,7 +10,7 @@ var view = (function (models) {
   var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5};
   var currentState = STATE.uninitialized;
   var selectedActivity;
-  var changeState = function (newState) {
+  var changeState = function (newState, userTriggered) {
     console.log('Changing state to '+newState);
     var lastState = currentState;
     if (lastState == STATE.loggedOut) {
@@ -24,6 +24,9 @@ var view = (function (models) {
       hideDetails();
       redrawActivitiesList();
       showActivitiesList();
+      if (userTriggered) {
+        history.pushState({state: STATE.list}, 'Upcoming Plans');
+      }
       if (models.activities.getActivitiesCount() > 0) {
         hideNoActivitiesCard();
         hideCreateActivityForm();
@@ -40,13 +43,19 @@ var view = (function (models) {
       hideDetails();
       showCreateActivityForm();
       showBackButton();
+      if (userTriggered) {
+        history.pushState({state: STATE.add}, 'Create a plan');
+      }
     } else if (currentState == STATE.edit) {
       setTitle('Edit');
       hideAddButton();
       hideActivitiesList();
       hideDetails();
       showCreateActivityForm();
-      showBackButton();      
+      showBackButton();
+      if (userTriggered) {
+        history.pushState({state: STATE.edit}, 'Edit plan');
+      }
     } else if (currentState == STATE.detail) {
       setTitle('View details');
       hideCreateActivityForm();
@@ -54,6 +63,9 @@ var view = (function (models) {
       hideActivitiesList();
       showBackButton();
       showDetails();
+      if (userTriggered) {
+        history.pushState({state: STATE.detail}, 'View details');
+      }
     } else if (currentState == STATE.loggedOut) {
       hideHeader();
       hideAddButton();
@@ -62,6 +74,16 @@ var view = (function (models) {
       throw('Unknown state');
     }
   };
+  window.addEventListener('popstate', function(e) {
+    console.log('User pressed back, popping a state');
+    console.log(e);
+    if (e.state.state !== undefined) {
+      console.log('Moving back in history to state '+e.state.state);
+      changeState(e.state.state, false);
+    } else {
+      console.log('Uh oh, no valid state in history to move back to');
+    }
+  })
   var activitiesSection = document.querySelector('section#activitiesList');
   var detailSection = document.querySelector('section#activityDetails');
   var editSection = document.querySelector('section#editActivity');
@@ -110,6 +132,7 @@ var view = (function (models) {
       config.activity = activity;
       var dateTime = activity.start_time;
       if (!dateTime instanceof Date) {
+        alert('An error occurred! Sorry :(. Please refresh.');
         throw("start_time should be a Date but it was a string!");
       }
       var timeString = twoDigitString(dateTime.getHours()) + ':' + twoDigitString(dateTime.getMinutes());
@@ -126,8 +149,9 @@ var view = (function (models) {
         if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
           this.classList.add('disabled');
           models.activities.tryCancelActivity(activity.activity_id, function () {
-            changeState(STATE.list);
+            changeState(STATE.list, true);
           }, function () {
+            alert('An error occurred! Sorry :(. Please refresh.');
             throw("Cancelling on server failed. Help the user understand why");
           });  
         } else {
@@ -158,16 +182,18 @@ var view = (function (models) {
       var activityChanges = {title: title, start_time: dateTime};
       if (currentState == STATE.edit) {
         models.activities.tryUpdateActivity(selectedActivity, activityChanges, function () {
-          changeState(STATE.list);
+          changeState(STATE.list, true);
         }, function () {
+          alert('An error occurred! Sorry :(. Please refresh.');
           throw('Editing the activity failed. Help the user understand why.');
         });
       } else {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
         this.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
-          changeState(STATE.list);
+          changeState(STATE.list, true);
         }, function () {
+          alert('An error occurred! Sorry :(. Please refresh.');
           throw("Adding to server failed. Help the user understand why");
         });        
       }
@@ -185,14 +211,13 @@ var view = (function (models) {
     var source = document.querySelector('#activity-details-template').innerHTML;
     var template = Handlebars.compile(source);
     var activity = models.activities.getActivity(selectedActivity);
-    console.log(activity);
     var config = {activity: activity, hasAttendees: activity.attendees.length > 0};
     detailSection.innerHTML = template(config);
     detailSection.querySelector('.option').onclick = function (e) {
       // Creators edit, non creators attend
       if (activity.is_creator) {
         selectedActivity = activity.activity_id;
-        changeState(STATE.edit);
+        changeState(STATE.edit, true);
       } else {
         // Note no callback since the list will automatically redraw when this changes
         models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
@@ -246,13 +271,13 @@ var view = (function (models) {
       var activityElem = document.querySelector('#activity-'+activity.activity_id);
       activityElem.onclick = function () {
         selectedActivity = activity.activity_id;
-        changeState(STATE.detail);
+        changeState(STATE.detail, true);
       };
       activityElem.querySelector('.option').onclick = function (e) {
         // Creators edit, non creators attend
         if (activity.is_creator) {
           selectedActivity = activity.activity_id;
-          changeState(STATE.edit);
+          changeState(STATE.edit, true);
         } else {
           // Note no callback since the list will automatically redraw when this changes
           models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
@@ -277,7 +302,7 @@ var view = (function (models) {
     models.setUserId(userId);
     models.setSessionToken(sessionToken);
     models.activities.tryRefreshActivities(function () {
-      changeState(STATE.list);
+      changeState(STATE.list, true);
     });
   };
   var fbLoginSuccess = function (fbToken) {
@@ -287,14 +312,14 @@ var view = (function (models) {
   };
 
   addButton.onclick = function () {
-    changeState(STATE.add);
+    changeState(STATE.add, true);
   };
   backButton.onclick = function () {
-    changeState(STATE.list);
+    changeState(STATE.list, true);
   };
   models.activities.addListener(redrawCurrentView);
 
-  changeState(STATE.loggedOut);
+  changeState(STATE.loggedOut, false);
 
   return {
     setLoginButtonCallback: setLoginButtonCallback,
@@ -302,30 +327,35 @@ var view = (function (models) {
     debugSkipLogin: appLoginSuccess
   };
 })(models);
-var getDayOrTodayOrTomorrow = function (date) {
+var getDateTimeString = function (date) {
+  var str = '';
   var today = (new Date);
   today.setHours(0,0,0,0);
   tomorrow = (new Date).setTime(today.getTime() + 24 * 60 * 60 * 1000);
   activityDateCopy = (new Date(date.getTime())).setHours(0,0,0,0);
   if (activityDateCopy.valueOf() == today.valueOf()) {
-    return "today";
+    str += 'today';
   } else if (activityDateCopy.valueOf() == tomorrow.valueOf()) {
-    return "tomorrow"
+    str += 'tomorrow';
   } else {
-     return 'on ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
+    str += 'on ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
   }
+  str += ' at ' + date.toLocaleTimeString().replace(/:00/g,'');
+  return str;
 }
 Handlebars.registerHelper('datetimeString', function(start_time) {
   if (!start_time instanceof Date) {
+    alert('An error occurred! Sorry :(. Please refresh.');
     throw("start_time was a string, not a Date in the template");
   }
   return start_time.toLocaleString().replace(/:00/g,'');
 }); 
 Handlebars.registerHelper('dateInString', function(start_time) {
   if (!start_time instanceof Date) {
+    alert('An error occurred! Sorry :(. Please refresh.');
     throw("start_time was a string, not a Date in the template");
   }
-  return getDayOrTodayOrTomorrow(start_time);
+  return getDateTimeString(start_time);
 }); 
 Handlebars.registerHelper('list', function(items, options) {
   var out = "<ul>";

@@ -4,6 +4,7 @@
     <title>Up Dog</title>
     <meta name="theme-color" content="#00BAD2"> 
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css'>
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
@@ -68,7 +69,7 @@
           <p><b>{{activity.title}}</b></p>
           <p>{{datetimeString activity.start_time}}</p>
           <p>Created by: {{activity.creator_name}}</p>
-          <p>Description: {{activity.description}}</p>
+          <!-- <p>Description: {{activity.description}}</p> -->
           {{#if hasAttendees}}
             <p>
               Also going:
@@ -80,7 +81,7 @@
         </div>
         <div class='optionContainer'>
           <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-            {{#if is_creator}}
+            {{#if activity.is_creator}}
               Edit
             {{else}}
               {{#if activity.is_attending}}

@@ -3,7 +3,7 @@
 var network = (function() {
   var sessionToken;
   var login = function (fb_token, success, failure) {
-    console.log("loggin in");
+    console.log('Logging in to the app');
     var req = new XMLHttpRequest();
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
@@ -44,7 +44,7 @@ var network = (function() {
     }
     req.open('get', '/../v1/activities/visible_to_user/', true);
     req.setRequestHeader('USER_ID', models.getUserId());
-    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('SESSION_TOKEN', sessionToken);
     req.send();
   };
   var requestCreateActivity = function (activity, success, failure) {
@@ -63,7 +63,7 @@ var network = (function() {
     }
     req.open('post', '/../v1/activities/visible_to_user/', true);
     req.setRequestHeader('USER_ID', models.getUserId());
-    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('SESSION_TOKEN', sessionToken);
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify(activity));
   };
@@ -80,7 +80,7 @@ var network = (function() {
       }
     };
     req.open('post', '/../v1/activities/'+activity_id+'/attend/', true);
-    req.setRequestHeader('SESSION_TOKEN', 'letmein');
+    req.setRequestHeader('SESSION_TOKEN', sessionToken);
     req.setRequestHeader('USER_ID', models.getUserId());
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(JSON.stringify({attending: attending}));          

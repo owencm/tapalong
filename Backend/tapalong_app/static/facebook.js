@@ -14,10 +14,10 @@ if (skipLogin) {
       view.fbLoginSuccess(response.authResponse.accessToken);
     } else if (response.status === 'not_authorized') {
       console.log('user hasnt authorized the app');      
-      FB.login(statusChangeCallback);
+      FB.login(statusChangeCallback, {display : 'touch'});
       // The person is logged into Facebook, but not your app.
     } else {
-      FB.login(statusChangeCallback);
+      FB.login(statusChangeCallback, {display : 'touch'});
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
     }
@@ -34,6 +34,9 @@ if (skipLogin) {
 
     // This is called once everything is initialized and you are able to attempt to login
     view.setLoginButtonCallback(function () {
+      setTimeout(function () {
+        alert('Logging in now. Please wait up to 30s');
+      }, 100);
       FB.getLoginStatus(function(response) {
         statusChangeCallback(response);
       });
