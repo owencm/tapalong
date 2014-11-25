@@ -1,4 +1,4 @@
-var skipLogin = true;
+var skipLogin = false;
 
 if (skipLogin) {  
   // view.debugSkipLogin(1, 'Ally Gale', 'letmein');
@@ -13,8 +13,11 @@ if (skipLogin) {
       // Logged into your app and Facebook.
       view.fbLoginSuccess(response.authResponse.accessToken);
     } else if (response.status === 'not_authorized') {
+      console.log('user hasnt authorized the app');      
+      FB.login(statusChangeCallback);
       // The person is logged into Facebook, but not your app.
     } else {
+      FB.login(statusChangeCallback);
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
     }
