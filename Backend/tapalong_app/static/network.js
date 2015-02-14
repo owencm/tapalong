@@ -31,6 +31,7 @@ var network = (function() {
     });
     // Convert every date from a string into a date object
     activities.forEach(function (activity) {
+      // alert(activity.start_time);
       activity.start_time = new Date(activity.start_time);
     });
     models.activities.setActivities(activities);
@@ -117,6 +118,7 @@ var network = (function() {
     req.send(body);
   }
   var setSessionToken = function (newSessionToken) {
+    
     sessionToken = newSessionToken;
   }
   return {

@@ -43,7 +43,7 @@ var models = (function () {
     var addActivity = function (activity) {
       var validity = validateNewActivity(activity);
       if (!validity.isValid) {
-        throw Error('Invalid activity attempted to be added');
+        throw Error('Invalid activity attempted to be added: '+validity.reason);
       }
       activities.push(activity);
       // TODO(owen): insert at the right point to maintain date sort rather than this hack
@@ -74,17 +74,23 @@ var models = (function () {
       return activities.length;
     };
     var setActivities = function (newActivities) {
-      activities = newActivities;
+      activities = newActivities.filter(function(activity) {
+        var validity = validateNewActivity(activity);
+        if (!validity.isValid) {
+          console.log('Not showing activity '+activity.activity_id+' from server because '+validity.reason);
+        }
+        return validity.isValid;
+      });
       fixActivitiesOrder();
       listenerModule.change();
     };
     var tryCreateActivity = function (newActivity, success, failure) {
-      console.log(newActivity);
       var validity = validateNewActivity(newActivity);
       if (validity.isValid) {
+        console.log(newActivity);
         network.requestCreateActivity(newActivity, success, failure);
       } else {
-        console.log('activity wasn\'t valid because '+validity.invalidityReason);
+        console.log('activity wasn\'t valid because '+validity.reason);
         failure();
       }
     };
@@ -121,24 +127,27 @@ var models = (function () {
     var validateNewActivity = function (activity) {
       // TODO: Validate values of the properties
       // TODO: Validate client generated ones separately to server given ones
-      validity = {};
       var properties = ['max_attendees', 'description', 'start_time', 'title', 'location'];
       var hasProperties = properties.reduce(function(previous, property) { 
         return (previous && activity.hasOwnProperty(property)); 
       }, true);
-      validity.invalidityReason = hasProperties ? '' : 'some properties were missing';
-      var validDate = false;
-      if (activity.start_time && activity.start_time instanceof Date) {
-        var today = new Date;
-        validDate = activity.start_time >= today;
-        if (!validDate) {
-          validity.invalidityReason = 'date (' + activity.start_time.toDateString() + ') was in the past';
-        }
-      } else {
-        validity.invalidityReason = 'date wasnt a date object or wasnt valid';
+      if (!hasProperties) {
+        return {isValid: false, reason: 'some properties were missing'};
       }
-      validity.isValid = hasProperties && validDate;
-      return validity;
+      if (activity.title == '') {
+        return {isValid: false, reason: 'missing title'};
+      }
+      if (!activity.start_time || !(activity.start_time instanceof Date)) {
+        return {isValid: false, reason: 'date wasnt a date object or was missing'};
+      }
+      if (activity.start_time && activity.start_time instanceof Date) {
+        // Allow users to see and edit events up to 2 hours in the past
+        var now = (new Date).add(-2).hours();
+        if (activity.start_time < now) {
+          return {isValid: false, reason: 'date (' + activity.start_time.toString() + ') was in the past'};
+        }
+      }
+      return {isValid: true};
     };
     var tryRefreshActivities = function (success, failure) {
       network.getActivitiesFromServer(success, failure);

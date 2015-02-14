@@ -181,3 +181,7 @@ LOGGING = {
         },
     }
 }
+
+GCM_API_KEY = {
+    'AIzaSyAAxf-66b5V2lsH7Son8Bd0scLtKMcYztA'
+}

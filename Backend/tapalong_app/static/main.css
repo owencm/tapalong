@@ -1,5 +1,11 @@
 html, body {margin:0;padding:0;height:100%;}
 
+/* prevent touch delay */
+html {
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+}
+
 body {
 	background-color: #eee;
 	font-family: 'Roboto', sans-serif;
@@ -46,6 +52,9 @@ header h1 {
 header #backButton {
 	width: 20px;
 	position: absolute;
+	top: 0;
+	left: 0;
+	padding: 18px;
 }
 
 div#container {

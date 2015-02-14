@@ -1,4 +1,4 @@
-var skipLogin = false;
+var skipLogin = true;
 
 if (skipLogin) {  
   // view.debugSkipLogin(1, 'Ally Gale', 'letmein');

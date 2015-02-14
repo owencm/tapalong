@@ -48,6 +48,7 @@ def refreshFriends(facebook, user):
 	friends = facebook.get_friends()
 	friend_ids = map(lambda friend: friend.id, friends)
 	friend_ids_str = ','.join(friend_ids)
+	print friend_ids_str
 	user.friends=friend_ids_str
 	user.save()
 
@@ -61,8 +62,9 @@ def serialize_activity(activity, user_id):
 
 	attendees_names = map(lambda user: user.name, activity.attendees.all())
 	#serialized_attendees_names = json.dumps(attendees_names)
-	
-	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": str(activity.start_time), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "http://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
+	debug_start_time = activity.start_time
+
+	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": activity.start_time.isoformat(), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "http://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
@@ -76,6 +78,7 @@ def activities_list(request):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
+		print('A suspicious operation ocurred', token, user_id)
 		return HttpResponse('<p>Suspicious Operation</p>')
 
 	# TODO, only return activities where creator_id is a friend and attendees.length < max_attendees or current user is in attendees
@@ -103,6 +106,7 @@ def activities_list(request):
 		activity_info = json.loads(request.body)
 		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
+		print(activity.start_time)
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
@@ -173,10 +177,9 @@ def activity(request, activity_id):
 			return HttpResponse('You aren\'t permitted to modify this event')
 		# Get fields of the activity the client wants to change
 		activity_info = json.loads(request.body)
-		print(activity_info)
 		# Get all fields into the format they will be needed
-		if hasattr(activity_info, 'start_time'):
-			activity_info.start_time = dateutil.parser.parse(activity_info.get('start_time'))
+		if 'start_time' in activity_info:
+			activity_info['start_time'] = dateutil.parser.parse(activity_info.get('start_time'))
 		updateActivity(activity, activity_info)
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)

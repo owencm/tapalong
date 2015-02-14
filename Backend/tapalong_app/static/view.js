@@ -77,13 +77,14 @@ var view = (function (models) {
   window.addEventListener('popstate', function(e) {
     console.log('User pressed back, popping a state');
     console.log(e);
-    if (e.state.state !== undefined) {
+    if (e.state !== null && e.state.state !== undefined) {
       console.log('Moving back in history to state '+e.state.state);
       changeState(e.state.state, false);
     } else {
+      // Note safari calls popstate on page load so this is expected
       console.log('Uh oh, no valid state in history to move back to');
     }
-  })
+  });
   var activitiesSection = document.querySelector('section#activitiesList');
   var detailSection = document.querySelector('section#activityDetails');
   var editSection = document.querySelector('section#editActivity');
@@ -122,10 +123,10 @@ var view = (function (models) {
     var config = {name: models.getUserName};
     var today = new Date;
     config.todaysDate = getDateString(today);
-    var tomorrow = new Date;
-    tomorrow.setTime(today.getTime() + 24 * 60 * 60 * 1000);
+    var tomorrow = Date.today().add(1).days()
     config.tomorrowsDate = getDateString(tomorrow);
-    config.nextWeeksDate = getDateString(new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000));
+    config.nextWeeksDate = getDateString(Date.today().add(14).days());
+    // Add extra data needed to render
     if (currentState == STATE.edit) {
       // Get the selected activity if we're editing
       var activity = models.activities.getActivity(selectedActivity);
@@ -144,6 +145,7 @@ var view = (function (models) {
     editSection.innerHTML = template(config);
     var titleInputElem = editSection.querySelector('input#title');
 
+    // Add interactivity
     if (currentState == STATE.edit) {
       editSection.querySelector('.option.cancel').onclick = function () {
         if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
@@ -173,6 +175,7 @@ var view = (function (models) {
     });
 
     editSection.querySelector('.option.save').onclick = function () {
+      var thisButton = this;
       var title = editSection.querySelector('input#title').value;
       var date = editSection.querySelector('input#date').valueAsDate;
       var time = editSection.querySelector('input#time').value.split(':');
@@ -182,6 +185,7 @@ var view = (function (models) {
       var activityChanges = {title: title, start_time: dateTime};
       if (currentState == STATE.edit) {
         models.activities.tryUpdateActivity(selectedActivity, activityChanges, function () {
+          // alert('Update successful');
           changeState(STATE.list, true);
         }, function () {
           alert('An error occurred! Sorry :(. Please refresh.');
@@ -189,13 +193,15 @@ var view = (function (models) {
         });
       } else {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
-        this.classList.add('disabled');
+        thisButton.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
-          changeState(STATE.list, true);
+          alert('Plan created');
         }, function () {
-          alert('An error occurred! Sorry :(. Please refresh.');
+          // thisButton.classList.toggle('disabled', false);
+          alert('Sorry, something went wrong. Please check you entered the information correctly.');
           throw("Adding to server failed. Help the user understand why");
-        });        
+        });   
+        changeState(STATE.list, true);     
       }
     }
     editSection.style.display = '';
@@ -329,18 +335,24 @@ var view = (function (models) {
 })(models);
 var getDateTimeString = function (date) {
   var str = '';
-  var today = (new Date);
-  today.setHours(0,0,0,0);
-  tomorrow = (new Date).setTime(today.getTime() + 24 * 60 * 60 * 1000);
-  activityDateCopy = (new Date(date.getTime())).setHours(0,0,0,0);
-  if (activityDateCopy.valueOf() == today.valueOf()) {
+  var today = Date.today();
+  var tomorrow = Date.today().add(1).days();
+  activityDateCopy = (new Date(date.getTime())).clearTime();
+  if (activityDateCopy.equals(today)) {
     str += 'today';
-  } else if (activityDateCopy.valueOf() == tomorrow.valueOf()) {
+  } else if (activityDateCopy.equals(tomorrow)) {
     str += 'tomorrow';
   } else {
+    // alert(date.toLocaleString() + ' is '+ date.getDay());
     str += 'on ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
   }
-  str += ' at ' + date.toLocaleTimeString().replace(/:00/g,'');
+  if (activityDateCopy.compareTo(today.add(7).days()) > 0) {
+    str += ' ' + date.toString('dd/MM');
+  }
+  str += ' at ' + date.toString('HH');
+  if (date.getMinutes !== 0) {
+    str += date.toString(':mm');
+  }
   return str;
 }
 Handlebars.registerHelper('datetimeString', function(start_time) {
