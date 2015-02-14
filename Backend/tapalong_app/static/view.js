@@ -150,7 +150,7 @@ var view = (function (models) {
       editSection.querySelector('.option.cancel').onclick = function () {
         if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
           this.classList.add('disabled');
-          models.activities.tryCancelActivity(activity.activity_id, function () {
+          models.activities.tryCancelActivity(activity, function () {
             changeState(STATE.list, true);
           }, function () {
             alert('An error occurred! Sorry :(. Please refresh.');
@@ -184,7 +184,9 @@ var view = (function (models) {
       dateTime.setMinutes(time[1]);
       var activityChanges = {title: title, start_time: dateTime};
       if (currentState == STATE.edit) {
-        models.activities.tryUpdateActivity(selectedActivity, activityChanges, function () {
+        var activity = models.activities.getActivity(selectedActivity);
+        console.log(activity);
+        models.activities.tryUpdateActivity(activity, activityChanges, function () {
           // alert('Update successful');
           changeState(STATE.list, true);
         }, function () {
@@ -226,7 +228,7 @@ var view = (function (models) {
         changeState(STATE.edit, true);
       } else {
         // Note no callback since the list will automatically redraw when this changes
-        models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
+        models.activities.trySetAttending(activity, !activity.is_attending, function () {
         }, function () {
           alert('An unexpected error occurred. Please refresh.');
         });
@@ -286,7 +288,7 @@ var view = (function (models) {
           changeState(STATE.edit, true);
         } else {
           // Note no callback since the list will automatically redraw when this changes
-          models.activities.trySetAttending(activity.activity_id, !activity.is_attending, function () {
+          models.activities.trySetAttending(activity, !activity.is_attending, function () {
           }, function () {
             alert('An unexpected error occurred. Please refresh.');
           });

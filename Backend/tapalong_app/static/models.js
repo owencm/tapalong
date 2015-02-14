@@ -94,11 +94,11 @@ var models = (function () {
         failure();
       }
     };
-    var tryUpdateActivity = function (activity_id, activityChanges, success, failure) {
-      network.requestUpdateActivity(activity_id, activityChanges, success, failure);
+    var tryUpdateActivity = function (activity, activityChanges, success, failure) {
+      network.requestUpdateActivity(activity, activityChanges, success, failure);
     };
-    var trySetAttending = function (activity_id, attending, success, failure) {
-      network.requestSetAttending(activity_id, attending, success, failure);
+    var trySetAttending = function (activity, attending, success, failure) {
+      network.requestSetAttending(activity, attending, success, failure);
     };
     var setAttending = function (activity_id, attending) {
       throw('Should not be changing is_attending on client side');
@@ -106,8 +106,8 @@ var models = (function () {
       activity.is_attending = !activity.is_attending;
       listenerModule.change();
     };
-    var tryCancelActivity = function (activity_id, success, failure) {
-      network.requestCancelActivity(activity_id, success, failure);
+    var tryCancelActivity = function (activity, success, failure) {
+      network.requestCancelActivity(activity, success, failure);
     };
     // TODO: Make me much more efficient plz!
     var fixActivitiesOrder = function () {
