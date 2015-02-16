@@ -23,7 +23,11 @@ self.addEventListener('push', function(evt) {
     log('push listener', evt);
     evt.waitUntil(new Promise(function(resolve, reject) {
         self.registration.pushManager.getSubscription().then(function(subscription) {
-          fetch('notifications.json').then(function(response) {
+          fetch('notifications.json', {
+            headers: {
+              'SESSION_TOKEN': 'letmein'
+            }
+          }).then(function(response) {
             // fetch('/notifications?version=' + version + '&subscriptionId=' + subscription.subscriptionId).then(function(response) {
                 response.text().then(function(txt) {
                     log(txt);
