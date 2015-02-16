@@ -177,9 +177,12 @@ var view = (function (models) {
     editSection.querySelector('.option.save').onclick = function () {
       var thisButton = this;
       var title = editSection.querySelector('input#title').value;
+      // date assumes the input was in GMT and then converts to local time
       var date = editSection.querySelector('input#date').valueAsDate;
-      var time = editSection.querySelector('input#time').value.split(':');
       var dateTime = new Date(date);
+      // Make a timezone adjustment
+      dateTime.addMinutes(dateTime.getTimezoneOffset());
+      var time = editSection.querySelector('input#time').value.split(':');
       dateTime.setHours(time[0]);
       dateTime.setMinutes(time[1]);
       var activityChanges = {title: title, start_time: dateTime};
@@ -197,13 +200,12 @@ var view = (function (models) {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
         thisButton.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
-          alert('Plan created');
+          changeState(STATE.list, true);
         }, function () {
           // thisButton.classList.toggle('disabled', false);
           alert('Sorry, something went wrong. Please check you entered the information correctly.');
           throw("Adding to server failed. Help the user understand why");
         });   
-        changeState(STATE.list, true);     
       }
     }
     editSection.style.display = '';
