@@ -7,65 +7,72 @@ var log = function () {
     console.log.apply(console, arguments);
   }
 }
+var userId;
+var sessionToken;
 
-self.addEventListener('install', function(evt) {
+self.addEventListener('install', function(e) {
     //Automatically take over the previous worker.
-    evt.waitUntil(self.skipWaiting());
+    e.waitUntil(self.skipWaiting());
 });
 
-self.addEventListener('activate', function(evt) {
+self.addEventListener('activate', function(e) {
   log('Activated ServiceWorker version: ' + version);
 });
 
 //Handle the push received event.
-self.addEventListener('push', function(evt) {
-    console.log('push received');
-    log('push listener', evt);
-    evt.waitUntil(new Promise(function(resolve, reject) {
-        self.registration.pushManager.getSubscription().then(function(subscription) {
-          fetch('notifications.json', {
-            headers: {
-              'SESSION_TOKEN': 'letmein'
-            }
-          }).then(function(response) {
-            // fetch('/notifications?version=' + version + '&subscriptionId=' + subscription.subscriptionId).then(function(response) {
-                response.text().then(function(txt) {
-                    log(txt);
-                    var json = JSON.parse(txt);
-                    for (var i = 0; i < json.notifications.length; i++) {
-                        var note = json.notifications[i];
-                        log('Showing notification: ' + note.body);
-                        showNotification(note.title, note.body, note.url, note.id);
-                    }
-                    resolve();
-                }).catch(function(reason){reject(reason);});
-            }).catch(function(reason){reject(reason);});
-            return subscription;
-        }).catch(function(reason){reject(reason);});
-    }));
+self.addEventListener('push', function(e) {
+  log('push listener', e);
+  e.waitUntil(new Promise(function(resolve, reject) {
+    fetch('/../v1/notifications/', {
+      headers: {
+        'SESSION_TOKEN': sessionToken,
+        'USER_ID': userId
+      }
+    }).then(function(response) {
+      response.text().then(function(txt) {
+        log('fetched notifications', txt);
+        var json = JSON.parse(txt);
+        for (var i = 0; i < json.notifications.length; i++) {
+          var note = json.notifications[i];
+          log('Showing notification: ' + note.body);
+          showNotification(note.title, note.body, note.url, note.id);
+        }
+        resolve();
+      }).catch(function(reason){reject(reason);});
+    }).catch(function(reason){reject(reason);});
+  }));
 });
 
-self.addEventListener('notificationclick', function(evt) {
-  log('notificationclick listener', evt);
-  evt.waitUntil(handleNotificationClick(evt));
+self.addEventListener('notificationclick', function(e) {
+  log('notificationclick listener', e);
+  e.waitUntil(handleNotificationClick(e));
 });
 
-self.addEventListener('message', function (evt) {
-  log('postMessage received', evt.data);
-  evt.ports[0].postMessage(evt.data);
+self.addEventListener('message', function (e) {
+  log('postMessage received', e.data);
+  if (e.data.sessionToken) {
+    // TODO: store in idb
+    sessionToken = e.data.sessionToken;
+  } else if (e.data.userId) {
+    // TODO: store in idb
+    userId = e.data.userId;
+  } else {
+    self.push();
+  }
+  e.ports[0].postMessage({success: 'true'});
 })
 
 //Utility function to handle the click
-function handleNotificationClick(evt) {
-  log('Notification clicked: ', evt.notification);
-  evt.notification.close();
+function handleNotificationClick(e) {
+  log('Notification clicked: ', e.notification);
+  e.notification.close();
   return clients.getAll({
       type: 'window',
       includeUncontrolled: false
   }).catch(function(ex) {
       console.log(ex);
   }).then(function(clientList) {
-      return clients.openWindow(evt.notification.tag);
+      return clients.openWindow(e.notification.url);
   });
 }
 

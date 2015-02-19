@@ -180,6 +180,7 @@ def activity(request, activity_id):
 		# Get all fields into the format they will be needed
 		if 'start_time' in activity_info:
 			activity_info['start_time'] = dateutil.parser.parse(activity_info.get('start_time'))
+			print activity_info['start_time']
 		updateActivity(activity, activity_info)
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
@@ -196,3 +197,13 @@ def updateActivity(activity, activity_info):
 	# Todo: validate before we save
 	activity.save()
 	return
+
+def notifications(request):
+	return HttpResponse('{\
+		"notifications": [\
+			{"title": "This is my title",\
+			"body": "This is my body",\
+			"url": "https://www.google.com/",\
+			"id": "magic-id"}\
+		]\
+	}')

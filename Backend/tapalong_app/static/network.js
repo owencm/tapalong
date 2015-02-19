@@ -74,7 +74,9 @@ var network = (function() {
     req.onload = function () {
       if(req.status >= 200 && req.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
+        console.log('Network provided the following start time: ',updatedActivity.start_time);
         updatedActivity.start_time = new Date(updatedActivity.start_time);
+        console.log('Which we parsed into: ',updatedActivity.start_time);
         models.activities.updateActivity(updatedActivity.activity_id, updatedActivity);
         success();
       } else {
@@ -118,9 +120,12 @@ var network = (function() {
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(body);
   }
+  // Only ever call this from the model. Use model.setSessionToken instead.
   var setSessionToken = function (newSessionToken) {
-    
     sessionToken = newSessionToken;
+  }
+  var sendToServiceWorker = function (data) {
+    navigator.serviceWorker.controller.postMessage(data);
   }
   return {
     getActivitiesFromServer: getActivitiesFromServer,

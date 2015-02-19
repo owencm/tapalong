@@ -20,6 +20,7 @@ var models = (function () {
   var userId;
   var setUserId = function (newUserId) {
     userId = newUserId;
+    setUserIdInSW(newUserId);
   };
   var getUserId = function () {
     return userId;
@@ -32,9 +33,13 @@ var models = (function () {
   };
   var setSessionToken = function (sessionToken) {
     network.setSessionToken(sessionToken);
+    setSessionTokenInSW(sessionToken);
   };
   var startLogin = function (fbToken, success, failure) {
     network.login(fbToken, success, failure);
+  };
+  var hasNotificationPermission = function (success, failure) {
+    return hasPushPermission(success, failure);
   };
 
   var activities = (function () {
@@ -51,7 +56,7 @@ var models = (function () {
       listenerModule.change();
     };
     // Use this so we don't trigger two change events when we remove and readd
-    var updateActivity = function (activity, activity_id) {
+    var updateActivity = function (activity_id, activity) {
        activities = activities.filter(function(activity) {
         return (activity.activity_id !== activity_id);
       });
@@ -90,7 +95,7 @@ var models = (function () {
         console.log(newActivity);
         network.requestCreateActivity(newActivity, success, failure);
       } else {
-        console.log('activity wasn\'t valid because '+validity.reason);
+        console.log('activity wasn\'t valid because '+validity.reason, newActivity);
         failure();
       }
     };
@@ -142,6 +147,7 @@ var models = (function () {
       }
       if (activity.start_time && activity.start_time instanceof Date) {
         // Allow users to see and edit events up to 2 hours in the past
+        console.log(activity.start_time);
         var now = (new Date).add(-2).hours();
         if (activity.start_time < now) {
           return {isValid: false, reason: 'date (' + activity.start_time.toString() + ') was in the past'};
@@ -183,6 +189,7 @@ var models = (function () {
     getUserName: getUserName,
     setUserName: setUserName,
     setSessionToken: setSessionToken,
-    startLogin: startLogin
+    startLogin: startLogin,
+    hasNotificationPermission: hasNotificationPermission
   }
 })();

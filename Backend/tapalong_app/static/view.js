@@ -7,10 +7,10 @@ var getDateString = function (dateTime) {
 }
 
 var view = (function (models) {
-  var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5};
+  var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5, notificationsOptIn: 6};
   var currentState = STATE.uninitialized;
   var selectedActivity;
-  var changeState = function (newState, userTriggered) {
+  var changeState = function (newState, options, userTriggered) {
     console.log('Changing state to '+newState);
     var lastState = currentState;
     if (lastState == STATE.loggedOut) {
@@ -22,10 +22,12 @@ var view = (function (models) {
       hideBackButton();
       setTitle('Upcoming Plans');
       hideDetails();
+      hideNotificationOptIn();
       redrawActivitiesList();
       showActivitiesList();
       if (userTriggered) {
-        history.pushState({state: STATE.list}, 'Upcoming Plans');
+        // Disabled due to http://crbug.com/459240
+        // history.pushState({state: STATE.list}, 'Upcoming Plans');
       }
       if (models.activities.getActivitiesCount() > 0) {
         hideNoActivitiesCard();
@@ -44,7 +46,7 @@ var view = (function (models) {
       showCreateActivityForm();
       showBackButton();
       if (userTriggered) {
-        history.pushState({state: STATE.add}, 'Create a plan');
+        // history.pushState({state: STATE.add}, 'Create a plan');
       }
     } else if (currentState == STATE.edit) {
       setTitle('Edit');
@@ -54,7 +56,7 @@ var view = (function (models) {
       showCreateActivityForm();
       showBackButton();
       if (userTriggered) {
-        history.pushState({state: STATE.edit}, 'Edit plan');
+        // history.pushState({state: STATE.edit}, 'Edit plan');
       }
     } else if (currentState == STATE.detail) {
       setTitle('View details');
@@ -64,12 +66,20 @@ var view = (function (models) {
       showBackButton();
       showDetails();
       if (userTriggered) {
-        history.pushState({state: STATE.detail}, 'View details');
+        // history.pushState({state: STATE.detail}, 'View details');
       }
     } else if (currentState == STATE.loggedOut) {
       hideHeader();
       hideAddButton();
+      hideNoActivitiesCard();
       showLogin();
+    } else if (currentState == STATE.notificationsOptIn) {
+      setTitle('Great!');
+      hideNoActivitiesCard();
+      showNotificationOptIn(options.reason, options.nextState);
+      hideDetails();
+      hideActivitiesList();
+      hideCreateActivityForm();
     } else {
       throw('Unknown state');
     }
@@ -79,7 +89,7 @@ var view = (function (models) {
     console.log(e);
     if (e.state !== null && e.state.state !== undefined) {
       console.log('Moving back in history to state '+e.state.state);
-      changeState(e.state.state, false);
+      changeState(e.state.state, {}, false);
     } else {
       // Note safari calls popstate on page load so this is expected
       console.log('Uh oh, no valid state in history to move back to');
@@ -92,6 +102,7 @@ var view = (function (models) {
   var backButton = document.querySelector('#backButton');
   var title = document.querySelector('#title');
   var noActivitiesCard = document.querySelector('#noActivitiesCard');
+  var notificationsOptInSection = document.querySelector('section#notificationsOptIn');
   var setTitle = function (newTitle) {
     title.innerHTML = newTitle;
   };
@@ -151,7 +162,7 @@ var view = (function (models) {
         if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
           this.classList.add('disabled');
           models.activities.tryCancelActivity(activity, function () {
-            changeState(STATE.list, true);
+            changeState(STATE.list, {}, true);
           }, function () {
             alert('An error occurred! Sorry :(. Please refresh.');
             throw("Cancelling on server failed. Help the user understand why");
@@ -180,18 +191,24 @@ var view = (function (models) {
       // date assumes the input was in GMT and then converts to local time
       var date = editSection.querySelector('input#date').valueAsDate;
       var dateTime = new Date(date);
+      console.log('DateTime created in the form is ',dateTime);
       // Make a timezone adjustment
       dateTime.addMinutes(dateTime.getTimezoneOffset());
       var time = editSection.querySelector('input#time').value.split(':');
       dateTime.setHours(time[0]);
       dateTime.setMinutes(time[1]);
+      console.log('DateTime created in the form is ',dateTime);
       var activityChanges = {title: title, start_time: dateTime};
       if (currentState == STATE.edit) {
         var activity = models.activities.getActivity(selectedActivity);
         console.log(activity);
         models.activities.tryUpdateActivity(activity, activityChanges, function () {
           // alert('Update successful');
-          changeState(STATE.list, true);
+          models.hasNotificationPermission(function() {
+            changeState(STATE.list, {}, true);
+          }, function () {
+            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'a friend says they want to come along'}, false);
+          });
         }, function () {
           alert('An error occurred! Sorry :(. Please refresh.');
           throw('Editing the activity failed. Help the user understand why.');
@@ -200,7 +217,11 @@ var view = (function (models) {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
         thisButton.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
-          changeState(STATE.list, true);
+          models.hasNotificationPermission(function() {
+            changeState(STATE.list, {}, true);
+          }, function () {
+            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'a friend says they want to come along'}, false);
+          });
         }, function () {
           // thisButton.classList.toggle('disabled', false);
           alert('Sorry, something went wrong. Please check you entered the information correctly.');
@@ -227,10 +248,13 @@ var view = (function (models) {
       // Creators edit, non creators attend
       if (activity.is_creator) {
         selectedActivity = activity.activity_id;
-        changeState(STATE.edit, true);
+        changeState(STATE.edit, {}, true);
       } else {
         // Note no callback since the list will automatically redraw when this changes
         models.activities.trySetAttending(activity, !activity.is_attending, function () {
+          if (!models.hasNotificationPermission()) {
+            changeState(STATE.notificationsOptIn, {nextState: STATE.detail, userTriggered: true, reason: 'a friend says they want to come along'}, false);
+          }
         }, function () {
           alert('An unexpected error occurred. Please refresh.');
         });
@@ -244,6 +268,29 @@ var view = (function (models) {
   var hideDetails = function () {
     detailSection.style.display = 'none';
   } 
+  var showNotificationOptIn = function (reason, nextState) {
+    var source = document.querySelector('#notifications-opt-in-template').innerHTML;
+    var template = Handlebars.compile(source);
+    var config = {reason: reason};
+    notificationsOptInSection.innerHTML = template(config);
+    notificationsOptInSection.style.display = ''; 
+    // Add interactivity
+    notificationsOptInSection.querySelector('.option').onclick = function (e) {
+      this.classList.add('disabled');
+      e.stopPropagation();
+      requestPushNotificationPermission(function (userChoice) {
+        if (userChoice == 'granted') {
+          changeState(nextState);
+        } else {
+          alert('You denied the permission, you naughty person.')
+        }
+        // TODO Handle rejection or error case
+      });
+    }
+  }
+  var hideNotificationOptIn = function () {
+    notificationsOptInSection.style.display = 'none';
+  }
   var showAddButton = function () {
     addButton.style.display = '';
   }
@@ -281,13 +328,13 @@ var view = (function (models) {
       var activityElem = document.querySelector('#activity-'+activity.activity_id);
       activityElem.onclick = function () {
         selectedActivity = activity.activity_id;
-        changeState(STATE.detail, true);
+        changeState(STATE.detail, {}, true);
       };
       activityElem.querySelector('.option').onclick = function (e) {
         // Creators edit, non creators attend
         if (activity.is_creator) {
           selectedActivity = activity.activity_id;
-          changeState(STATE.edit, true);
+          changeState(STATE.edit, {}, true);
         } else {
           // Note no callback since the list will automatically redraw when this changes
           models.activities.trySetAttending(activity, !activity.is_attending, function () {
@@ -312,7 +359,7 @@ var view = (function (models) {
     models.setUserId(userId);
     models.setSessionToken(sessionToken);
     models.activities.tryRefreshActivities(function () {
-      changeState(STATE.list, true);
+      changeState(STATE.list, {}, true);
     });
   };
   var fbLoginSuccess = function (fbToken) {
@@ -322,14 +369,14 @@ var view = (function (models) {
   };
 
   addButton.onclick = function () {
-    changeState(STATE.add, true);
+    changeState(STATE.add, {}, true);
   };
   backButton.onclick = function () {
-    changeState(STATE.list, true);
+    changeState(STATE.list, {}, true);
   };
   models.activities.addListener(redrawCurrentView);
 
-  changeState(STATE.loggedOut, false);
+  changeState(STATE.loggedOut, {}, false);
 
   return {
     setLoginButtonCallback: setLoginButtonCallback,
