@@ -11,6 +11,7 @@ import datetime
 from datetime import date, timedelta
 import dateutil.parser
 import sessions
+import notifications
 
 # return user id and session token
 @csrf_exempt
@@ -21,7 +22,8 @@ def login_user(request):
 		facebook = Pyfb(settings.FACEBOOK_APP_ID)
 		#Sets the authentication token
 		facebook.set_access_token(fb_token)
-		#Gets info about myself 
+		# Gets info about myself 
+		# Todo: what if this fails?
 		me = facebook.get_myself()
 		try:
 			user = User.objects.get(fb_id=me.id)
@@ -106,7 +108,6 @@ def activities_list(request):
 		activity_info = json.loads(request.body)
 		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
 		activity.save()
-		print(activity.start_time)
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
 		return HttpResponse(json_output, mimetype='application/json')
@@ -132,9 +133,12 @@ def attending(request, activity_id):
 			# If the activity has more space
 			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
 				activity.attendees.add(user)
+				print notifications
+				notifications.create_notification(activity.creator_id, 'now_attending', {'attending_user_name': user.name, 'activity': activity})
 			else:
 				print('No room for user at activity')
-				# Return an error
+				return HttpResponse('No room available')
+				# TODO: Return an error
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
@@ -198,12 +202,35 @@ def updateActivity(activity, activity_info):
 	activity.save()
 	return
 
-def notifications(request):
-	return HttpResponse('{\
-		"notifications": [\
-			{"title": "This is my title",\
-			"body": "This is my body",\
-			"url": "https://www.google.com/",\
-			"id": "magic-id"}\
-		]\
-	}')
+def notifications_list(request):
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p>Suspicious Operation</p>')
+
+	potential_notifications = Notification.objects.filter(dismissed = false, expired = false, user = User.objects.get(id=user_id))
+	active_notifications = []
+	for note in potential_notifications:
+		if note.start_time < date.today():
+			note.expired = true
+			note.save()
+		else:
+			active_notifications.push(note)
+	notifications_to_send = map(lambda note: notifications.render_notification(note), active_notifications)
+	map(lambda note: notifications.mark_delivered(note, registration_id), active_notifications)
+	json_output = json.dumps(notifications_to_send)
+	return HttpResponse(json_output, mimetype='application/json')
+
+def dismiss_notification(request, note_id):
+	# Get the notification, set dismissed = true
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponse('<p>Suspicious Operation</p>')
+
+	note = Notification.objects.get(id = note_id)
+	if (note.user != User.objects.get(id=user_id)):
+		return HttpResponse('Error: This notification was not for you.')
+
+	note.dismissed = true
+	note.save()

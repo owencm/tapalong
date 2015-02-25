@@ -23,25 +23,32 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('push', function(e) {
   log('push listener', e);
   e.waitUntil(new Promise(function(resolve, reject) {
-    fetch('/../v1/notifications/', {
-      headers: {
-        'SESSION_TOKEN': sessionToken,
-        'USER_ID': userId
-      }
-    }).then(function(response) {
-      response.text().then(function(txt) {
-        log('fetched notifications', txt);
-        var json = JSON.parse(txt);
-        for (var i = 0; i < json.notifications.length; i++) {
-          var note = json.notifications[i];
-          log('Showing notification: ' + note.body);
-          showNotification(note.title, note.body, note.url, note.id);
-        }
-        resolve();
-      }).catch(function(reason){reject(reason);});
-    }).catch(function(reason){reject(reason);});
+    getNotifications(function (notifications) {
+      notifications.map(function(note) {
+        showNotification(note.title, note.body, note.url, note.id);
+      });
+      resolve();
+    }, function (reason) {
+      reject(reason);
+    });
   }));
 });
+
+function getNotifications(resolve, reject) {
+  fetch('/../v1/notifications/', {
+    headers: {
+      'SESSION_TOKEN': sessionToken,
+      'USER_ID': userId
+    }
+  }).then(function(response) {
+    response.text().then(function(txt) {
+      log('fetched notifications', txt);
+      var json = JSON.parse(txt);
+      var notifications = json.notifications;
+      resolve(notifications);
+    }).catch(function(reason){reject(reason);});
+  }).catch(function(reason){reject(reason);});
+}
 
 self.addEventListener('notificationclick', function(e) {
   log('notificationclick listener', e);
@@ -56,8 +63,14 @@ self.addEventListener('message', function (e) {
   } else if (e.data.userId) {
     // TODO: store in idb
     userId = e.data.userId;
+  } else if (e.data.showNotifications) {
+    getNotifications(function (notifications) {
+      notifications.map(function(note) {
+        showNotification(note.title, note.body, note.url, note.id);
+      });
+    });
   } else {
-    self.push();
+    throw Error('Unrecognised postmessage')
   }
   e.ports[0].postMessage({success: 'true'});
 })

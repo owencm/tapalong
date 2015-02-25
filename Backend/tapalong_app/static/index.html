@@ -82,7 +82,7 @@
           <p><b>{{activity.title}}</b></p>
           <p>{{datetimeString activity.start_time}}</p>
           <p>Created by: {{activity.creator_name}}</p>
-          <!-- <p>Description: {{activity.description}}</p> -->
+          <p>Description: {{activity.description}}</p>
           {{#if hasAttendees}}
             <p>
               Also going:
@@ -116,6 +116,8 @@
           <input type='date' id='date' max='{{nextWeeksDate}}' min='{{todaysDate}}' value='{{#if editing}}{{activityExtras.date}}{{else}}{{tomorrowsDate}}{{/if}}' required></input>
           <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}} required></input>
           <div class='clear'></div>
+          <input type='text' value='{{activity.description}}' id='description' placeholder=
+          "Extra infomation (where? when? what?)"></input>
         </div>
         <div class='optionContainer'>
           {{#if editing}}<div class='option left bad cancel'>Cancel plan</div>{{/if}}

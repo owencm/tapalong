@@ -123,6 +123,7 @@ section.card .optionContainer .option.disabled {
 }
 
 section.card .friendIcon {
+	background-color: #ddd;
 	border: 1px solid #ccc;
 	border-radius: 19px;
 	width: 38px;

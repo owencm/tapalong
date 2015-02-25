@@ -188,6 +188,7 @@ var view = (function (models) {
     editSection.querySelector('.option.save').onclick = function () {
       var thisButton = this;
       var title = editSection.querySelector('input#title').value;
+      var description = editSection.querySelector('input#description').value;
       // date assumes the input was in GMT and then converts to local time
       var date = editSection.querySelector('input#date').valueAsDate;
       var dateTime = new Date(date);
@@ -198,7 +199,7 @@ var view = (function (models) {
       dateTime.setHours(time[0]);
       dateTime.setMinutes(time[1]);
       console.log('DateTime created in the form is ',dateTime);
-      var activityChanges = {title: title, start_time: dateTime};
+      var activityChanges = {title: title, description: description, start_time: dateTime};
       if (currentState == STATE.edit) {
         var activity = models.activities.getActivity(selectedActivity);
         console.log(activity);
@@ -398,7 +399,7 @@ var getDateTimeString = function (date) {
     str += 'on ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
   }
   if (activityDateCopy.compareTo(today.add(7).days()) > 0) {
-    str += ' ' + date.toString('dd/MM');
+    str += ' ' + date.toString('MM/dd');
   }
   str += ' at ' + date.toString('HH');
   if (date.getMinutes !== 0) {

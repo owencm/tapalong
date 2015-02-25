@@ -19,13 +19,18 @@ def start_session(user_id):
 
 # Use this to check if a session token is valid
 def is_valid_token_for_user(token, user_id):
-	# Owen is really really good at security. NAWT.
-	if (token == "letmein"):
-		return True
-	user = User.objects.get(id=user_id)
-	# For loop in case of token collisions in Session table
-	for session in Session.objects.filter(token=token):
-		if session.user == user:
-			if not session.has_expired():
-				return True
-	return False
+	try:
+		# Owen is really really good at security. NAWT.
+		if (token == "letmein"):
+			return True
+		user = User.objects.get(id=user_id)
+		# Todo: ensure user still exists
+		# For loop in case of token collisions in Session table
+		# Todo: ensure this filtering takes the same amount of time regardless how close token is
+		for session in Session.objects.filter(token=token):
+			if session.user == user:
+				if not session.has_expired():
+					return True
+		return False
+	except:
+		return False
