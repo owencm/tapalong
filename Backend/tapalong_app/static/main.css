@@ -137,15 +137,17 @@ section.card .cardTitleContainer {
 	overflow: hidden;
 }
 
-section.card input {
-	padding: 10px 10px 10px 2px;
-	border: none;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	background-color: rgba(0,0,0,0);
-	width: 100%;
+section.card input, section.card textarea {
 	display: block;
-	margin: 10px 0;
 	box-sizing: border-box;
+	width: 100%;
+	margin: 10px 0;
+	padding: 10px 10px 10px 2px;
+	border-top: none;
+	border-right: none;
+	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+	border-left: none;
+	background-color: rgba(0,0,0,0);
 }
 
 section.card input#title {
@@ -155,6 +157,13 @@ section.card input#title {
 
 section.card input#title::-webkit-input-placeholder {
 	font-weight: lighter;
+}
+
+section.card textarea#description {
+	font-size: 1em;
+	line-height: 1.8em;
+	max-width: 100%;
+	overflow: hidden;
 }
 
 section.card input#date {
@@ -169,10 +178,10 @@ section.card input#time {
 	width: 150px;
 }
 
-section.card input:focus {
+section.card input:focus, section.card textarea:focus {
 	outline: none;
-	border-bottom: 1px solid #2196f3;
-	box-shadow: 0 1px 0 0px #2196f3;
+	border-bottom: 1px solid #00BAD2;
+	box-shadow: 0 1px 0 0px #00BAD2;
 }
 
 section.card.detail {

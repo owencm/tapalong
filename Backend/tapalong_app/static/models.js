@@ -42,6 +42,7 @@ var models = (function () {
     return hasPushPermission(success, failure);
   };
 
+  // TODO: Check that all the activities are still valid with an interval
   var activities = (function () {
     var activities = [];
     var listenerModule = ListenerModule();

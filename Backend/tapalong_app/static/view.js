@@ -154,9 +154,27 @@ var view = (function (models) {
     }
 
     editSection.innerHTML = template(config);
-    var titleInputElem = editSection.querySelector('input#title');
+
+    // Make the textarea autoresize
+    var descriptionInputElem = editSection.querySelector('textarea#description');
+    function delayedResize (elem) {
+      return function () {
+        window.setTimeout(function () { 
+          elem.style.height = 'auto';
+          elem.style.height = elem.scrollHeight+'px';
+       }, 0);
+      }
+    }
+    var delayedResizeInstance = delayedResize(descriptionInputElem);
+    delayedResizeInstance();
+    descriptionInputElem.addEventListener('change',  delayedResizeInstance);
+    descriptionInputElem.addEventListener('cut',     delayedResizeInstance);
+    descriptionInputElem.addEventListener('paste',   delayedResizeInstance);
+    descriptionInputElem.addEventListener('drop',    delayedResizeInstance);
+    descriptionInputElem.addEventListener('keydown', delayedResizeInstance);
 
     // Add interactivity
+    var titleInputElem = editSection.querySelector('input#title');
     if (currentState == STATE.edit) {
       editSection.querySelector('.option.cancel').onclick = function () {
         if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
@@ -188,7 +206,7 @@ var view = (function (models) {
     editSection.querySelector('.option.save').onclick = function () {
       var thisButton = this;
       var title = editSection.querySelector('input#title').value;
-      var description = editSection.querySelector('input#description').value;
+      var description = editSection.querySelector('textarea#description').value;
       // date assumes the input was in GMT and then converts to local time
       var date = editSection.querySelector('input#date').valueAsDate;
       var dateTime = new Date(date);
