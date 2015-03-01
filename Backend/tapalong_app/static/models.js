@@ -17,30 +17,49 @@ var ListenerModule = function () {
 };
 
 var models = (function () {
-  var userId;
-  var setUserId = function (newUserId) {
-    userId = newUserId;
-    setUserIdInSW(newUserId);
-  };
-  var getUserId = function () {
-    return userId;
-  };
-  var setUserName = function (newUserName) {
-    userName = newUserName;
-  }
-  var getUserName = function () {
-    return userName;
-  };
-  var setSessionToken = function (sessionToken) {
-    network.setSessionToken(sessionToken);
-    setSessionTokenInSW(sessionToken);
-  };
+
   var startLogin = function (fbToken, success, failure) {
     network.login(fbToken, success, failure);
   };
   var hasNotificationPermission = function (success, failure) {
     return hasPushPermission(success, failure);
   };
+
+  var user = (function() {
+    var userId;
+    var sessionToken;
+    var listenerModule = ListenerModule();
+    var setUserId = function (newUserId) {
+      userId = newUserId;
+      listenerModule.change();
+    };
+    var getUserId = function () {
+      return userId;
+    };
+    var setUserName = function (newUserName) {
+      userName = newUserName;
+      listenerModule.change();
+    }
+    var getUserName = function () {
+      return userName;
+    };
+    var setSessionToken = function (newSessionToken) {
+      sessionToken = newSessionToken;
+      listenerModule.change();
+    };
+    var getSessionToken = function () {
+      return sessionToken;
+    };
+    return {
+      setUserId: setUserId,
+      getUserId: getUserId,
+      setUserName: setUserName,
+      getUserName: getUserName,
+      setSessionToken: setSessionToken,
+      getSessionToken: getSessionToken,
+      addListener: listenerModule.addListener
+    };
+  })();
 
   // TODO: Check that all the activities are still valid with an interval
   var activities = (function () {
@@ -185,11 +204,7 @@ var models = (function () {
   })();
   return {
     activities: activities,
-    getUserId: getUserId,
-    setUserId: setUserId,
-    getUserName: getUserName,
-    setUserName: setUserName,
-    setSessionToken: setSessionToken,
+    user: user,
     startLogin: startLogin,
     hasNotificationPermission: hasNotificationPermission
   }

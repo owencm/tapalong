@@ -1,15 +1,13 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 
 var network = (function() {
-  var sessionToken;
   var login = function (fb_token, success, failure) {
     console.log('Logging in to the app');
-    var req = new XMLHttpRequest();
-    req.onload = function () {
-      if(req.status >= 200 && req.status < 400) {
+    sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), function() {
+      if(this.status >= 200 && this.status < 400) {
         console.log(this.responseText);
         response = JSON.parse(this.responseText);
-        if (response.success === "true") {
+        if (response.success === 'true') {
           success(response.user_id, response.user_name, response.session_token);
         } else {
           failure();
@@ -19,10 +17,7 @@ var network = (function() {
         // Request failed
         throw ('login request failed');
       }
-    }
-    req.open('post', '/../v1/login/', true);
-    req.setRequestHeader('Content-type', 'application/json');
-    req.send(JSON.stringify({fb_token: fb_token}));
+    });
   }
   var processActivitiesFromServer = function (responseText) {
     // Strip activity label for each item
@@ -37,42 +32,32 @@ var network = (function() {
     models.activities.setActivities(activities);
   };
   var getActivitiesFromServer = function (success, failure) {
-    var req = new XMLHttpRequest();
-    req.onload = function () {
-      // TODO: Check this actually succeeded
-      processActivitiesFromServer(this.responseText);
-      success();
-    }
-    req.open('get', '/../v1/activities/visible_to_user/', true);
-    req.setRequestHeader('USER_ID', models.getUserId());
-    req.setRequestHeader('SESSION_TOKEN', sessionToken);
-    req.send();
+    sendRequest('/../v1/activities/visible_to_user/', 'get', '', function() {
+      if (this.status >= 200 && this.status < 400) {
+        // TODO: Check this actually succeeded
+        processActivitiesFromServer(this.responseText);
+        success();
+      } else {
+        failure();
+      }
+    });
   };
   var requestCreateActivity = function (activity, success, failure) {
-    var req = new XMLHttpRequest();
-    req.onload = function () {
-      if(req.status >= 200 && req.status < 400) {
+    sendRequest('/../v1/activities/visible_to_user/', 'post', JSON.stringify(activity), function() {
+      if(this.status >= 200 && this.status < 400) {
         var activity = JSON.parse(this.responseText).activity;
         activity.start_time = new Date(activity.start_time);
         models.activities.addActivity(activity);
         success();
       } else {
-        console.log("Error:");
-        console.log(this.responseText)
+        console.log('Server error: ', this.responseText)
         failure();
       }
-    }
-    req.open('post', '/../v1/activities/visible_to_user/', true);
-    req.setRequestHeader('USER_ID', models.getUserId());
-    req.setRequestHeader('SESSION_TOKEN', sessionToken);
-    req.setRequestHeader('CONTENT_TYPE', 'application/json');
-    req.send(JSON.stringify(activity));
+    });
   };
   var requestSetAttending = function (activity, attending, success, failure) {
-    console.log(activity);
-    var req = new XMLHttpRequest();
-    req.onload = function () {
-      if(req.status >= 200 && req.status < 400) {
+    sendRequest('/../v1/activities/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), function () {
+      if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
         console.log('Network provided the following start time: ',updatedActivity.start_time);
         updatedActivity.start_time = new Date(updatedActivity.start_time);
@@ -82,12 +67,7 @@ var network = (function() {
       } else {
         failure();
       }
-    };
-    req.open('post', '/../v1/activities/'+activity.activity_id+'/attend/', true);
-    req.setRequestHeader('SESSION_TOKEN', sessionToken);
-    req.setRequestHeader('USER_ID', models.getUserId());
-    req.setRequestHeader('CONTENT_TYPE', 'application/json');
-    req.send(JSON.stringify({attending: attending}));          
+    });
   };
   var requestUpdateActivity = function(activity, activityChanges, success, failure) {
     sendRequest('/../v1/activities/'+activity.activity_id+'/', 'post', JSON.stringify(activityChanges), function () {
@@ -115,14 +95,18 @@ var network = (function() {
     var req = new XMLHttpRequest();
     req.onload = onload;
     req.open(method, url, true);
-    req.setRequestHeader('SESSION_TOKEN', sessionToken);
-    req.setRequestHeader('USER_ID', models.getUserId());
+    // Only set session_token and user_id if the user is logged in. 
+    // TODO: Use state in the model to know whether the user is logged in.
+    var sessionToken = models.user.getSessionToken();
+    var userId = models.user.getUserId();
+    if (sessionToken !== undefined && userId !== undefined) {
+      req.setRequestHeader('SESSION_TOKEN', sessionToken);
+      req.setRequestHeader('USER_ID', userId);
+    } else {
+      console.log('Sending an unauthenticated request since we haven\'t logged in yet');
+    }
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     req.send(body);
-  }
-  // Only ever call this from the model. Use model.setSessionToken instead.
-  var setSessionToken = function (newSessionToken) {
-    sessionToken = newSessionToken;
   }
   var sendToServiceWorker = function (data) {
     navigator.serviceWorker.controller.postMessage(data);
@@ -133,7 +117,6 @@ var network = (function() {
     requestSetAttending: requestSetAttending,
     requestUpdateActivity: requestUpdateActivity,
     requestCancelActivity: requestCancelActivity,
-    login: login,
-    setSessionToken: setSessionToken
+    login: login
   };
 })();

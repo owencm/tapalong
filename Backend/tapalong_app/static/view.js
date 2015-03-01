@@ -69,6 +69,7 @@ var view = (function (models) {
         // history.pushState({state: STATE.detail}, 'View details');
       }
     } else if (currentState == STATE.loggedOut) {
+      // TODO: Move this state to within the model
       hideHeader();
       hideAddButton();
       hideNoActivitiesCard();
@@ -131,7 +132,7 @@ var view = (function (models) {
   var showCreateActivityForm = function () {
     var source = document.querySelector('#edit-activity-template').innerHTML;
     var template = Handlebars.compile(source);
-    var config = {name: models.getUserName};
+    var config = {name: models.user.getUserName};
     var today = new Date;
     config.todaysDate = getDateString(today);
     var tomorrow = Date.today().add(1).days()
@@ -374,9 +375,9 @@ var view = (function (models) {
     loginElem.onclick = callback;
   };
   var appLoginSuccess = function (userId, userName, sessionToken) {
-    models.setUserName(userName);
-    models.setUserId(userId);
-    models.setSessionToken(sessionToken);
+    models.user.setUserName(userName);
+    models.user.setUserId(userId);
+    models.user.setSessionToken(sessionToken);
     models.activities.tryRefreshActivities(function () {
       changeState(STATE.list, {}, true);
     });

@@ -243,8 +243,9 @@ def push_registrations_list(request):
 		return HttpResponseForbidden()
 
 	if request.method == 'POST':
-		# do stuff
-		print 'write to db here'
+		request_contents = json.loads(request.body)
+		reg_id = request_contents.get('registration_id')
+		print 'received reg_id = '+reg_id
 	else: 
 		return HttpResponseBadRequest()
 
