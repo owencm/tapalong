@@ -1,4 +1,4 @@
-from tapalong_app.models import User, Activity, Session
+from tapalong_app.models import User, Activity, Session, Notification
 from django.utils import simplejson as json
 from django.utils.timezone import utc
 from django.http import HttpResponse
