@@ -4,7 +4,7 @@ import datetime
 
 class User(models.Model):
 	name = models.CharField(max_length = 20, blank=False)
-	password = models.CharField(max_length = 30, blank=False)
+	password = models.CharField(max_length = 30)
 	fb_id = models.IntegerField(blank=False)
 	friends = models.TextField(default='')
 	def __unicode__(self):
@@ -45,3 +45,8 @@ class Notification(models.Model):
 	dismissed = models.BooleanField(default=False)
 	expired = models.BooleanField(default=False)
 
+class PushRegistration(models.Model):
+	recipient = models.ForeignKey(User, related_name='push_registration_set', blank=False)
+	registration_id = models.CharField(max_length=300, blank=False)
+	created_at = models.DateTimeField(auto_now_add=True)
+	expired_at = models.DateTimeField(blank=True)

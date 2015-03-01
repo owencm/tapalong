@@ -81,7 +81,7 @@ def activities_list(request):
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		print('A suspicious operation ocurred', token, user_id)
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	# TODO, only return activities where creator_id is a friend and attendees.length < max_attendees or current user is in attendees
 	#friends = facebook.get_friends()
@@ -118,7 +118,7 @@ def attending(request, activity_id):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	if request.method == 'POST':
 		user = User.objects.get(id=user_id)
@@ -152,7 +152,7 @@ def cancel(request, activity_id):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	if request.method == 'POST':
 		user = User.objects.get(id=user_id)
@@ -170,7 +170,7 @@ def activity(request, activity_id):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	if request.method == 'POST':
 		user = User.objects.get(id=user_id)
@@ -206,7 +206,7 @@ def notifications_list(request):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	potential_notifications = Notification.objects.filter(dismissed = false, expired = false, user = User.objects.get(id=user_id))
 	active_notifications = []
@@ -226,7 +226,7 @@ def dismiss_notification(request, note_id):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponse('<p>Suspicious Operation</p>')
+		return HttpResponseForbidden()
 
 	note = Notification.objects.get(id = note_id)
 	if (note.user != User.objects.get(id=user_id)):
@@ -234,3 +234,19 @@ def dismiss_notification(request, note_id):
 
 	note.dismissed = true
 	note.save()
+	return HttpResponse()
+
+def push_registrations_list(request):
+	token = request.META.get('HTTP_SESSION_TOKEN')
+	user_id = request.META.get('HTTP_USER_ID')
+	if not (sessions.is_valid_token_for_user(token, user_id)):
+		return HttpResponseForbidden()
+
+	if request.method == 'POST':
+		# do stuff
+		print 'write to db here'
+	else: 
+		return HttpResponseBadRequest()
+
+
+

@@ -21,6 +21,7 @@ def send_tickle(reg):
 
 def render_notification(note):
 	# Todo, handle different templates
+	# Todo parse options from JSON
 	return {'title': note.options.activity.title,
 			'body': note.options.attending_user_name + ' is also coming along',
 			'url': 'https://www.google.com/',
