@@ -90,7 +90,10 @@ var network = (function() {
         failure();
       }
     })
-  }
+  };
+  var requestCreatePushNotificationsSubscription = function (subscription) {
+    sendRequest('/../v1/push_subscriptions/', 'post', JSON.stringify(subscription), function () {});
+  };
   var sendRequest = function (url, method, body, onload) {
     var req = new XMLHttpRequest();
     req.onload = onload;
@@ -117,6 +120,7 @@ var network = (function() {
     requestSetAttending: requestSetAttending,
     requestUpdateActivity: requestUpdateActivity,
     requestCancelActivity: requestCancelActivity,
+    requestCreatePushNotificationsSubscription: requestCreatePushNotificationsSubscription,
     login: login
   };
 })();

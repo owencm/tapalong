@@ -25,7 +25,7 @@ var models = (function () {
     return hasPushPermission(success, failure);
   };
 
-  var user = (function() {
+  var user = (function () {
     var userId;
     var sessionToken;
     var listenerModule = ListenerModule();

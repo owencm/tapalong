@@ -63,6 +63,7 @@ var view = (function (models) {
       hideCreateActivityForm();
       hideAddButton();
       hideActivitiesList();
+      hideNotificationOptIn();
       showBackButton();
       showDetails();
       if (userTriggered) {
@@ -75,7 +76,7 @@ var view = (function (models) {
       hideNoActivitiesCard();
       showLogin();
     } else if (currentState == STATE.notificationsOptIn) {
-      setTitle('Great!');
+      setTitle('Stay up to date');
       hideNoActivitiesCard();
       showNotificationOptIn(options.reason, options.nextState);
       hideDetails();
@@ -205,7 +206,7 @@ var view = (function (models) {
     });
 
     editSection.querySelector('.option.save').onclick = function () {
-      var thisButton = this;
+      var thisButton = this; 
       var title = editSection.querySelector('input#title').value;
       var description = editSection.querySelector('textarea#description').value;
       // date assumes the input was in GMT and then converts to local time
@@ -223,11 +224,10 @@ var view = (function (models) {
         var activity = models.activities.getActivity(selectedActivity);
         console.log(activity);
         models.activities.tryUpdateActivity(activity, activityChanges, function () {
-          // alert('Update successful');
-          models.hasNotificationPermission(function() {
+          swLibrary.hasPushNotificationPermission(function() {
             changeState(STATE.list, {}, true);
           }, function () {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'a friend says they want to come along'}, false);
+            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
           });
         }, function () {
           alert('An error occurred! Sorry :(. Please refresh.');
@@ -237,10 +237,10 @@ var view = (function (models) {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
         thisButton.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
-          models.hasNotificationPermission(function() {
+          swLibrary.hasPushNotificationPermission(function() {
             changeState(STATE.list, {}, true);
           }, function () {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'a friend says they want to come along'}, false);
+            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
           });
         }, function () {
           // thisButton.classList.toggle('disabled', false);
@@ -272,9 +272,9 @@ var view = (function (models) {
       } else {
         // Note no callback since the list will automatically redraw when this changes
         models.activities.trySetAttending(activity, !activity.is_attending, function () {
-          if (!models.hasNotificationPermission()) {
+          swLibrary.hasPushNotificationPermission(function(){}, function() {
             changeState(STATE.notificationsOptIn, {nextState: STATE.detail, userTriggered: true, reason: 'a friend says they want to come along'}, false);
-          }
+          });
         }, function () {
           alert('An unexpected error occurred. Please refresh.');
         });
@@ -298,7 +298,7 @@ var view = (function (models) {
     notificationsOptInSection.querySelector('.option').onclick = function (e) {
       this.classList.add('disabled');
       e.stopPropagation();
-      requestPushNotificationPermission(function (userChoice) {
+      swLibrary.requestPushNotificationPermissionAndSubscribe(function (userChoice) {
         if (userChoice == 'granted') {
           changeState(nextState);
         } else {
@@ -358,6 +358,12 @@ var view = (function (models) {
         } else {
           // Note no callback since the list will automatically redraw when this changes
           models.activities.trySetAttending(activity, !activity.is_attending, function () {
+          // If the user is opting in, show them the prompt
+          if (!activity.is_attending) {
+            swLibrary.hasPushNotificationPermission(function(){}, function() {
+              changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
+            });
+          }
           }, function () {
             alert('An unexpected error occurred. Please refresh.');
           });
@@ -404,6 +410,7 @@ var view = (function (models) {
     debugSkipLogin: appLoginSuccess
   };
 })(models);
+
 var getDateTimeString = function (date) {
   var str = '';
   var today = Date.today();

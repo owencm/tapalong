@@ -45,8 +45,8 @@ class Notification(models.Model):
 	dismissed = models.BooleanField(default=False)
 	expired = models.BooleanField(default=False)
 
-class PushRegistration(models.Model):
-	recipient = models.ForeignKey(User, related_name='push_registration_set', blank=False)
-	registration_id = models.CharField(max_length=300, blank=False)
+class PushSubscription(models.Model):
+	recipient = models.ForeignKey(User, related_name='push_subscription_set', blank=False)
+	subscription_id = models.CharField(max_length=300, blank=False)
 	created_at = models.DateTimeField(auto_now_add=True)
-	expired_at = models.DateTimeField(blank=True)
+	expired_at = models.DateTimeField(null=True, blank=True)

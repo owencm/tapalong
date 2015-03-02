@@ -1,4 +1,4 @@
-from tapalong_app.models import User, Activity, Session, Notification
+from tapalong_app.models import User, Activity, Session, Notification, PushSubscription
 from django.utils import simplejson as json
 from django.utils.timezone import utc
 from django.http import HttpResponse
@@ -133,8 +133,7 @@ def attending(request, activity_id):
 			# If the activity has more space
 			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
 				activity.attendees.add(user)
-				print notifications
-				notifications.create_notification(activity.creator_id, 'now_attending', {'attending_user_name': user.name, 'activity': activity})
+				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title})
 			else:
 				print('No room for user at activity')
 				return HttpResponse('No room available')
@@ -217,7 +216,7 @@ def notifications_list(request):
 		else:
 			active_notifications.push(note)
 	notifications_to_send = map(lambda note: notifications.render_notification(note), active_notifications)
-	map(lambda note: notifications.mark_delivered(note, registration_id), active_notifications)
+	map(lambda note: notifications.mark_delivered(note, subscription_id), active_notifications)
 	json_output = json.dumps(notifications_to_send)
 	return HttpResponse(json_output, mimetype='application/json')
 
@@ -236,16 +235,23 @@ def dismiss_notification(request, note_id):
 	note.save()
 	return HttpResponse()
 
-def push_registrations_list(request):
+@csrf_exempt
+def push_subscriptions_list(request):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponseForbidden()
 
 	if request.method == 'POST':
-		request_contents = json.loads(request.body)
-		reg_id = request_contents.get('registration_id')
-		print 'received reg_id = '+reg_id
+		user = User.objects.get(id=user_id)
+		subscription = json.loads(request.body)
+		subscription_id = subscription.get('subscriptionId')
+		endpoint = subscription.get('endpoint')
+		# Ignore the endpoint until we support more than GCM on Chrome
+		push_subscription = PushSubscription(subscription_id=subscription_id, recipient=user)
+		push_subscription.save()
+		print push_subscription
+		return HttpResponse()
 	else: 
 		return HttpResponseBadRequest()
 
