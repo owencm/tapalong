@@ -1,7 +1,7 @@
 from tapalong_app.models import User, Activity, Session, Notification, PushSubscription
 from django.utils import simplejson as json
 from django.utils.timezone import utc
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.http import QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.template import RequestContext, loader
@@ -134,6 +134,7 @@ def attending(request, activity_id):
 			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
 				activity.attendees.add(user)
 				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title})
+				notifications.create_notification(user.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title})
 			else:
 				print('No room for user at activity')
 				return HttpResponse('No room available')
@@ -201,25 +202,27 @@ def updateActivity(activity, activity_info):
 	activity.save()
 	return
 
+@csrf_exempt
 def notifications_list(request):
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponseForbidden()
 
-	potential_notifications = Notification.objects.filter(dismissed = false, expired = false, user = User.objects.get(id=user_id))
+	potential_notifications = Notification.objects.filter(dismissed = False, expired = False, user = User.objects.get(id=user_id))
 	active_notifications = []
 	for note in potential_notifications:
-		if note.start_time < date.today():
-			note.expired = true
-			note.save()
-		else:
-			active_notifications.push(note)
+		# if note.start_time < date.today():
+		# 	note.expired = true
+		# 	note.save()
+		# else:
+			active_notifications.append(note)
 	notifications_to_send = map(lambda note: notifications.render_notification(note), active_notifications)
-	map(lambda note: notifications.mark_delivered(note, subscription_id), active_notifications)
+	# map(lambda note: notifications.mark_delivered(note, subscription_id), active_notifications)
 	json_output = json.dumps(notifications_to_send)
 	return HttpResponse(json_output, mimetype='application/json')
 
+@csrf_exempt
 def dismiss_notification(request, note_id):
 	# Get the notification, set dismissed = true
 	token = request.META.get('HTTP_SESSION_TOKEN')
@@ -246,11 +249,9 @@ def push_subscriptions_list(request):
 		user = User.objects.get(id=user_id)
 		subscription = json.loads(request.body)
 		subscription_id = subscription.get('subscriptionId')
-		endpoint = subscription.get('endpoint')
 		# Ignore the endpoint until we support more than GCM on Chrome
-		push_subscription = PushSubscription(subscription_id=subscription_id, recipient=user)
-		push_subscription.save()
-		print push_subscription
+		endpoint = subscription.get('endpoint')
+		notifications.create_subscription(user, subscription_id)
 		return HttpResponse()
 	else: 
 		return HttpResponseBadRequest()

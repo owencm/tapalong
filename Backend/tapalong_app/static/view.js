@@ -105,6 +105,7 @@ var view = (function (models) {
   var title = document.querySelector('#title');
   var noActivitiesCard = document.querySelector('#noActivitiesCard');
   var notificationsOptInSection = document.querySelector('section#notificationsOptIn');
+  var permissionOverlay = document.querySelector('div#permissionOverlay');
   var setTitle = function (newTitle) {
     title.innerHTML = newTitle;
   };
@@ -296,16 +297,20 @@ var view = (function (models) {
     notificationsOptInSection.style.display = ''; 
     // Add interactivity
     notificationsOptInSection.querySelector('.option').onclick = function (e) {
+      showOverlay();
       this.classList.add('disabled');
       e.stopPropagation();
-      swLibrary.requestPushNotificationPermissionAndSubscribe(function (userChoice) {
-        if (userChoice == 'granted') {
-          changeState(nextState);
-        } else {
-          alert('You denied the permission, you naughty person.')
-        }
-        // TODO Handle rejection or error case
-      });
+      setTimeout(function() {
+        swLibrary.requestPushNotificationPermissionAndSubscribe(function (userChoice) {
+          hideOverlay();
+          if (userChoice == 'granted') {
+            changeState(nextState);
+          } else {
+            alert('You denied the permission, you naughty person.')
+          }
+          // TODO Handle rejection or error case
+        });
+      }, 300);
     }
   }
   var hideNotificationOptIn = function () {
@@ -325,17 +330,27 @@ var view = (function (models) {
   };
   var showActivitiesList = function () {
     activitiesSection.style.display = '';
-  }
+  };
   var hideActivitiesList = function () {
     activitiesSection.style.display = 'none';
-  }
+  };
+  var showOverlay = function  () {
+    permissionOverlay.style.display = '';
+    permissionOverlay.offsetTop;
+    permissionOverlay.style.opacity = 1;
+  };
+  var hideOverlay = function () {
+    permissionOverlay.style.display = 'none';
+    permissionOverlay.offsetTop;
+    permissionOverlay.style.opacity = 0;
+  };
   var redrawCurrentView = function () {
     if (currentState == STATE.list) {
       redrawActivitiesList();
     } else if (currentState == STATE.detail) {
       redrawDetails();
     }
-  }
+  };
   var redrawActivitiesList = function () {
     var source = document.querySelector('#activity-summary-template').innerHTML;
     var template = Handlebars.compile(source);

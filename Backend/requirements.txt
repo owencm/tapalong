@@ -4,3 +4,4 @@ wsgiref==0.1.2
 South==1.0.2
 pyfb==0.4.2
 python-dateutil==2.1
+requests==2.5.3

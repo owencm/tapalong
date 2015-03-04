@@ -1,5 +1,5 @@
 // TODO: make sure this all works in browsers without SW support. Checks are half baked today.
-
+var reg;
 var swLibrary = (function() {
   var browserSupportsSW = false;
   if ('serviceWorker' in navigator) {
@@ -11,15 +11,12 @@ var swLibrary = (function() {
       failure();
       return;
     }
-    navigator.serviceWorker.getRegistration().then(function(registration) {
-      registration.pushManager.hasPermission().then(function(pushPermissionStatus) {
-        if (pushPermissionStatus !== 'granted') {
-          failure();
-        } else {
-          success();
-        }
-      });
-    });
+    var status = Notification.permission;
+    if (status !== 'granted') {
+      failure();
+    } else {
+      success();
+    }
   };
 
   // Calls success with either 'granted' or 'denied'
@@ -91,12 +88,8 @@ var swLibrary = (function() {
       var sessionToken = models.user.getSessionToken();
       // If the user is logged in
       if (userId !== undefined && sessionToken !== undefined) {
-        // Make sure the SW has up to date information about the user
-        sendMessageToSW({userId: userId}, function () {});
-        sendMessageToSW({sessionToken: sessionToken}, function () {});
-
         // If we have permission but lost our pushSubscription, make a new one.
-        navigator.serviceWorker.getRegistration().then(function(registration) {
+        navigator.serviceWorker.ready.then(function(registration) {
           hasPushNotificationPermission(function () {
             registration.pushManager.getSubscription().then(function(pushSubscription) {
               if (!pushSubscription) {

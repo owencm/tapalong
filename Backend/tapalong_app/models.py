@@ -45,6 +45,9 @@ class Notification(models.Model):
 	dismissed = models.BooleanField(default=False)
 	expired = models.BooleanField(default=False)
 
+	def __unicode__(self):
+		return 'Notificaiton object: ' + self.template + ' for ' + self.user.name
+
 class PushSubscription(models.Model):
 	recipient = models.ForeignKey(User, related_name='push_subscription_set', blank=False)
 	subscription_id = models.CharField(max_length=300, blank=False)

@@ -1,7 +1,9 @@
 'use strict';
 
+importScripts('objectdb.js');
 var version = 1;
 var logging = true;
+
 var log = function () {
   if (logging) {
     console.log.apply(console, arguments);
@@ -35,19 +37,38 @@ self.addEventListener('push', function(e) {
 });
 
 function getNotifications(resolve, reject) {
-  fetch('/../v1/notifications/', {
-    headers: {
-      'SESSION_TOKEN': sessionToken,
-      'USER_ID': userId
+  // Get the session tokens etc from IDB
+  var db = objectDB.open('db-1');
+  db.get().then(function(data) {
+    var sessionToken = data.sessionToken;
+    var userId = data.userId;
+    if (sessionToken == undefined || userId == undefined) {
+      throw new Error('User was not logged in. Cannot request notifications.');
     }
-  }).then(function(response) {
-    response.text().then(function(txt) {
-      log('fetched notifications', txt);
-      var json = JSON.parse(txt);
-      var notifications = json.notifications;
-      resolve(notifications);
-    }).catch(function(reason){reject(reason);});
-  }).catch(function(reason){reject(reason);});
+    fetch('/../v1/notifications/', {
+      headers: {
+        'SESSION_TOKEN': sessionToken,
+        'USER_ID': userId
+      }
+    }).then(function(response) {
+      response.text().then(function(txt) {
+        log('fetched notifications', txt);
+        var notifications = JSON.parse(txt);
+        resolve(notifications);
+      }).catch(reject)
+    }).catch(reject);
+  });
+}
+
+function showNewNotifications() {
+  getNotifications(function (notifications) {
+    console.log('got notifications!');
+    notifications.map(function(note) {
+      showNotification(note.title, note.body, note.url, note.id);
+    });
+  }, function (reason) {
+    console.log('Failed to show notifications because '+reasons);
+  });
 }
 
 self.addEventListener('notificationclick', function(e) {
@@ -57,18 +78,8 @@ self.addEventListener('notificationclick', function(e) {
 
 self.addEventListener('message', function (e) {
   log('postMessage received', e.data);
-  if (e.data.sessionToken) {
-    // TODO: store in idb
-    sessionToken = e.data.sessionToken;
-  } else if (e.data.userId) {
-    // TODO: store in idb
-    userId = e.data.userId;
-  } else if (e.data.showNotifications) {
-    getNotifications(function (notifications) {
-      notifications.map(function(note) {
-        showNotification(note.title, note.body, note.url, note.id);
-      });
-    });
+  if (e.data.showNotifications) {
+    showNewNotifications();
   } else {
     throw Error('Unrecognised postmessage')
   }
@@ -105,3 +116,5 @@ function showNotification(title, body, url, tag) {
     self.registration.showNotification(title, options);
   }
 }
+
+showNewNotifications();

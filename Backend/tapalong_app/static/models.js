@@ -31,6 +31,8 @@ var models = (function () {
     var listenerModule = ListenerModule();
     var setUserId = function (newUserId) {
       userId = newUserId;
+      var db = objectDB.open('db-1');
+      db.put('userId', userId);
       listenerModule.change();
     };
     var getUserId = function () {
@@ -45,6 +47,8 @@ var models = (function () {
     };
     var setSessionToken = function (newSessionToken) {
       sessionToken = newSessionToken;
+      var db = objectDB.open('db-1');
+      db.put('sessionToken', sessionToken);
       listenerModule.change();
     };
     var getSessionToken = function () {
@@ -168,7 +172,8 @@ var models = (function () {
       if (activity.start_time && activity.start_time instanceof Date) {
         // Allow users to see and edit events up to 2 hours in the past
         console.log(activity.start_time);
-        var now = (new Date).add(-2).hours();
+        var now = new Date;
+        now = now.add(-2).hours();
         if (activity.start_time < now) {
           return {isValid: false, reason: 'date (' + activity.start_time.toString() + ') was in the past'};
         }
