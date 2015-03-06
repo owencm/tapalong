@@ -103,7 +103,7 @@ def activities_list(request):
 		return HttpResponse(json_output, mimetype='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
-		#now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		# now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data and parse it from JSON
 		activity_info = json.loads(request.body)
 		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
@@ -203,22 +203,14 @@ def updateActivity(activity, activity_info):
 	return
 
 @csrf_exempt
-def notifications_list(request):
+def notifications_list(request, subscription_id):
+
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponseForbidden()
 
-	potential_notifications = Notification.objects.filter(dismissed = False, expired = False, user = User.objects.get(id=user_id))
-	active_notifications = []
-	for note in potential_notifications:
-		# if note.start_time < date.today():
-		# 	note.expired = true
-		# 	note.save()
-		# else:
-			active_notifications.append(note)
-	notifications_to_send = map(lambda note: notifications.render_notification(note), active_notifications)
-	# map(lambda note: notifications.mark_delivered(note, subscription_id), active_notifications)
+	notifications_to_send = notifications.get_active(user_id)	
 	json_output = json.dumps(notifications_to_send)
 	return HttpResponse(json_output, mimetype='application/json')
 
@@ -234,7 +226,7 @@ def dismiss_notification(request, note_id):
 	if (note.user != User.objects.get(id=user_id)):
 		return HttpResponse('Error: This notification was not for you.')
 
-	note.dismissed = true
+	note.dismissed = True
 	note.save()
 	return HttpResponse()
 

@@ -27,7 +27,7 @@ self.addEventListener('push', function(e) {
   e.waitUntil(new Promise(function(resolve, reject) {
     getNotifications(function (notifications) {
       notifications.map(function(note) {
-        showNotification(note.title, note.body, note.url, note.id);
+        showNotificationIfNotShownPreviously(note.title, note.body, note.url, note.id);
       });
       resolve();
     }, function (reason) {
@@ -45,18 +45,25 @@ function getNotifications(resolve, reject) {
     if (sessionToken == undefined || userId == undefined) {
       throw new Error('User was not logged in. Cannot request notifications.');
     }
-    fetch('/../v1/notifications/', {
-      headers: {
-        'SESSION_TOKEN': sessionToken,
-        'USER_ID': userId
+    self.registration.pushManager.getSubscription().then(function(subscription) {
+      if (subscription) {
+        var subscriptionId = subscription.subscriptionId;
+        fetch('/../v1/notifications/for/'+subscriptionId, {
+          headers: {
+            'SESSION_TOKEN': sessionToken,
+            'USER_ID': userId
+          }
+        }).then(function(response) {
+          response.text().then(function(txt) {
+            log('fetched notifications', txt);
+            var notifications = JSON.parse(txt);
+            resolve(notifications);
+          }).catch(reject)
+        }).catch(reject);
+      } else {
+        console.log('Was asked to get notifications before a subscription was created!')
       }
-    }).then(function(response) {
-      response.text().then(function(txt) {
-        log('fetched notifications', txt);
-        var notifications = JSON.parse(txt);
-        resolve(notifications);
-      }).catch(reject)
-    }).catch(reject);
+    });
   });
 }
 
@@ -67,7 +74,7 @@ function showNewNotifications() {
       showNotification(note.title, note.body, note.url, note.id);
     });
   }, function (reason) {
-    console.log('Failed to show notifications because '+reasons);
+    console.log('Failed to show notifications because '+reason);
   });
 }
 
@@ -90,13 +97,30 @@ self.addEventListener('message', function (e) {
 function handleNotificationClick(e) {
   log('Notification clicked: ', e.notification);
   e.notification.close();
-  return clients.getAll({
+  return clients.matchAll({
       type: 'window',
       includeUncontrolled: false
   }).catch(function(ex) {
       console.log(ex);
   }).then(function(clientList) {
       return clients.openWindow(e.notification.url);
+  });
+}
+
+function showNotificationIfNotShownPreviously(title, body, url, tag) {
+  var db = objectDB.open('db-1');
+  db.get().then(function(data)  {
+    console.log('data', data);
+    if (data.tags == undefined ) {
+      console.log('data.tags was blank')
+      data.tags = [];
+    }
+    if (data.tags.indexOf(tag) < 0) {
+      data.tags.push(tag);
+      console.log('data.tags',data.tags)
+      db.put('tags', data.tags);
+      showNotification(title, body, url, tag);
+    }
   });
 }
 
