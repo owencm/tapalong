@@ -133,7 +133,8 @@ def attending(request, activity_id):
 			# If the activity has more space
 			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
 				activity.attendees.add(user)
-				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title, 'icon': 'http://graph.facebook.com/'+str(activity.creator.fb_id)+'/picture'})
+				print activity.creator.image_url()
+				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title, 'icon': activity.creator.image_url()})
 			else:
 				print('No room for user at activity')
 				return HttpResponse('No room available')

@@ -26,9 +26,7 @@ self.addEventListener('push', function(e) {
   log('push listener', e);
   e.waitUntil(new Promise(function(resolve, reject) {
     getNotifications(function (notifications) {
-      notifications.map(function(note) {
-        showNotificationIfNotShownPreviously(note.title, note.body, note.url, note.icon, note.id);
-      });
+      showNotificationsIfNotShownPreviously(notifications);
       resolve();
     }, function (reason) {
       reject(reason);
@@ -86,7 +84,7 @@ function handleNotificationClick(e) {
   });
 }
 
-function showNotificationIfNotShownPreviously(title, body, url, icon, tag) {
+function showNotificationsIfNotShownPreviously(notifications) {
   var db = objectDB.open('db-1');
   db.get().then(function(data)  {
     console.log('data', data);
@@ -94,13 +92,14 @@ function showNotificationIfNotShownPreviously(title, body, url, icon, tag) {
       console.log('data.tags was blank')
       data.tags = [];
     }
-    if (data.tags.indexOf(tag) < 0) {
-      data.tags.push(tag);
-      console.log('data.tags',data.tags)
-      // This is not finishing before we do the next one in the for loop and read again :(
-      db.put('tags', data.tags);
-      showNotification(title, body, url, icon, tag);
+    for (var i = 0; i < notifications.length i++) {
+      var note = notifications[i];
+      if (data.tags.indexOf(note.tag) < 0) {
+        data.tags.push(note.tag);
+        showNotification(note.title, note.body, note.url, note.icon, note.tag);
+      }
     }
+    db.put('tags', data.tags);
   });
 }
 

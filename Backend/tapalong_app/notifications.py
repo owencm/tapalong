@@ -39,11 +39,13 @@ def send_tickle(subscription):
 		'Authorization': 'key=' + settings.GCM_API_KEY,
 	}
 	print('Sending a tickle!')
-	response = requests.post(url="https://android.googleapis.com/gcm/send",
-							 data=values,
-							 headers=headers)
-	print(response.content)
-	print('Response came back')
+	try:
+		response = requests.post(url="https://android.googleapis.com/gcm/send",
+								 data=values,
+								 headers=headers)
+		print(response.content)
+	except:
+		print 'Error sending tickle'
 
 def render_notification(note):
 	# Todo, handle different templates

@@ -7,8 +7,12 @@ class User(models.Model):
 	password = models.CharField(max_length = 30)
 	fb_id = models.IntegerField(blank=False)
 	friends = models.TextField(default='')
+
 	def __unicode__(self):
 		return self.name
+
+	def image_url(self):
+		return 'http://graph.facebook.com/'+str(self.fb_id)+'/picture'
 
 class Activity(models.Model):
 	# Many-to-one relationship with User
