@@ -27,7 +27,7 @@ self.addEventListener('push', function(e) {
   e.waitUntil(new Promise(function(resolve, reject) {
     getNotifications(function (notifications) {
       notifications.map(function(note) {
-        showNotificationIfNotShownPreviously(note.title, note.body, note.url, note.id);
+        showNotificationIfNotShownPreviously(note.title, note.body, note.url, note.icon, note.id);
       });
       resolve();
     }, function (reason) {
@@ -67,31 +67,10 @@ function getNotifications(resolve, reject) {
   });
 }
 
-function showNewNotifications() {
-  getNotifications(function (notifications) {
-    console.log('got notifications!');
-    notifications.map(function(note) {
-      showNotification(note.title, note.body, note.url, note.id);
-    });
-  }, function (reason) {
-    console.log('Failed to show notifications because '+reason);
-  });
-}
-
 self.addEventListener('notificationclick', function(e) {
   log('notificationclick listener', e);
   e.waitUntil(handleNotificationClick(e));
 });
-
-self.addEventListener('message', function (e) {
-  log('postMessage received', e.data);
-  if (e.data.showNotifications) {
-    showNewNotifications();
-  } else {
-    throw Error('Unrecognised postmessage')
-  }
-  e.ports[0].postMessage({success: 'true'});
-})
 
 //Utility function to handle the click
 function handleNotificationClick(e) {
@@ -107,7 +86,7 @@ function handleNotificationClick(e) {
   });
 }
 
-function showNotificationIfNotShownPreviously(title, body, url, tag) {
+function showNotificationIfNotShownPreviously(title, body, url, icon, tag) {
   var db = objectDB.open('db-1');
   db.get().then(function(data)  {
     console.log('data', data);
@@ -118,19 +97,20 @@ function showNotificationIfNotShownPreviously(title, body, url, tag) {
     if (data.tags.indexOf(tag) < 0) {
       data.tags.push(tag);
       console.log('data.tags',data.tags)
+      // This is not finishing before we do the next one in the for loop and read again :(
       db.put('tags', data.tags);
-      showNotification(title, body, url, tag);
+      showNotification(title, body, url, icon, tag);
     }
   });
 }
 
 //Utility function to actually show the notification.
-function showNotification(title, body, url, tag) {
+function showNotification(title, body, url, icon, tag) {
   var options = {
     body: body,
     tag: tag,
     // lang: 'test lang',
-    icon: 'icon.png',
+    icon: 'images/icon.png',
     data: {url: url},
     vibrate: 1000,
     noscreen: false
@@ -140,5 +120,3 @@ function showNotification(title, body, url, tag) {
     self.registration.showNotification(title, options);
   }
 }
-
-showNewNotifications();

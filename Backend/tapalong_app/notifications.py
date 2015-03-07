@@ -38,16 +38,19 @@ def send_tickle(subscription):
 		'Content-Type': 'application/json',
 		'Authorization': 'key=' + settings.GCM_API_KEY,
 	}
+	print('Sending a tickle!')
 	response = requests.post(url="https://android.googleapis.com/gcm/send",
 							 data=values,
 							 headers=headers)
 	print(response.content)
+	print('Response came back')
 
 def render_notification(note):
 	# Todo, handle different templates
 	options = json.loads(note.options)
 	return {'title': options['activity_title'],
-			'body': options['attending_user_name'] + ' is coming along too',
+			'body': options['attending_user_name'] + ' is coming along',
+			'icon': options['icon'],
 			'url': 'https://www.google.com/',
 			'id': note.id}
 
