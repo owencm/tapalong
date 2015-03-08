@@ -18,7 +18,7 @@ var network = (function() {
         throw ('login request failed');
       }
     });
-  }
+  };
   var processActivitiesFromServer = function (responseText) {
     // Strip activity label for each item
     var activities = JSON.parse(responseText).map(function (activity) {
@@ -59,10 +59,9 @@ var network = (function() {
     sendRequest('/../v1/activities/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), function () {
       if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
-        console.log('Network provided the following start time: ',updatedActivity.start_time);
         updatedActivity.start_time = new Date(updatedActivity.start_time);
-        console.log('Which we parsed into: ',updatedActivity.start_time);
-        models.activities.updateActivity(updatedActivity.activity_id, updatedActivity);
+        updatedActivity.id = activity.id;
+        models.activities.updateActivity(updatedActivity.id, updatedActivity);
         success();
       } else {
         failure();
@@ -74,7 +73,8 @@ var network = (function() {
       if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
         updatedActivity.start_time = new Date(updatedActivity.start_time);
-        models.activities.updateActivity(updatedActivity.activity_id, updatedActivity);
+        updatedActivity.id = activity.id;
+        models.activities.updateActivity(updatedActivity.id, updatedActivity);
         success();
       } else {
         failure();
@@ -84,7 +84,7 @@ var network = (function() {
   var requestCancelActivity = function (activity, success, failure) {
     sendRequest('/../v1/activities/'+activity.activity_id+'/cancel/', 'post', '', function () {
       if(this.status >= 200 && this.status < 400) {
-        models.activities.removeActivity(activity.activity_id);
+        models.activities.removeActivity(activity.id);
         success();
       } else {
         failure();

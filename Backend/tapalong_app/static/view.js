@@ -268,7 +268,7 @@ var view = (function (models) {
     detailSection.querySelector('.option').onclick = function (e) {
       // Creators edit, non creators attend
       if (activity.is_creator) {
-        selectedActivity = activity.activity_id;
+        selectedActivity = activity.id;
         changeState(STATE.edit, {}, true);
       } else {
         // Note no callback since the list will automatically redraw when this changes
@@ -360,15 +360,15 @@ var view = (function (models) {
       var activityHTML = template(config);
       activitiesSection.insertAdjacentHTML('beforeend', activityHTML);
       // Make this specific to each activity
-      var activityElem = document.querySelector('#activity-'+activity.activity_id);
+      var activityElem = document.querySelector('#activity-'+activity.id);
       activityElem.onclick = function () {
-        selectedActivity = activity.activity_id;
+        selectedActivity = activity.id;
         changeState(STATE.detail, {}, true);
       };
       activityElem.querySelector('.option').onclick = function (e) {
         // Creators edit, non creators attend
         if (activity.is_creator) {
-          selectedActivity = activity.activity_id;
+          selectedActivity = activity.id;
           changeState(STATE.edit, {}, true);
         } else {
           // Note no callback since the list will automatically redraw when this changes

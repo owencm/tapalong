@@ -69,32 +69,37 @@ var models = (function () {
   var activities = (function () {
     var activities = [];
     var listenerModule = ListenerModule();
+    var maxActivityId = 0;
     var addActivity = function (activity) {
       var validity = validateNewActivity(activity);
       if (!validity.isValid) {
         throw Error('Invalid activity attempted to be added: '+validity.reason);
       }
+      activity.id = maxActivityId++;
       activities.push(activity);
       // TODO(owen): insert at the right point to maintain date sort rather than this hack
       fixActivitiesOrder();
       listenerModule.change();
     };
     // Use this so we don't trigger two change events when we remove and readd
-    var updateActivity = function (activity_id, activity) {
-       activities = activities.filter(function(activity) {
-        return (activity.activity_id !== activity_id);
+    var updateActivity = function (id, newActivity) {
+      if (newActivity.id !== id) {
+        throw new Error('Tried to update an activity to a new activity whose id didn\'t match');
+      }
+      activities = activities.filter(function(activity) {
+        return (activity.id !== id);
       });
-      addActivity(activity);
+      addActivity(newActivity);
       listenerModule.change();   
     }
-    var removeActivity = function (activity_id) {
+    var removeActivity = function (id) {
       activities = activities.filter(function(activity) {
-        return (activity.activity_id !== activity_id);
+        return (activity.id !== id);
       });
       listenerModule.change();
     };
-    var getActivity = function (activity_id) { 
-      return activities.filter(function (activity) { return activity.activity_id == activity_id; } )[0];
+    var getActivity = function (id) { 
+      return activities.filter(function (activity) { return activity.id == id; } )[0];
     };
     var getActivities = function () {
       return activities;
@@ -107,6 +112,8 @@ var models = (function () {
         var validity = validateNewActivity(activity);
         if (!validity.isValid) {
           console.log('Not showing activity '+activity.activity_id+' from server because '+validity.reason);
+        } else {
+          activity.id = maxActivityId++;
         }
         return validity.isValid;
       });
@@ -129,9 +136,9 @@ var models = (function () {
     var trySetAttending = function (activity, attending, success, failure) {
       network.requestSetAttending(activity, attending, success, failure);
     };
-    var setAttending = function (activity_id, attending) {
+    var setAttending = function (id, attending) {
       throw('Should not be changing is_attending on client side');
-      var activity = getActivity(activity_id);
+      var activity = getActivity(id);
       activity.is_attending = !activity.is_attending;
       listenerModule.change();
     };
@@ -148,7 +155,7 @@ var models = (function () {
         } else if (b > a) {
           return 1;
         } else {
-          return (activityA.activity_id < activityB.activity_id) ? -1 : 1;
+          return (activityA.id < activityB.id) ? -1 : 1;
         }
       });
       activities.reverse();
@@ -183,12 +190,6 @@ var models = (function () {
     var tryRefreshActivities = function (success, failure) {
       network.getActivitiesFromServer(success, failure);
     };
-    // var hasActivitiesFromFriends = function () {
-    //   var friendsActivities = activities.filter(function (activity) {
-    //     return !activity.is_creator;
-    //   });
-    //   return (friendsActivities.length > 0);
-    // };
     return {
       tryRefreshActivities: tryRefreshActivities,
       tryCreateActivity: tryCreateActivity,
