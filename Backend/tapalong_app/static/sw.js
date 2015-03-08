@@ -112,7 +112,7 @@ function showNotification(title, body, url, icon, tag) {
     body: body,
     tag: tag,
     // lang: 'test lang',
-    icon: 'images/icon.png',
+    icon: icon,
     data: {url: url},
     vibrate: 1000,
     noscreen: false

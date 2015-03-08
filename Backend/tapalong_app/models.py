@@ -14,6 +14,9 @@ class User(models.Model):
 	def image_url(self):
 		return 'http://graph.facebook.com/'+str(self.fb_id)+'/picture'
 
+	def large_image_url(self):
+		return self.image_url() + '?type=large'
+
 class Activity(models.Model):
 	# Many-to-one relationship with User
 	creator = models.ForeignKey(User, related_name='event_set', blank=False)

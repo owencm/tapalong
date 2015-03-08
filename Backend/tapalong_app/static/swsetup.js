@@ -38,22 +38,23 @@ var swLibrary = (function() {
     network.requestCreatePushNotificationsSubscription(subscription);
   };
 
-  var subscribeForPushNotifications = function (success) {
+  var subscribeForPushNotifications = function (callback) {
     navigator.serviceWorker.ready.then(function(registration) {
       console.log('Registering for push');
       registration.pushManager.subscribe()
         .then(function(pushSubscription) {
           console.log('Subscription succeeded', pushSubscription);
-          success(pushSubscription);
+          callback(pushSubscription);
         }, function (e) {
           console.log('registering for push failed', e);
         });
     });
   };
 
-  var unsubscribe = function (subscription) {
+  var unsubscribe = function (subscription, callback) {
     subscription.unsubscribe().then(function(){
       console.log('Unsubscribed');
+      callback();
     }, function () {
       console.log('Unregistration failed');
     });
@@ -71,6 +72,19 @@ var swLibrary = (function() {
       throw Error('No service worker exists, can\'t send a message');
     }
   };
+
+  var _unsubscribeAndResubscribe = function () {
+    navigator.serviceWorker.ready.then(function(registration){
+      registration.pushManager.getSubscription().then(function(pushSubscription){
+        if (pushSubscription) {
+          unsubscribe(pushSubscription, function(){subscribeForPushNotifications(sendSubscriptionToServer);});
+        } else {
+          console.log('no subscription to unsubscribe');
+          subscribeForPushNotifications(sendSubscriptionToServer);
+        }
+      });
+    });
+  }
 
   var init = function () {
     if (browserSupportsSW) {
@@ -112,6 +126,7 @@ var swLibrary = (function() {
 
   return {
     hasPushNotificationPermission: hasPushNotificationPermission,
-    requestPushNotificationPermissionAndSubscribe: requestPushNotificationPermissionAndSubscribe
+    requestPushNotificationPermissionAndSubscribe: requestPushNotificationPermissionAndSubscribe,
+    _unsubscribeAndResubscribe: _unsubscribeAndResubscribe
   }
 })();

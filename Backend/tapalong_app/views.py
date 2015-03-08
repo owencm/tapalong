@@ -134,7 +134,7 @@ def attending(request, activity_id):
 			if activity.max_attendees == -1 or activity.attendees.count() < activity.max_attendees:
 				activity.attendees.add(user)
 				print activity.creator.image_url()
-				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title, 'icon': activity.creator.image_url()})
+				notifications.create_notification(activity.creator.id, 'now_attending', {'attending_user_name': user.name, 'activity_id': activity.id, 'activity_title': activity.title, 'icon': user.large_image_url()})
 			else:
 				print('No room for user at activity')
 				return HttpResponse('No room available')
