@@ -83,13 +83,20 @@ var models = (function () {
     };
     // Use this so we don't trigger two change events when we remove and readd
     var updateActivity = function (id, newActivity) {
+      var validity = validateNewActivity(newActivity);
+      if (!validity.isValid) {
+        throw Error('Invalid activity attempted to be updated: '+validity.reason);
+      }
       if (newActivity.id !== id) {
         throw new Error('Tried to update an activity to a new activity whose id didn\'t match');
       }
-      activities = activities.filter(function(activity) {
-        return (activity.id !== id);
-      });
-      addActivity(newActivity);
+      for (var i = 0; i < activities.length; i++) {
+        if (activities[i].id == id) {
+          // Instead of modifying the one activity, maybe just splice the array and replace it?
+          activities[i] = newActivity;
+        };
+      }
+      fixActivitiesOrder();
       listenerModule.change();   
     }
     var removeActivity = function (id) {
@@ -133,8 +140,8 @@ var models = (function () {
     var tryUpdateActivity = function (activity, activityChanges, success, failure) {
       network.requestUpdateActivity(activity, activityChanges, success, failure);
     };
-    var trySetAttending = function (activity, attending, success, failure) {
-      network.requestSetAttending(activity, attending, success, failure);
+    var trySetAttending = function (activity, attending, optimistic, success, failure) {
+      network.requestSetAttending(activity, attending, optimistic, success, failure);
     };
     var setAttending = function (id, attending) {
       throw('Should not be changing is_attending on client side');
@@ -174,7 +181,7 @@ var models = (function () {
         return {isValid: false, reason: 'missing title'};
       }
       if (!activity.start_time || !(activity.start_time instanceof Date)) {
-        return {isValid: false, reason: 'date wasnt a date object or was missing'};
+        return {isValid: false, reason: 'start_time wasnt a date object or was missing'};
       }
       if (activity.start_time && activity.start_time instanceof Date) {
         // Allow users to see and edit events up to 2 hours in the past

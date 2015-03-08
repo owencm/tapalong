@@ -55,12 +55,31 @@ var network = (function() {
       }
     });
   };
-  var requestSetAttending = function (activity, attending, success, failure) {
+  var requestSetAttending = function (activity, attending, optimistic, success, failure) {
+    if (optimistic) {
+      console.log('Set attending optimistically!');
+      // TODO: do a more efficient copy!
+      var activityCopy = JSON.parse(JSON.stringify(activity));
+      // Parse the start_time since we serialized it in the copy :(
+      activityCopy.start_time = new Date(activityCopy.start_time);
+      activityCopy.is_attending = attending;
+      var userName = models.user.getUserName();
+      if (attending) {
+        activityCopy.attendees.push(userName);
+      } else {
+        activityCopy.attendees = activityCopy.attendees.filter(function(attendeeName) {
+          return attendeeName !== userName;
+        });
+      }
+      activityCopy.dirty = true;
+      models.activities.updateActivity(activityCopy.id, activityCopy);
+    }
     sendRequest('/../v1/activities/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), function () {
       if(this.status >= 200 && this.status < 400) {
         var updatedActivity = JSON.parse(this.responseText).activity;
         updatedActivity.start_time = new Date(updatedActivity.start_time);
         updatedActivity.id = activity.id;
+        // Note updatedAcitivy won't have dirty set
         models.activities.updateActivity(updatedActivity.id, updatedActivity);
         success();
       } else {
@@ -109,7 +128,9 @@ var network = (function() {
       console.log('Sending an unauthenticated request since we haven\'t logged in yet');
     }
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
-    req.send(body);
+    setTimeout(function() {
+      req.send(body);
+    }, 0);
   }
   var sendToServiceWorker = function (data) {
     navigator.serviceWorker.controller.postMessage(data);

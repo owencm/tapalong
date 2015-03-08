@@ -184,7 +184,7 @@ section.card input:focus, section.card textarea:focus {
 	box-shadow: 0 1px 0 0px #00BAD2;
 }
 
-section.card.detail {
+section#activityDetails {
 	-webkit-animation: fadeIn 0.5s;
 }
 

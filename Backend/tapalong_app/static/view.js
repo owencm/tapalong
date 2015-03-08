@@ -272,11 +272,11 @@ var view = (function (models) {
         changeState(STATE.edit, {}, true);
       } else {
         // Note no callback since the list will automatically redraw when this changes
-        models.activities.trySetAttending(activity, !activity.is_attending, function () {
-          swLibrary.hasPushNotificationPermission(function(){}, function() {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.detail, userTriggered: true, reason: 'a friend says they want to come along'}, false);
-          });
+        var optimistic = activity.dirty == undefined;
+        models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {
+          console.log('Request to attending was a success');
         }, function () {
+          console.log('Uhoh, an optimistic error was a mistake!!');
           alert('An unexpected error occurred. Please refresh.');
         });
       }
@@ -371,17 +371,19 @@ var view = (function (models) {
           selectedActivity = activity.id;
           changeState(STATE.edit, {}, true);
         } else {
-          // Note no callback since the list will automatically redraw when this changes
-          models.activities.trySetAttending(activity, !activity.is_attending, function () {
-          // If the user is opting in, show them the prompt
+          // Optimistically move onto the next page
           if (!activity.is_attending) {
             swLibrary.hasPushNotificationPermission(function(){}, function() {
               changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
             });
           }
-          }, function () {
+          // Note no callback since the list will automatically redraw when this changes
+          var optimistic = activity.dirty == undefined;
+          models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {}, function () {
+            console.log('Uhoh, an optimistic error was a mistake!!');
             alert('An unexpected error occurred. Please refresh.');
           });
+          // If the user is opting in, show them the prompt
         }
         this.classList.add('disabled');
         e.stopPropagation();
