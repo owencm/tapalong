@@ -88,18 +88,21 @@ function showNotificationsIfNotShownPreviously(notifications) {
   var db = objectDB.open('db-1');
   db.get().then(function(data)  {
     console.log('data', data);
-    if (data.tags == undefined ) {
-      console.log('data.tags was blank')
-      data.tags = [];
+    if (data.notificationIds == undefined ) {
+      console.log('data.notificationIds was blank')
+      data.notificationIds = [];
     }
-    for (var i = 0; i < notifications.length i++) {
+    for (var i = 0; i < notifications.length; i++) {
       var note = notifications[i];
-      if (data.tags.indexOf(note.tag) < 0) {
-        data.tags.push(note.tag);
-        showNotification(note.title, note.body, note.url, note.icon, note.tag);
+      if (data.notificationIds.indexOf(note.id) < 0) {
+        console.log('havent shown note '+note.id+' before');
+        data.notificationIds.push(note.id);
+        showNotification(note.title, note.body, note.url, note.icon, note.id);
+      } else {
+        console.log('we showed note '+note.id+' previously so skip it');
       }
     }
-    db.put('tags', data.tags);
+    db.put('notificationIds', data.notificationIds);
   });
 }
 

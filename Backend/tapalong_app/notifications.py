@@ -30,7 +30,6 @@ def send_tickle(subscription):
 	values = {
 		'registration_ids': [subscription.subscription_id],
 		'data': {}
-		# TODO: TTL
 	}
 	values = json.dumps(values)
 	headers = {
@@ -38,7 +37,7 @@ def send_tickle(subscription):
 		'Content-Type': 'application/json',
 		'Authorization': 'key=' + settings.GCM_API_KEY,
 	}
-	print('Sending a tickle!')
+	print('Sending a tickle to '+subscription.recipient.name)
 	try:
 		response = requests.post(url="https://android.googleapis.com/gcm/send",
 								 data=values,
@@ -57,6 +56,7 @@ def render_notification(note):
 			'id': note.id}
 
 def get_active(user_id):
+	print 'getting active for '+str(user_id)
 	potential_notifications = Notification.objects.filter(dismissed = False, expired = False, user = User.objects.get(id=user_id))
 	active_notifications = []
 	for note in potential_notifications:

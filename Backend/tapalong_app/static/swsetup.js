@@ -86,29 +86,27 @@ var swLibrary = (function() {
     var userChanged = function() {
       var userId = models.user.getUserId();
       var sessionToken = models.user.getSessionToken();
-      // If the user is logged in
-      if (userId !== undefined && sessionToken !== undefined) {
-        // If we have permission but lost our pushSubscription, make a new one.
-        navigator.serviceWorker.ready.then(function(registration) {
-          hasPushNotificationPermission(function () {
+      navigator.serviceWorker.ready.then(function(registration) {
+        hasPushNotificationPermission(function () {
+          if (userId !== undefined && sessionToken !== undefined) {
             registration.pushManager.getSubscription().then(function(pushSubscription) {
               if (!pushSubscription) {
                 console.log('ruh roh, we lost our push subscription (or we never managed to make one - were you offline?). Better make a new one...');
                 subscribeForPushNotifications(sendSubscriptionToServer);
               }
             });
-          }, function () {
-            // If we don't have permission for push messages make sure we've cleared subscriptions (Chrome has a bug where it doesn't do this)
-            registration.pushManager.getSubscription().then(function(pushSubscription) {
-                if (pushSubscription) { unsubscribe(pushSubscription); }
-            });
+          }
+        }, function () {
+          // If we don't have permission for push messages make sure we've cleared subscriptions (Chrome has a bug where it doesn't do this)
+          registration.pushManager.getSubscription().then(function(pushSubscription) {
+            if (pushSubscription) { unsubscribe(pushSubscription); }
           });
         });
-      }
+      });
     };
     userChanged();
     models.user.addListener(userChanged);
-  };
+  }
 
   init();
 
