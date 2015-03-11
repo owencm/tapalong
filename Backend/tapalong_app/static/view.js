@@ -263,7 +263,7 @@ var view = (function (models) {
     var source = document.querySelector('#activity-details-template').innerHTML;
     var template = Handlebars.compile(source);
     var activity = models.activities.getActivity(selectedActivity);
-    var config = {activity: activity, hasAttendees: activity.attendees.length > 0};
+    var config = {activity: activity, hasAttendees: activity.attendees.length > 0, hasDescription: activity.description !== ''};
     detailSection.innerHTML = template(config);
     detailSection.querySelector('.option').onclick = function (e) {
       // Creators edit, non creators attend

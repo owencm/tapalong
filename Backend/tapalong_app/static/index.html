@@ -83,11 +83,13 @@
           <p><b>{{activity.title}}</b></p>
           <p>{{datetimeString activity.start_time}}</p>
           <p>Created by: {{activity.creator_name}}</p>
-          <p><b>Description</b></p>
-          <pre>{{activity.description}}</pre>
+          {{#if hasDescription}}
+            <p><b>Description</b></p>
+            <pre>{{activity.description}}</pre>
+          {{/if}}
           {{#if hasAttendees}}
+            <p><b>Friends going</b></p>
             <p>
-              Also going:
               {{#each activity.attendees}}
                 {{this}},
               {{/each}}.
