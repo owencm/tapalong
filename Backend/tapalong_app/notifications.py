@@ -37,7 +37,7 @@ def send_tickle(subscription):
 		'Content-Type': 'application/json',
 		'Authorization': 'key=' + settings.GCM_API_KEY,
 	}
-	print('Sending a tickle to '+subscription.recipient.name)
+	print('Sending a tickle to '+subscription.recipient.name + ' via '+str(subscription.subscription_id))
 	try:
 		response = requests.post(url="https://android.googleapis.com/gcm/send",
 								 data=values,

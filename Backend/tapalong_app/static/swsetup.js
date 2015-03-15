@@ -34,7 +34,9 @@ var swLibrary = (function() {
     });
   }
 
-  var sendSubscriptionToServer = function (subscription) {
+  var sendSubscriptionToServer = function (subscriptionObj) {
+    // Recreate the object due to https://code.google.com/p/chromium/issues/detail?id=467366
+    var subscription = {subscriptionId: subscriptionObj.subscriptionId, endpoint: subscriptionObj.endpoint};
     network.requestCreatePushNotificationsSubscription(subscription);
   };
 

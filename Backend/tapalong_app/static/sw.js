@@ -26,8 +26,8 @@ self.addEventListener('push', function(e) {
   log('push listener', e);
   e.waitUntil(new Promise(function(resolve, reject) {
     getNotifications(function (notifications) {
-      showNotificationsIfNotShownPreviously(notifications);
-      resolve();
+      // This is async so resolve once it's done and the notifications are showing
+      showNotificationsIfNotShownPreviously(notifications, resolve);
     }, function (reason) {
       reject(reason);
     });
@@ -84,7 +84,7 @@ function handleNotificationClick(e) {
   });
 }
 
-function showNotificationsIfNotShownPreviously(notifications) {
+function showNotificationsIfNotShownPreviously(notifications, success) {
   var db = objectDB.open('db-1');
   db.get().then(function(data)  {
     console.log('data', data);
@@ -103,6 +103,7 @@ function showNotificationsIfNotShownPreviously(notifications) {
       }
     }
     db.put('notificationIds', data.notificationIds);
+    success();
   });
 }
 
