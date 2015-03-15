@@ -1,4 +1,4 @@
-var skipLogin = true;
+var skipLogin = false;
 
 if (skipLogin) {  
   // view.debugSkipLogin(5, 'Ally Gale', 'letmein');
@@ -32,13 +32,10 @@ if (skipLogin) {
       version    : 'v2.0' // use version 2.0
     });
 
-    // This is called once everything is initialized and you are able to attempt to login
-    view.setLoginButtonCallback(function () {
-      setTimeout(function () {
-        alert('Logging in now. Please wait up to 30s');
-      }, 100);
-      FB.getLoginStatus(function(response) {
-        statusChangeCallback(response);
+    FB.getLoginStatus(function(response) {
+      // This is called once everything is initialized and you are able to attempt to login
+      view.setLoginButtonCallback(function () {
+          statusChangeCallback(response);
       });
     });
   };

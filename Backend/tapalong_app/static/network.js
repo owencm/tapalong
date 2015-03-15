@@ -1,6 +1,7 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 
 var network = (function() {
+  var firstListOfActivitiesLoadedFlag = false;
   var login = function (fb_token, success, failure) {
     console.log('Logging in to the app');
     sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), function() {
@@ -30,6 +31,7 @@ var network = (function() {
       activity.start_time = new Date(activity.start_time);
     });
     models.activities.setActivities(activities);
+    firstListOfActivitiesLoadedFlag = true;
   };
   var getActivitiesFromServer = function (success, failure) {
     sendRequest('/../v1/activities/visible_to_user/', 'get', '', function() {
@@ -130,10 +132,13 @@ var network = (function() {
     req.setRequestHeader('CONTENT_TYPE', 'application/json');
     setTimeout(function() {
       req.send(body);
-    }, 0);
+    }, 3000);
   }
   var sendToServiceWorker = function (data) {
     navigator.serviceWorker.controller.postMessage(data);
+  }
+  var firstListOfActivitiesLoaded = function () {
+    return firstListOfActivitiesLoadedFlag;
   }
   return {
     getActivitiesFromServer: getActivitiesFromServer,

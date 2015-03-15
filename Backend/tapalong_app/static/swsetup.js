@@ -1,13 +1,13 @@
 // TODO: make sure this all works in browsers without SW support. Checks are half baked today.
 var reg;
 var swLibrary = (function() {
-  var browserSupportsSW = false;
-  if ('serviceWorker' in navigator) {
-    browserSupportsSW = true
+  var browserSupportsSWAndNotifications = false;
+  if ('serviceWorker' in navigator && typeof Notification !== 'undefined') {
+    browserSupportsSWAndNotifications = true
   }
 
   var hasPushNotificationPermission = function(success, failure) {
-    if (!browserSupportsSW) {
+    if (!browserSupportsSWAndNotifications) {
       failure();
       return;
     }
@@ -87,7 +87,7 @@ var swLibrary = (function() {
   }
 
   var init = function () {
-    if (browserSupportsSW) {
+    if (browserSupportsSWAndNotifications) {
       navigator.serviceWorker.register('./sw.js').then(function(registration) {
         // Registration was successful
         console.log('ServiceWorker registration successful with scope: ', registration.scope);

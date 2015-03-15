@@ -208,6 +208,8 @@ var view = (function (models) {
 
     editSection.querySelector('.option.save').onclick = function () {
       var thisButton = this; 
+      thisButton.classList.add('disabled');
+      thisButton.innerHTML = 'Saving...';
       var title = editSection.querySelector('input#title').value;
       var description = editSection.querySelector('textarea#description').value;
       // date assumes the input was in GMT and then converts to local time
@@ -236,7 +238,6 @@ var view = (function (models) {
         });
       } else {
         var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
-        thisButton.classList.add('disabled');
         models.activities.tryCreateActivity(newActivity, function () {
           swLibrary.hasPushNotificationPermission(function() {
             changeState(STATE.list, {}, true);
@@ -401,8 +402,9 @@ var view = (function (models) {
     models.user.setUserName(userName);
     models.user.setUserId(userId);
     models.user.setSessionToken(sessionToken);
+    // TODO: Change to the list before we even have the activities to avoid an extra RTT on first load
     models.activities.tryRefreshActivities(function () {
-      changeState(STATE.list, {}, true);
+        changeState(STATE.list, {}, true);
     });
   };
   var fbLoginSuccess = function (fbToken) {

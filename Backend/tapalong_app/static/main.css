@@ -13,7 +13,7 @@ body {
 	overflow: auto;
 }
 
-input {
+input, textarea {
 	font-family: inherit;
 	font-size: inherit;
 }
@@ -156,6 +156,10 @@ section.card input#title {
 }
 
 section.card input#title::-webkit-input-placeholder {
+	font-weight: lighter;
+}
+
+section.card textarea#description::-webkit-input-placeholder {
 	font-weight: lighter;
 }
 
