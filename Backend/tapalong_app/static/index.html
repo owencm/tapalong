@@ -85,13 +85,17 @@
           <p>Created by: {{activity.creator_name}}</p>
           {{#if hasDescription}}
             <p><b>Description</b></p>
-            <pre>{{activity.description}}</pre>
+            <div>
+              {{#each descriptionLines}}
+                {{this}}{{#unless @last}}<br />{{/unless}}
+              {{/each}}
+            </div>
           {{/if}}
           {{#if hasAttendees}}
             <p><b>Friends going</b></p>
             <p>
               {{#each activity.attendees}}
-                {{this}},
+                {{this}}{{#unless @last}},{{/unless}}
               {{/each}}.
             </p>
           {{/if}}

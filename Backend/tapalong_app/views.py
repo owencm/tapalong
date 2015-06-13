@@ -24,9 +24,10 @@ def login_user(request):
 		facebook.set_access_token(fb_token)
 		# Gets info about myself 
 		# Todo: what if this fails?
-		me = facebook.get_myself()
+		fb_user = facebook.get_myself()
 		try:
-			user = User.objects.get(fb_id=me.id)
+			user = User.objects.get(fb_id=fb_user.id)
+			print('logging in as user ',user.id)
 			refreshFriends(facebook, user)
 			# Start dat session
 			session_token = sessions.start_session(user.id)
@@ -35,7 +36,7 @@ def login_user(request):
 			return HttpResponse(json_output, mimetype='application/json')
 		except User.DoesNotExist:
 			# TODO: catch errors here
-			user = User(name=me.name, fb_id=me.id)
+			user = User(name=fb_user.name, fb_id=fb_user.id)
 			user.save()
 			refreshFriends(facebook, user)
 			session_token = sessions.start_session(user.id)

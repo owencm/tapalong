@@ -237,7 +237,7 @@ var view = (function (models) {
           throw('Editing the activity failed. Help the user understand why.');
         });
       } else {
-        var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: ''};
+        var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: description};
         models.activities.tryCreateActivity(newActivity, function () {
           swLibrary.hasPushNotificationPermission(function() {
             changeState(STATE.list, {}, true);
@@ -264,7 +264,7 @@ var view = (function (models) {
     var source = document.querySelector('#activity-details-template').innerHTML;
     var template = Handlebars.compile(source);
     var activity = models.activities.getActivity(selectedActivity);
-    var config = {activity: activity, hasAttendees: activity.attendees.length > 0, hasDescription: activity.description !== ''};
+    var config = {activity: activity, hasAttendees: activity.attendees.length > 0, hasDescription: activity.description !== '', descriptionLines: activity.description.split('\n')};
     detailSection.innerHTML = template(config);
     detailSection.querySelector('.option').onclick = function (e) {
       // Creators edit, non creators attend

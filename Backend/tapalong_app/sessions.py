@@ -3,6 +3,7 @@ from django.utils.timezone import utc
 import datetime
 import random
 import math
+from django.utils.crypto import constant_time_compare
 
 # This generates and returns a new session token for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
 # It may be modified to take a user rather than the ID.
@@ -15,22 +16,23 @@ def start_session(user_id):
 	token = system_random.randrange(0, math.pow(2, 63))
 	session = Session(user=user, expires_at=expires_at, token=token)
 	session.save()
+	print('started session, issued token: ', token)
+	for s in Session.objects.filter(user=user):
+		print(s.token)
 	return token
 
 # Use this to check if a session token is valid
 def is_valid_token_for_user(token, user_id):
-	try:
-		# Owen is really really good at security. NAWT.
-		if (token == "letmein"):
-			return True
-		user = User.objects.get(id=user_id)
-		# Todo: ensure user still exists
-		# For loop in case of token collisions in Session table
-		# Todo: ensure this filtering takes the same amount of time regardless how close token is
-		for session in Session.objects.filter(token=token):
-			if session.user == user:
-				if not session.has_expired():
-					return True
-		return False
-	except:
-		return False
+	# Owen is really really good at security. NAWT.
+	if (token == "letmein"):
+		return True
+	user = User.objects.get(id=user_id)
+	# Todo: ensure user still exists
+	# Get all the sessions issued for this user
+	for session in Session.objects.filter(user=user):
+		# Check with constant time (to avoid timing attacks) whether the tokens match
+		if constant_time_compare(str(session.token), str(token)):
+			# Check the token is still valid
+			if not session.has_expired():
+				return True
+	return False
