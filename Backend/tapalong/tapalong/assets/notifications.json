@@ -1,0 +1,8 @@
+{
+	"notifications": [
+		{"title": "This is my title",
+		"body": "This is my body",
+		"url": "https://www.google.com/",
+		"id": "magic-id"}
+	]
+}
