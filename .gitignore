@@ -1,22 +1,5 @@
-# django specific
-*.db
-*.pyc
 
-# xcode specific
-build/*
-*.pbxuser
-*.mode2v3
-*.mode1v3
-*.perspective
-*.perspectivev3
-*~.nib
-#ignore private workspace stuff added by Xcode4
-xcuserdata
-project.xcworkspace
-
-# generic files to ignore
-*~
-*.lock
-*.DS_Store
-*.swp
-*.out
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
