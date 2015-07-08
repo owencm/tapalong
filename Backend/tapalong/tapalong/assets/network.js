@@ -124,12 +124,12 @@ var network = (function() {
     var sessionToken = models.user.getSessionToken();
     var userId = models.user.getUserId();
     if (sessionToken !== undefined && userId !== undefined) {
-      req.setRequestHeader('SESSION_TOKEN', sessionToken);
-      req.setRequestHeader('USER_ID', userId);
+      req.setRequestHeader('Session-Token', sessionToken);
+      req.setRequestHeader('User-Id', userId);
     } else {
       console.log('Sending an unauthenticated request since we haven\'t logged in yet');
     }
-    req.setRequestHeader('CONTENT_TYPE', 'application/json');
+    req.setRequestHeader('Content-Type', 'application/json');
     setTimeout(function() {
       req.send(body);
     }, 0);
