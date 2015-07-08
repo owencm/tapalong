@@ -404,7 +404,9 @@ var view = (function (models) {
     models.user.setSessionToken(sessionToken);
     // TODO: Change to the list before we even have the activities to avoid an extra RTT on first load
     models.activities.tryRefreshActivities(function () {
-        changeState(STATE.list, {}, true);
+      changeState(STATE.list, {}, true);
+    }, function () {
+      console.log('Failed to download activities')
     });
   };
   var fbLoginSuccess = function (fbToken) {
