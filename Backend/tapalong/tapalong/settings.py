@@ -31,14 +31,26 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.messages.context_processors.messages',
 )
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': os.path.join(BASE_DIR, 'sqlite3.db'), # Or path to database file if using sqlite3.
+#         # The following settings are not used with sqlite3:
+#         'USER': '',
+#         'PASSWORD': '',
+#         'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+#         'PORT': '',  # Set to empty string for default.
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(BASE_DIR, 'sqlite3.db'), # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'django_db_1', # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': '',
+        'USER': 'root',
         'PASSWORD': '',
-        'HOST': '',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'HOST': 'localhost',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '',  # Set to empty string for default.
     }
 }
