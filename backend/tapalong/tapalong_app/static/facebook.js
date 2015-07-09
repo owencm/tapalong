@@ -14,10 +14,10 @@ if (skipLogin) {
       view.fbLoginSuccess(response.authResponse.accessToken);
     } else if (response.status === 'not_authorized') {
       console.log('user hasnt authorized the app');      
-      FB.login(statusChangeCallback, {display : 'touch'});
+      FB.login(statusChangeCallback);
       // The person is logged into Facebook, but not your app.
     } else {
-      FB.login(statusChangeCallback, {display : 'touch'});
+      FB.login(statusChangeCallback);
       // The person is not logged into Facebook, so we're not sure if
       // they are logged into this app or not.
     }
@@ -26,10 +26,8 @@ if (skipLogin) {
   window.fbAsyncInit = function() {
     FB.init({
       appId      : '175370155978273',
-      cookie     : true,  // enable cookies to allow the server to access 
-                          // the session
       xfbml      : false,  // parse social plugins on this page
-      version    : 'v2.0' // use version 2.0
+      version    : 'v2.3' 
     });
 
     FB.getLoginStatus(function(response) {
@@ -43,9 +41,11 @@ if (skipLogin) {
   // Load the SDK asynchronously
   (function(d, s, id) {
     var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
+    if (d.getElementById(id)) { return };
     js = d.createElement(s); js.id = id;
     js.src = "//connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
+
+
 }
