@@ -3,7 +3,7 @@ from django.utils.timezone import utc
 import datetime
 
 class User(models.Model):
-	name = models.CharField(max_length = 20, blank=False)
+	name = models.CharField(max_length = 30, blank=False)
 	password = models.CharField(max_length = 30)
 	fb_id = models.IntegerField(blank=False)
 	friends = models.TextField(default='')
@@ -22,8 +22,8 @@ class Activity(models.Model):
 	creator = models.ForeignKey(User, related_name='event_set', blank=False)
 	pub_date = models.DateTimeField(auto_now_add=True)
 	start_time = models.DateTimeField(blank=False)
-	title = models.CharField(max_length=30, blank=False)
-	description = models.CharField(max_length=300, default='')
+	title = models.CharField(max_length=60, blank=False)
+	description = models.CharField(max_length=1024, default='')
 	attendees = models.ManyToManyField(User, related_name='attending_set')
 	location = models.CharField(max_length=60)
 	# 0 will represent no max here.
