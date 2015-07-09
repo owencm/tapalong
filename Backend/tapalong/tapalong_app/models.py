@@ -33,7 +33,7 @@ class Activity(models.Model):
 		return self.title
 
 class Session(models.Model):
-	token = models.IntegerField()
+	token = models.BigIntegerField()
 	user = models.ForeignKey(User)
 	created_at = models.DateTimeField(auto_now_add=True, blank=False)
 	expires_at = models.DateTimeField(blank=False)
