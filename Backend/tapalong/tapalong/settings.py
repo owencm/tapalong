@@ -43,15 +43,26 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+#         'NAME': 'django_db_1', # Or path to database file if using sqlite3.
+#         # The following settings are not used with sqlite3:
+#         'USER': 'root',
+#         'PASSWORD': '',
+#         'HOST': 'localhost',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+#         'PORT': '',  # Set to empty string for default.
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'django_db_1', # Or path to database file if using sqlite3.
-        # The following settings are not used with sqlite3:
-        'USER': 'root',
-        'PASSWORD': '',
-        'HOST': 'localhost',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-        'PORT': '',  # Set to empty string for default.
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ebdb',
+        'USER': 'dbadmin',
+        'PASSWORD': 'sn4pdr4g0nadmin',
+        'HOST': 'aa1bie9y4xbp4ux.cdb9iiixydbt.us-west-2.rds.amazonaws.com',  # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '3306',
     }
 }
 
