@@ -1,5 +1,4 @@
 // TODO: make sure this all works in browsers without SW support. Checks are half baked today.
-var reg;
 var swLibrary = (function() {
   var browserSupportsSWAndNotifications = false;
   if ('serviceWorker' in navigator && typeof Notification !== 'undefined') {
@@ -43,7 +42,7 @@ var swLibrary = (function() {
   var subscribeForPushNotifications = function (callback) {
     navigator.serviceWorker.ready.then(function(registration) {
       console.log('Registering for push');
-      registration.pushManager.subscribe()
+      registration.pushManager.subscribe({userVisibleOnly: true})
         .then(function(pushSubscription) {
           console.log('Subscription succeeded', pushSubscription);
           callback(pushSubscription);

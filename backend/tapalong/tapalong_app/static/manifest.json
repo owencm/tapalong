@@ -3,6 +3,5 @@
   "name": "UpDog",
   "start_url": "/static/index.html",
   "display": "standalone",
-  "gcm_sender_id": "669073433855",
-  "gcm_user_visible_only": true
+  "gcm_sender_id": "669073433855"
 }

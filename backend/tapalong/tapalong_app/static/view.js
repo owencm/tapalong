@@ -162,7 +162,7 @@ var view = (function (models) {
     var descriptionInputElem = editSection.querySelector('textarea#description');
     function delayedResize (elem) {
       return function () {
-        window.setTimeout(function () { 
+        window.setTimeout(function () {
           elem.style.height = 'auto';
           elem.style.height = elem.scrollHeight+'px';
        }, 0);
@@ -187,7 +187,7 @@ var view = (function (models) {
           }, function () {
             alert('An error occurred! Sorry :(. Please refresh.');
             throw("Cancelling on server failed. Help the user understand why");
-          });  
+          });
         } else {
           // Do nothing
         }
@@ -201,13 +201,13 @@ var view = (function (models) {
     }
 
     titleInputElem.addEventListener('keydown', function(key) {
-      if (key.keyCode == 13) { 
+      if (key.keyCode == 13) {
         this.blur();
       }
     });
 
     editSection.querySelector('.option.save').onclick = function () {
-      var thisButton = this; 
+      var thisButton = this;
       thisButton.classList.add('disabled');
       thisButton.innerHTML = 'Saving...';
       var title = editSection.querySelector('input#title').value;
@@ -248,7 +248,7 @@ var view = (function (models) {
           // thisButton.classList.toggle('disabled', false);
           alert('Sorry, something went wrong. Please check you entered the information correctly.');
           throw("Adding to server failed. Help the user understand why");
-        });   
+        });
       }
     }
     editSection.style.display = '';
@@ -289,13 +289,14 @@ var view = (function (models) {
   var redrawDetails = showDetails;
   var hideDetails = function () {
     detailSection.style.display = 'none';
-  } 
+  }
   var showNotificationOptIn = function (reason, nextState) {
+    // TODO(owencm): Show something different if the notification permission is denied
     var source = document.querySelector('#notifications-opt-in-template').innerHTML;
     var template = Handlebars.compile(source);
     var config = {reason: reason};
     notificationsOptInSection.innerHTML = template(config);
-    notificationsOptInSection.style.display = ''; 
+    notificationsOptInSection.style.display = '';
     // Add interactivity
     notificationsOptInSection.querySelector('.option').onclick = function (e) {
       showOverlay();
@@ -460,14 +461,14 @@ Handlebars.registerHelper('datetimeString', function(start_time) {
     throw("start_time was a string, not a Date in the template");
   }
   return start_time.toLocaleString().replace(/:00/g,'');
-}); 
+});
 Handlebars.registerHelper('dateInString', function(start_time) {
   if (!start_time instanceof Date) {
     alert('An error occurred! Sorry :(. Please refresh.');
     throw("start_time was a string, not a Date in the template");
   }
   return getDateTimeString(start_time);
-}); 
+});
 Handlebars.registerHelper('list', function(items, options) {
   var out = "<ul>";
 
