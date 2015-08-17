@@ -513,6 +513,7 @@ var view = (function (models) {
               ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
             )
           ), 
+          /* Keep track of this.props.activity.is_creator and trigger the different actions depending */
           React.createElement(CardOptions, {
             options: [actionString], 
             onClick: actionClicked.bind(this)}

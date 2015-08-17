@@ -66,75 +66,16 @@ div#container {
     overflow-y: visible;
 }
 
-section.card {
-	/* This puts the border inside the edge */
-	box-sizing: border-box;
-	max-width: 600px;
-	margin: 0 auto;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	color: #444;
-	line-height: 1.5em;
-	background-color: #fafafa;
-	/* For fading into 'attending' */
-	/*-webkit-transition: background-color 0.5s;*/
-}
-
-section.card .contentContainer {
-	padding: 24px;
-}
-
-section.card.attending {
-	background-color: #cdf9c9;
-}
-
 section.card p {
 	margin-bottom: 5px;
-}
-
-section.card .optionContainer {
-}
-
-section.card .optionContainer .option {
-	text-transform: uppercase;
-	font-weight: 600;
-	font-size: 14px;
-	/* Put the padding and margin on the options so the click targets are larger */
-	padding: 6px 12px;
-	margin: 8px;
-	color: #00BCD4;
-	/* A default position */
-	float: right;
 }
 
 section.card .optionContainer .option.left {
 	float: left;
 }
 
-section.card .optionContainer .option.right {
-	float: right;
-}
-
 section.card .optionContainer .option.bad {
 	color: #D55;
-}
-
-section.card .optionContainer .option.disabled {
-	color: #CCC;
-}
-
-section.card .friendIcon {
-	background-color: #ddd;
-	border: 1px solid #ccc;
-	border-radius: 19px;
-	width: 38px;
-	height: 38px;
-	margin-right: 24px;
-	float: left;
-}
-
-section.card .cardTitleContainer {
-	/* This forces the title to not wrap around the bottom of the icon */
-	overflow: hidden;
 }
 
 section.card input, section.card textarea {
@@ -231,7 +172,7 @@ img#loginButtonImg {
 	background-repeat: no-repeat;
 	background-attachment: fixed;
 	/* TODO: Work me out */
-	background-position: center center; 
+	background-position: center center;
 	background-size: 100% 100%;
 }
 

@@ -393,149 +393,150 @@ var view = (function (models) {
       redrawDetails();
     }
   };
-  var FriendIcon = React.createClass({displayName: "FriendIcon",
-    render: function () {
-      var friendIconStyle = {
-        backgroundColor: '#ddd',
-        border: '1px solid #ccc',
-        borderRadius: '19px',
-        width: '38px',
-        height: '38px',
-        marginRight: '24px',
-        float: 'left'
-      };
-      return (
-        React.createElement("img", {src: this.props.thumbnail, style: friendIconStyle})
-      )
-    }
-  });
-  var CardOptions = React.createClass({displayName: "CardOptions",
-    getInitialState: function () {
-      return {enabled: true};
-    },
-    disableAndCall: function (callback) {
-      this.setState({enabled: false})
-    },
-    render: function () {
-      var optionStyle = {
-        textTransform: 'uppercase',
-        fontWeight: '600',
-        fontSize: '14px',
-        /* Put the padding and margin on the options so the click targets are larger */
-        padding: '6px 12px',
-        margin: '8px',
-        /* A default position */
-        float: 'right'
-      };
-      var enabledOptionStyle = {
-        color: '#00BCD4'
-      };
-      var disabledOptionStyle = {
-        color: '#CCC'
-      };
-      return (
-        React.createElement("div", null, 
-          React.createElement("div", {style: optionStyle}, 
-            React.createElement("a", {style: this.state.enabled ? enabledOptionStyle : disabledOptionStyle, 
-              onClick: this.state.enabled ? this.props.onClick : function(){}}, 
-              this.props.options[0]
-            )
-          ), 
-          React.createElement("div", {style: {clear: 'both'}})
+  var redrawActivitiesList = function () {
+    var FriendIcon = React.createClass({displayName: "FriendIcon",
+      render: function () {
+        var friendIconStyle = {
+          backgroundColor: '#ddd',
+          border: '1px solid #ccc',
+          borderRadius: '19px',
+          width: '38px',
+          height: '38px',
+          marginRight: '24px',
+          float: 'left'
+        };
+        return (
+          React.createElement("img", {src: this.props.thumbnail, style: friendIconStyle})
         )
-      )
-    }
-  });
-  var Card = React.createClass({displayName: "Card",
-    render: function () {
-      var cardStyle = {
-        /* This puts the border inside the edge */
-        boxSizing: 'border-box',
-        maxWidth: '600px',
-        margin: '0 auto',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-        color: '#444',
-        lineHeight: '1.5em',
-        backgroundColor: '#fafafa',
-        /* For fading into 'attending' */
-        /*-webkitTransition: 'background-color 0.5s',*/
-      };
-      if (this.props.backgroundColor !== undefined) {
-        cardStyle = objectAssign(cardStyle, {backgroundColor: this.props.backgroundColor});
       }
-      return (
-        React.createElement("div", {style: cardStyle}, this.props.children)
-      );
-    }
-  });
-  var ActivityBox = React.createClass({displayName: "ActivityBox",
-    getInitialState: function () {
-      var action = this.props.activity.is_creator ?
-        this.ACTIONS.edit : (this.props.activity.is_attending ? this.ACTIONS.undoAttend : this.ACTIONS.attend);
-      return {action: action}
-    },
-    ACTIONS: {
-      edit: 0,
-      attend: 1,
-      undoAttend: 2
-    },
-    render: function() {
-      var actionString = ['Edit', 'Go along', 'Cancel attending'][this.state.action];
-      var actionClicked = function () {
-        if (this.state.action == this.ACTIONS.edit) {
-          selectedActivity = this.props.activity.id;
-          changeState(STATE.edit, {}, true);
-        } else if (action == this.ACTIONS.attend) {
-          // Optimistically move onto the next page
-          swLibrary.hasPushNotificationPermission(function(){}, function() {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
-          });
-          // Note no callback since the list will automatically redraw when this changes
-          var optimistic = this.props.activity.dirty == undefined;
-          models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
-            console.log('Uhoh, an optimistic error was a mistake!!');
-            alert('An unexpected error occurred. Please refresh.');
-          });
-        } else if (action == this.ACTIONS.undoAttend) {
-          alert('undo attend');
-        }
-      };
-      return (
-        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined}, 
-          React.createElement("div", {style: {padding: '24px'}}, 
-            React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
-            /* This forces the title to not wrap around the bottom of the icon */
-            React.createElement("div", {style: {overflow: 'hidden'}}, 
-              this.props.activity.is_creator ? (
-                React.createElement("span", null, React.createElement("b", null, "You"), " are ")
-              ) : (
-                React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
-              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
-            )
-          ), 
-          React.createElement(CardOptions, {
-            options: [actionString], 
-            onClick: actionClicked.bind(this)}
+    });
+    var CardOptions = React.createClass({displayName: "CardOptions",
+      getInitialState: function () {
+        return {enabled: true};
+      },
+      disableAndCall: function (callback) {
+        this.setState({enabled: false})
+      },
+      render: function () {
+        var optionStyle = {
+          textTransform: 'uppercase',
+          fontWeight: '600',
+          fontSize: '14px',
+          /* Put the padding and margin on the options so the click targets are larger */
+          padding: '6px 12px',
+          margin: '8px',
+          /* A default position */
+          float: 'right'
+        };
+        var enabledOptionStyle = {
+          color: '#00BCD4'
+        };
+        var disabledOptionStyle = {
+          color: '#CCC'
+        };
+        return (
+          React.createElement("div", null, 
+            React.createElement("div", {style: optionStyle}, 
+              React.createElement("a", {style: this.state.enabled ? enabledOptionStyle : disabledOptionStyle, 
+                onClick: this.state.enabled ? this.props.onClick : function(){}}, 
+                this.props.options[0]
+              )
+            ), 
+            React.createElement("div", {style: {clear: 'both'}})
           )
         )
-      );
-    }
-  });
-  var ActivityList = React.createClass({displayName: "ActivityList",
-    render: function () {
-      var activitiesList = models.activities.getActivities().map(function (activity) {
-        // TODO: do me properly somehow
-        activity.key = activity.id;
-        return React.createElement(ActivityBox, {activity: activity});
-      });
-      return (
-        React.createElement("div", null, 
-          activitiesList
-        )
-      );
-    }
-  });
-  var redrawActivitiesList = function () {
+      }
+    });
+    var Card = React.createClass({displayName: "Card",
+      render: function () {
+        var cardStyle = {
+          /* This puts the border inside the edge */
+          boxSizing: 'border-box',
+          maxWidth: '600px',
+          margin: '0 auto',
+          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+          color: '#444',
+          lineHeight: '1.5em',
+          backgroundColor: '#fafafa',
+          /* For fading into 'attending' */
+          /*-webkitTransition: 'background-color 0.5s',*/
+        };
+        return (
+          React.createElement("div", null)
+        );
+      }
+    });
+    var ActivityBox = React.createClass({displayName: "ActivityBox",
+      getInitialState: function () {
+        var action = this.props.activity.is_creator ?
+          this.ACTIONS.edit : (this.props.activity.is_attending ? this.ACTIONS.undoAttend : this.ACTIONS.attend);
+        return {action: action}
+      },
+      ACTIONS: {
+        edit: 0,
+        attend: 1,
+        undoAttend: 2
+      },
+      render: function() {
+        var attendingStyle = {
+          backgroundColor: '#cdf9c9'
+        };
+        var actionString = ['Edit', 'Go along', 'Cancel attending'][action];
+        var actionClicked = function () {
+          if (this.state.action == this.ACTIONS.edit) {
+            selectedActivity = this.props.activity.id;
+            changeState(STATE.edit, {}, true);
+          } else if (action == this.ACTIONS.attend) {
+            // Optimistically move onto the next page
+            swLibrary.hasPushNotificationPermission(function(){}, function() {
+              changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
+            });
+            // Note no callback since the list will automatically redraw when this changes
+            var optimistic = this.props.activity.dirty == undefined;
+            models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
+              console.log('Uhoh, an optimistic error was a mistake!!');
+              alert('An unexpected error occurred. Please refresh.');
+            });
+          } else if (action == this.ACTIONS.undoAttend) {
+            alert('undo attend');
+          }
+        };
+        return (
+          React.createElement(Card, null, 
+            React.createElement("div", {style: {padding: '24px'}}, 
+              React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
+              /* This forces the title to not wrap around the bottom of the icon */
+              React.createElement("div", {style: {overflow: 'hidden'}}, 
+                this.props.activity.is_creator ? (
+                  React.createElement("span", null, React.createElement("b", null, "You"), " are ")
+                ) : (
+                  React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
+                ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
+              )
+            ), 
+            /* Keep track of this.props.activity.is_creator and trigger the different actions depending */
+            React.createElement(CardOptions, {
+              options: [actionString], 
+              onClick: actionClicked.bind(this)}
+            )
+          )
+        );
+      }
+    });
+    var ActivityList = React.createClass({displayName: "ActivityList",
+      render: function () {
+        var activitiesList = models.activities.getActivities().map(function (activity) {
+          // TODO: do me properly somehow
+          activity.key = activity.id;
+          return React.createElement(ActivityBox, {activity: activity});
+        });
+        return (
+          React.createElement("div", null, 
+            activitiesList
+          )
+        );
+      }
+    });
     React.render(
       React.createElement(ActivityList, null),
       document.getElementById('activitiesList')

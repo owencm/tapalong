@@ -6,45 +6,6 @@ var getDateString = function (dateTime) {
   return [(1900 + dateTime.getYear()),twoDigitString(dateTime.getMonth()+1),twoDigitString(dateTime.getDate())].join('-');
 }
 
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
-
-function ToObject(val) {
-	if (val == null) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
-
-	return Object(val);
-}
-
-function ownEnumerableKeys(obj) {
-	var keys = Object.getOwnPropertyNames(obj);
-
-	if (Object.getOwnPropertySymbols) {
-		keys = keys.concat(Object.getOwnPropertySymbols(obj));
-	}
-
-	return keys.filter(function (key) {
-		return propIsEnumerable.call(obj, key);
-	});
-}
-
-var objectAssign = function (target, source) {
-	var from;
-	var keys;
-	var to = ToObject(target);
-
-	for (var s = 1; s < arguments.length; s++) {
-		from = arguments[s];
-		keys = ownEnumerableKeys(Object(from));
-
-		for (var i = 0; i < keys.length; i++) {
-			to[keys[i]] = from[keys[i]];
-		}
-	}
-
-	return to;
-};
-
 var view = (function (models) {
   var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5, notificationsOptIn: 6};
   var currentState = STATE.uninitialized;
@@ -393,159 +354,89 @@ var view = (function (models) {
       redrawDetails();
     }
   };
-  var FriendIcon = React.createClass({displayName: "FriendIcon",
-    render: function () {
-      var friendIconStyle = {
-        backgroundColor: '#ddd',
-        border: '1px solid #ccc',
-        borderRadius: '19px',
-        width: '38px',
-        height: '38px',
-        marginRight: '24px',
-        float: 'left'
-      };
-      return (
-        React.createElement("img", {src: this.props.thumbnail, style: friendIconStyle})
-      )
-    }
-  });
-  var CardOptions = React.createClass({displayName: "CardOptions",
-    getInitialState: function () {
-      return {enabled: true};
-    },
-    disableAndCall: function (callback) {
-      this.setState({enabled: false})
-    },
-    render: function () {
-      var optionStyle = {
-        textTransform: 'uppercase',
-        fontWeight: '600',
-        fontSize: '14px',
-        /* Put the padding and margin on the options so the click targets are larger */
-        padding: '6px 12px',
-        margin: '8px',
-        /* A default position */
-        float: 'right'
-      };
-      var enabledOptionStyle = {
-        color: '#00BCD4'
-      };
-      var disabledOptionStyle = {
-        color: '#CCC'
-      };
-      return (
-        React.createElement("div", null, 
-          React.createElement("div", {style: optionStyle}, 
-            React.createElement("a", {style: this.state.enabled ? enabledOptionStyle : disabledOptionStyle, 
-              onClick: this.state.enabled ? this.props.onClick : function(){}}, 
-              this.props.options[0]
-            )
-          ), 
-          React.createElement("div", {style: {clear: 'both'}})
-        )
-      )
-    }
-  });
-  var Card = React.createClass({displayName: "Card",
-    render: function () {
-      var cardStyle = {
-        /* This puts the border inside the edge */
-        boxSizing: 'border-box',
-        maxWidth: '600px',
-        margin: '0 auto',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-        color: '#444',
-        lineHeight: '1.5em',
-        backgroundColor: '#fafafa',
-        /* For fading into 'attending' */
-        /*-webkitTransition: 'background-color 0.5s',*/
-      };
-      if (this.props.backgroundColor !== undefined) {
-        cardStyle = objectAssign(cardStyle, {backgroundColor: this.props.backgroundColor});
-      }
-      return (
-        React.createElement("div", {style: cardStyle}, this.props.children)
-      );
-    }
-  });
-  var ActivityBox = React.createClass({displayName: "ActivityBox",
-    getInitialState: function () {
-      var action = this.props.activity.is_creator ?
-        this.ACTIONS.edit : (this.props.activity.is_attending ? this.ACTIONS.undoAttend : this.ACTIONS.attend);
-      return {action: action}
-    },
-    ACTIONS: {
-      edit: 0,
-      attend: 1,
-      undoAttend: 2
-    },
-    render: function() {
-      var actionString = ['Edit', 'Go along', 'Cancel attending'][this.state.action];
-      var actionClicked = function () {
-        if (this.state.action == this.ACTIONS.edit) {
-          selectedActivity = this.props.activity.id;
-          changeState(STATE.edit, {}, true);
-        } else if (action == this.ACTIONS.attend) {
-          // Optimistically move onto the next page
-          swLibrary.hasPushNotificationPermission(function(){}, function() {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
-          });
-          // Note no callback since the list will automatically redraw when this changes
-          var optimistic = this.props.activity.dirty == undefined;
-          models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
-            console.log('Uhoh, an optimistic error was a mistake!!');
-            alert('An unexpected error occurred. Please refresh.');
-          });
-        } else if (action == this.ACTIONS.undoAttend) {
-          alert('undo attend');
-        }
-      };
-      return (
-        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined}, 
-          React.createElement("div", {style: {padding: '24px'}}, 
-            React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
-            /* This forces the title to not wrap around the bottom of the icon */
-            React.createElement("div", {style: {overflow: 'hidden'}}, 
-              this.props.activity.is_creator ? (
-                React.createElement("span", null, React.createElement("b", null, "You"), " are ")
-              ) : (
-                React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
-              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
-            )
-          ), 
-          React.createElement(CardOptions, {
-            options: [actionString], 
-            onClick: actionClicked.bind(this)}
-          )
-        )
-      );
-    }
-  });
-  var ActivityList = React.createClass({displayName: "ActivityList",
-    render: function () {
-      var activitiesList = models.activities.getActivities().map(function (activity) {
-        // TODO: do me properly somehow
-        activity.key = activity.id;
-        return React.createElement(ActivityBox, {activity: activity});
-      });
-      return (
-        React.createElement("div", null, 
-          activitiesList
-        )
-      );
-    }
-  });
   var redrawActivitiesList = function () {
-    React.render(
+    var ActivityBox = React.createClass({displayName: "ActivityBox",
+      render: function() {
+        var activity = this.props.activity;
+        console.log(activity);
+        var cardTitle = [activity.is_creator ? React.createElement("span", null, React.createElement("b", null, "You"), " are") :
+          React.createElement("span", null, React.createElement("b", null, activity.creator_name), " is")];
+        // dateInString for starttime
+        cardTitle.push(React.createElement("span", null, React.createElement("b", null, activity.title), " ", activity.start_time));
+        var actionType = activity.is_creator ? 'edit' : 'attend';
+        var actionString = activity.is_creator ? 'Edit' : (activity.is_attending ? 'Cancel attending' : 'Go along');
+        return (
+          React.createElement("section", {class:  activity.is_attending ? 'card attending' : 'card'}, 
+            React.createElement("div", {class: "contentContainer"}, 
+              React.createElement("img", {src: "{ activity.thumbnail }", class: "friendIcon"}), 
+              React.createElement("div", {class: "cardTitleContainer"}, 
+                cardTitle
+              )
+            ), 
+            React.createElement("div", {class: "optionContainer"}, 
+              React.createElement("div", {class: "option right {actionType}"}, 
+                actionString
+              )
+            ), 
+            React.createElement("div", {class: "clear"})
+          )
+        );
+      }
+    });
+    var ActivityList = React.createClass({displayName: "ActivityList",
+      render: function () {
+        var activitiesList = models.activities.getActivities().map(function (activity) {
+          // TODO: do me properly somehow
+          activity.key = activity.id;
+          return React.createElement(ActivityBox, {activity: activity});
+        });
+        return (
+          React.createElement("div", null, 
+            activitiesList
+          )
+        );
+      }
+    });
+    console.log(React.render(
       React.createElement(ActivityList, null),
       document.getElementById('activitiesList')
-    );
+    ));
+    // var source = document.querySelector('#activity-summary-template').innerHTML;
+    // var template = Handlebars.compile(source);
+    // activitiesSection.innerHTML = '';
+    // models.activities.getActivities().map(function (activity) {
+    //   var config = {activity: activity};
+    //   var activityHTML = template(config);
+    //   activitiesSection.insertAdjacentHTML('beforeend', activityHTML);
+    //   // Make this specific to each activity
+    //   var activityElem = document.querySelector('#activity-'+activity.id);
     //   activityElem.onclick = function () {
     //     selectedActivity = activity.id;
     //     changeState(STATE.detail, {}, true);
     //   };
     //   activityElem.querySelector('.option').onclick = function (e) {
-
+    //     // Creators edit, non creators attend
+    //     if (activity.is_creator) {
+    //       selectedActivity = activity.id;
+    //       changeState(STATE.edit, {}, true);
+    //     } else {
+    //       // Optimistically move onto the next page
+    //       if (!activity.is_attending) {
+    //         swLibrary.hasPushNotificationPermission(function(){}, function() {
+    //           changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
+    //         });
+    //       }
+    //       // Note no callback since the list will automatically redraw when this changes
+    //       var optimistic = activity.dirty == undefined;
+    //       models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {}, function () {
+    //         console.log('Uhoh, an optimistic error was a mistake!!');
+    //         alert('An unexpected error occurred. Please refresh.');
+    //       });
+    //       // If the user is opting in, show them the prompt
+    //     }
+    //     this.classList.add('disabled');
+    //     e.stopPropagation();
+    //   }
     //   if (activity.is_attending) {
     //     activityElem.classList.add('attending');
     //   }

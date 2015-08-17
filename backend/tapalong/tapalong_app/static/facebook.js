@@ -1,8 +1,8 @@
-var skipLogin = false;
+var skipLogin = true;
 
-if (skipLogin) {  
+if (skipLogin) {
   // view.debugSkipLogin(5, 'Ally Gale', 'letmein');
-  // view.debugSkipLogin(2, 'Owen Campbell-Moore', 'letmein');
+  view.debugSkipLogin(1, 'Owen Campbell-Moore', 'letmein');
   // view.debugSkipLogin(3, 'Tyler Rigsby', 'letmein');
 } else {
   // This loads the facebook SDK async, then calls window.fbAsyncInit. FB.getLoginStatus does the logging in, and statusChangeCallback is as expected.
@@ -13,7 +13,7 @@ if (skipLogin) {
       // Logged into your app and Facebook.
       view.fbLoginSuccess(response.authResponse.accessToken);
     } else if (response.status === 'not_authorized') {
-      console.log('user hasnt authorized the app');      
+      console.log('user hasnt authorized the app');
       FB.login(statusChangeCallback);
       // The person is logged into Facebook, but not your app.
     } else {
@@ -27,7 +27,7 @@ if (skipLogin) {
     FB.init({
       appId      : '175370155978273',
       xfbml      : false,  // parse social plugins on this page
-      version    : 'v2.3' 
+      version    : 'v2.3'
     });
 
     FB.getLoginStatus(function(response) {

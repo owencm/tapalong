@@ -393,7 +393,7 @@ var view = (function (models) {
       redrawDetails();
     }
   };
-  var FriendIcon = React.createClass({displayName: "FriendIcon",
+  var FriendIcon = React.createClass({
     render: function () {
       var friendIconStyle = {
         backgroundColor: '#ddd',
@@ -405,11 +405,11 @@ var view = (function (models) {
         float: 'left'
       };
       return (
-        React.createElement("img", {src: this.props.thumbnail, style: friendIconStyle})
+        <img src={this.props.thumbnail} style={friendIconStyle}></img>
       )
     }
   });
-  var CardOptions = React.createClass({displayName: "CardOptions",
+  var CardOptions = React.createClass({
     getInitialState: function () {
       return {enabled: true};
     },
@@ -434,19 +434,19 @@ var view = (function (models) {
         color: '#CCC'
       };
       return (
-        React.createElement("div", null, 
-          React.createElement("div", {style: optionStyle}, 
-            React.createElement("a", {style: this.state.enabled ? enabledOptionStyle : disabledOptionStyle, 
-              onClick: this.state.enabled ? this.props.onClick : function(){}}, 
-              this.props.options[0]
-            )
-          ), 
-          React.createElement("div", {style: {clear: 'both'}})
-        )
+        <div>
+          <div style={optionStyle}>
+            <a style={this.state.enabled ? enabledOptionStyle : disabledOptionStyle}
+              onClick={this.state.enabled ? this.props.onClick : function(){}}>
+              {this.props.options[0]}
+            </a>
+          </div>
+          <div style={{clear: 'both'}}></div>
+        </div>
       )
     }
   });
-  var Card = React.createClass({displayName: "Card",
+  var Card = React.createClass({
     render: function () {
       var cardStyle = {
         /* This puts the border inside the edge */
@@ -464,11 +464,11 @@ var view = (function (models) {
         cardStyle = objectAssign(cardStyle, {backgroundColor: this.props.backgroundColor});
       }
       return (
-        React.createElement("div", {style: cardStyle}, this.props.children)
+        <div style={cardStyle}>{this.props.children}</div>
       );
     }
   });
-  var ActivityBox = React.createClass({displayName: "ActivityBox",
+  var ActivityBox = React.createClass({
     getInitialState: function () {
       var action = this.props.activity.is_creator ?
         this.ACTIONS.edit : (this.props.activity.is_attending ? this.ACTIONS.undoAttend : this.ACTIONS.attend);
@@ -501,43 +501,43 @@ var view = (function (models) {
         }
       };
       return (
-        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined}, 
-          React.createElement("div", {style: {padding: '24px'}}, 
-            React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
-            /* This forces the title to not wrap around the bottom of the icon */
-            React.createElement("div", {style: {overflow: 'hidden'}}, 
-              this.props.activity.is_creator ? (
-                React.createElement("span", null, React.createElement("b", null, "You"), " are ")
+        <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined}>
+          <div style={{padding: '24px'}}>
+            <FriendIcon thumbnail={this.props.activity.thumbnail}/>
+            {/* This forces the title to not wrap around the bottom of the icon */}
+            <div style={{overflow: 'hidden'}}>
+              {this.props.activity.is_creator ? (
+                <span><b>You</b> are </span>
               ) : (
-                React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
-              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
-            )
-          ), 
-          React.createElement(CardOptions, {
-            options: [actionString], 
-            onClick: actionClicked.bind(this)}
-          )
-        )
+                <span><b>{this.props.activity.creator_name}</b> is </span>
+              )}<b>{this.props.activity.title}</b> {this.props.activity.start_time}
+            </div>
+          </div>
+          <CardOptions
+            options={[actionString]}
+            onClick={actionClicked.bind(this)}
+          />
+        </Card>
       );
     }
   });
-  var ActivityList = React.createClass({displayName: "ActivityList",
+  var ActivityList = React.createClass({
     render: function () {
       var activitiesList = models.activities.getActivities().map(function (activity) {
         // TODO: do me properly somehow
         activity.key = activity.id;
-        return React.createElement(ActivityBox, {activity: activity});
+        return <ActivityBox activity={activity}/>;
       });
       return (
-        React.createElement("div", null, 
-          activitiesList
-        )
+        <div>
+          {activitiesList}
+        </div>
       );
     }
   });
   var redrawActivitiesList = function () {
     React.render(
-      React.createElement(ActivityList, null),
+      <ActivityList/>,
       document.getElementById('activitiesList')
     );
     //   activityElem.onclick = function () {
