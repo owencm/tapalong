@@ -89,9 +89,13 @@ section.card textarea#description {
 	overflow: hidden;
 }
 
-section.card input:focus, section.card textarea:focus {
+.noOutline:focus {
 	outline: none;
-	border-bottom: 1px solid #00BCD4;
+}
+
+.focusUnderline:focus {
+  /* Important is used as using react the default style is inline */
+	border-bottom: 1px solid #00BCD4!important;
 	box-shadow: 0 1px 0 0px #00BCD4;
 }
 

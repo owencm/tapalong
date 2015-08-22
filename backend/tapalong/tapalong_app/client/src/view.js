@@ -351,6 +351,18 @@ var view = (function (models) {
     backButton.style.display = 'none';
   };
   var EditActivity = React.createClass({
+    getInitialState: function () {
+      return {
+        title: this.props.activity.title,
+        description: this.props.activity.description
+      };
+    },
+    handleTitleChange: function (e) {
+      this.setState({title: e.target.value});
+    },
+    handleDescriptionChange: function (e) {
+      this.setState({description: e.target.value});
+    },
     render: function () {
       var getTimeAndDateFormatted = function (dateTime) {
         if (!dateTime instanceof Date) {
@@ -371,7 +383,8 @@ var view = (function (models) {
         borderRight: 'none',
         borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
         borderLeft: 'none',
-        backgroundColor: 'rgba(0,0,0,0)'
+        backgroundColor: 'rgba(0,0,0,0)',
+        outline: 'none'
       };
       var option = {label: 'Create', onClick: function(){}};
       var editing = !!this.props.activity;
@@ -388,11 +401,19 @@ var view = (function (models) {
         <Card>
           <div style={{padding: '24px'}}>
             <b>{this.props.userName}</b> is<br />
-            <input type='text' style={m(inputStyle, {fontSize: '1.2em'})} className='input-placeholder-lighter' value={this.props.activity.title} placeholder='Watching Frozen' autoCapitalize='words' required></input>
+            <input type='text'
+              style={m(inputStyle, {fontSize: '1.2em'})}
+              className='input-placeholder-lighter focusUnderline'
+              value={this.state.title}
+              placeholder='Watching Frozen'
+              autoCapitalize='words'
+              required
+              onChange={this.handleTitleChange}>
+            </input>
             <input
               type='date'
               style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
-              className='input-placeholder-lighter'
+              className='input-placeholder-lighter focusUnderline'
               max={nextWeeksDate}
               min={todaysDate}
               value={editing ? timeAndDate.date : tomorrowsDate}
@@ -401,13 +422,21 @@ var view = (function (models) {
             <input
               type='time'
               style={m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'})}
-              className='input-placeholder-lighter'
+              className='input-placeholder-lighter focusUnderline'
               step="900"
               value={editing ? timeAndDate.time : '13:00'}
               required>
             </input>
             <div style={{clear: 'both'}}></div>
-            <textarea id='description' style={inputStyle} placeholder='Extra information (where? when? what?)' rows='1' value={this.props.activity.description}></textarea>
+            <textarea
+              id='description'
+              style={inputStyle}
+              className='focusUnderline'
+              placeholder='Extra information (where? when? what?)'
+              rows='1'
+              value={this.state.description}
+              onChange={this.handleDescriptionChange}>
+            </textarea>
           </div>
           <CardOptions options={[option]}/>
         </Card>
