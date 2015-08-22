@@ -6,43 +6,34 @@ var getDateString = function (dateTime) {
   return [(1900 + dateTime.getYear()),twoDigitString(dateTime.getMonth()+1),twoDigitString(dateTime.getDate())].join('-');
 }
 
-var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+var m = function (obj) {
+  var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
-function ToObject(val) {
-	if (val == null) {
-		throw new TypeError('Object.assign cannot be called with null or undefined');
-	}
+  function ownEnumerableKeys(obj) {
+  	var keys = Object.getOwnPropertyNames(obj);
 
-	return Object(val);
-}
+  	if (Object.getOwnPropertySymbols) {
+  		keys = keys.concat(Object.getOwnPropertySymbols(obj));
+  	}
 
-function ownEnumerableKeys(obj) {
-	var keys = Object.getOwnPropertyNames(obj);
-
-	if (Object.getOwnPropertySymbols) {
-		keys = keys.concat(Object.getOwnPropertySymbols(obj));
-	}
-
-	return keys.filter(function (key) {
-		return propIsEnumerable.call(obj, key);
-	});
-}
-
-var objectAssign = function (target, source) {
+  	return keys.filter(function (key) {
+  		return propIsEnumerable.call(obj, key);
+  	});
+  }
+  var result = {};
 	var from;
 	var keys;
-	var to = ToObject(target);
 
-	for (var s = 1; s < arguments.length; s++) {
+	for (var s = 0; s < arguments.length; s++) {
 		from = arguments[s];
 		keys = ownEnumerableKeys(Object(from));
 
 		for (var i = 0; i < keys.length; i++) {
-			to[keys[i]] = from[keys[i]];
+			result[keys[i]] = from[keys[i]];
 		}
 	}
 
-	return to;
+	return result;
 };
 
 var view = (function (models) {
@@ -251,7 +242,7 @@ var view = (function (models) {
         /*-webkitTransition: 'background-color 0.5s',*/
       };
       if (this.props.backgroundColor !== undefined) {
-        cardStyle = objectAssign(cardStyle, {backgroundColor: this.props.backgroundColor});
+        cardStyle = m(cardStyle, {backgroundColor: this.props.backgroundColor});
       }
       return (
         React.createElement("div", {style: cardStyle}, this.props.children)
@@ -397,10 +388,10 @@ var view = (function (models) {
         React.createElement(Card, null, 
           React.createElement("div", {style: {padding: '24px'}}, 
             React.createElement("b", null, this.props.userName), " is", React.createElement("br", null), 
-            React.createElement("input", {type: "text", style: objectAssign({fontSize: '1.2em'}, inputStyle), className: "input-placeholder-lighter", value: this.props.activity.title, placeholder: "Watching Frozen", autoCapitalize: "words", required: true}), 
+            React.createElement("input", {type: "text", style: m(inputStyle, {fontSize: '1.2em'}), className: "input-placeholder-lighter", value: this.props.activity.title, placeholder: "Watching Frozen", autoCapitalize: "words", required: true}), 
             React.createElement("input", {
               type: "date", 
-              style: objectAssign(objectAssign({}, inputStyle), {	float: 'left', fontSize: '1em', width: 'auto'}), 
+              style: m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'}), 
               className: "input-placeholder-lighter", 
               max: nextWeeksDate, 
               min: todaysDate, 
@@ -409,7 +400,7 @@ var view = (function (models) {
             ), 
             React.createElement("input", {
               type: "time", 
-              style: objectAssign(objectAssign({}, inputStyle), {	float: 'right', fontSize: '1em', width: '150px'}), 
+              style: m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'}), 
               className: "input-placeholder-lighter", 
               step: "900", 
               value: editing ? timeAndDate.time : '13:00', 
