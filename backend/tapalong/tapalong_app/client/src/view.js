@@ -129,14 +129,18 @@ var view = (function (models) {
   });
   var ImgFadeInOnLoad = React.createClass({
     getInitialState: function () {
-      return { loaded: false };
+      return { loading: false, loaded: false };
+    },
+    loadImage: function (src) {
+      if (!this.loadingStarted) {
+        this.loadingStarted = true;
+        var img = new Image();
+        img.onload = function() { this.setState({loaded: true})}.bind(this);
+        img.src = src;
+      }
     },
     render: function () {
-      if (!this.loaded) {
-        fetch(this.props.src).then(function(response) {
-          this.setState({loaded: true});
-        }.bind(this));
-      }
+      this.loadImage(this.props.src);
       var overlayStyle = {
         width: this.props.width,
         height: this.props.height,
@@ -166,7 +170,7 @@ var view = (function (models) {
       }
       return (
         <div style={{position: 'relative'}}>
-          <img src={this.props.src} style={imgStyle} />
+          { this.state.loaded ? (<img src={this.props.src} style={imgStyle} />) : {} }
           <div style={overlayStyle} />
         </div>
       )
