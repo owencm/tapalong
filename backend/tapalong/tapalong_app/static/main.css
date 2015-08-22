@@ -78,28 +78,7 @@ section.card .optionContainer .option.bad {
 	color: #D55;
 }
 
-section.card input, section.card textarea {
-	display: block;
-	box-sizing: border-box;
-	width: 100%;
-	margin: 10px 0;
-	padding: 10px 10px 10px 2px;
-	border-top: none;
-	border-right: none;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-	border-left: none;
-	background-color: rgba(0,0,0,0);
-}
-
-section.card input#title {
-	font-size: 1.2em;
-}
-
-section.card input#title::-webkit-input-placeholder {
-	font-weight: lighter;
-}
-
-section.card textarea#description::-webkit-input-placeholder {
+.input-placeholder-lighter::-webkit-input-placeholder {
 	font-weight: lighter;
 }
 
@@ -108,18 +87,6 @@ section.card textarea#description {
 	line-height: 1.8em;
 	max-width: 100%;
 	overflow: hidden;
-}
-
-section.card input#date {
-	float: left;
-	width: auto;
-	font-size: 1em;
-}
-
-section.card input#time {
-	float: right;
-	font-size: 1em;
-	width: 150px;
 }
 
 section.card input:focus, section.card textarea:focus {

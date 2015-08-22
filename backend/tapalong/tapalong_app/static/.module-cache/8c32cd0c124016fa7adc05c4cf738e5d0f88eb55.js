@@ -136,70 +136,24 @@ var view = (function (models) {
       console.log('Uh oh, no valid state in history to move back to');
     }
   });
-  var ImgFadeInOnLoad = React.createClass({
-    getInitialState: function () {
-      return { loaded: false };
-    },
-    render: function () {
-      if (!this.loaded) {
-        fetch(this.props.src).then(function(response) {
-          this.setState({loaded: true});
-        }.bind(this));
-      }
-      var overlayStyle = {
-        width: this.props.width,
-        height: this.props.height,
-        backgroundColor: this.props.backgroundColor,
-        opacity: '1',
-        transition: 'opacity 600ms',
-        position: 'absolute',
-        top: '0',
-        left: '0'
-      };
-      if (this.state.loaded) {
-        overlayStyle.opacity = 0;
-      }
-      var imgStyle = {
-        position: 'absolute',
-        top: '0',
-        left: '0',
-        width: this.props.width,
-        height: this.props.height
-      }
-      // To account for the clipping bug filed against Doug in Chrome
-      if (this.props.circular) {
-        overlayStyle.borderRadius = '50%';
-        overlayStyle.overflow = 'hidden';
-        imgStyle.borderRadius = '50%';
-        imgStyle.overflow = 'hidden';
-      }
-      return (
-        <div style={{position: 'relative'}}>
-          <img src={this.props.src} style={imgStyle} />
-          <div style={overlayStyle} />
-        </div>
-      )
-    }
-  });
-  var FriendIcon = React.createClass({
+
+  var FriendIcon = React.createClass({displayName: "FriendIcon",
     render: function () {
       var friendIconStyle = {
+        backgroundColor: '#ddd',
         border: '1px solid #ccc',
         borderRadius: '19px',
         width: '38px',
         height: '38px',
         marginRight: '24px',
-        float: 'left',
-        overflow: 'hidden'
+        float: 'left'
       };
       return (
-        <div style={friendIconStyle}>
-          <ImgFadeInOnLoad src={this.props.thumbnail} backgroundColor='ddd' width='38' height='38' circular/>
-        </div>
+        React.createElement("img", {src: this.props.thumbnail, style: friendIconStyle})
       )
     }
   });
-  var CardOptions = React.createClass({
+  var CardOptions = React.createClass({displayName: "CardOptions",
     getInitialState: function () {
       return {enabled: [true]};
     },
@@ -224,19 +178,19 @@ var view = (function (models) {
         color: '#CCC'
       };
       return (
-        <div>
-          <div style={optionStyle}>
-            <a style={this.state.enabled[0] ? enabledOptionStyle : disabledOptionStyle}
-              onClick={this.state.enabled[0] ? this.props.options[0].onClick : function(){}}>
-              {this.props.options[0].label}
-            </a>
-          </div>
-          <div style={{clear: 'both'}}></div>
-        </div>
+        React.createElement("div", null, 
+          React.createElement("div", {style: optionStyle}, 
+            React.createElement("a", {style: this.state.enabled[0] ? enabledOptionStyle : disabledOptionStyle, 
+              onClick: this.state.enabled[0] ? this.props.options[0].onClick : function(){}}, 
+              this.props.options[0].label
+            )
+          ), 
+          React.createElement("div", {style: {clear: 'both'}})
+        )
       )
     }
   });
-  var Card = React.createClass({
+  var Card = React.createClass({displayName: "Card",
     render: function () {
       var cardStyle = {
         /* This puts the border inside the edge */
@@ -254,11 +208,11 @@ var view = (function (models) {
         cardStyle = objectAssign(cardStyle, {backgroundColor: this.props.backgroundColor});
       }
       return (
-        <div style={cardStyle}>{this.props.children}</div>
+        React.createElement("div", {style: cardStyle}, this.props.children)
       );
     }
   });
-  var ActivityBox = React.createClass({
+  var ActivityBox = React.createClass({displayName: "ActivityBox",
     getInitialState: function () {
       var option = this.props.activity.is_creator ?
         this.OPTIONS.edit : (this.props.activity.is_attending ? this.OPTIONS.undoAttend : this.OPTIONS.attend);
@@ -291,36 +245,36 @@ var view = (function (models) {
         }
       };
       return (
-        <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined}>
-          <div style={{padding: '24px'}}>
-            <FriendIcon thumbnail={this.props.activity.thumbnail}/>
-            {/* This forces the title to not wrap around the bottom of the icon */}
-            <div style={{overflow: 'hidden'}}>
-              {this.props.activity.is_creator ? (
-                <span><b>You</b> are </span>
+        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined}, 
+          React.createElement("div", {style: {padding: '24px'}}, 
+            React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
+            /* This forces the title to not wrap around the bottom of the icon */
+            React.createElement("div", {style: {overflow: 'hidden'}}, 
+              this.props.activity.is_creator ? (
+                React.createElement("span", null, React.createElement("b", null, "You"), " are ")
               ) : (
-                <span><b>{this.props.activity.creator_name}</b> is </span>
-              )}<b>{this.props.activity.title}</b> {this.props.activity.start_time}
-            </div>
-          </div>
-          <CardOptions
-            options={[{label: optionString, onClick: optionClicked.bind(this)}]}
-          />
-        </Card>
+                React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
+              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
+            )
+          ), 
+          React.createElement(CardOptions, {
+            options: [{label: optionString, onClick: optionClicked.bind(this)}]}
+          )
+        )
       );
     }
   });
-  var ActivityList = React.createClass({
+  var ActivityList = React.createClass({displayName: "ActivityList",
     render: function () {
       var activitiesList = models.activities.getActivities().map(function (activity) {
         // TODO: do me properly somehow
         activity.key = activity.id;
-        return <ActivityBox activity={activity}/>;
+        return React.createElement(ActivityBox, {activity: activity});
       });
       return (
-        <div>
-          {activitiesList}
-        </div>
+        React.createElement("div", null, 
+          activitiesList
+        )
       );
     }
   });
@@ -359,67 +313,27 @@ var view = (function (models) {
   var hideBackButton = function () {
     backButton.style.display = 'none';
   };
-  var EditActivity = React.createClass({
+  var EditActivity = React.createClass({displayName: "EditActivity",
     render: function () {
-      var getTimeAndDateFormatted = function (dateTime) {
-        if (!dateTime instanceof Date) {
+      var getTimeAndDateFormatted = function (start_time) {
+        if (!start_time instanceof Date) {
           alert('An error occurred! Sorry :(. Please refresh.');
           throw("start_time should be a Date but it was a string!");
         }
-        var timeString = twoDigitString(dateTime.getHours()) + ':' + twoDigitString(dateTime.getMinutes());
-        var dateString = getDateString(dateTime);
-        return {time: timeString, date: dateString};
-      };
-      var inputStyle = {
-        display: 'block',
-        boxSizing: 'border-box',
-        width: '100%',
-        margin: '10px 0',
-        padding: '10px 10px 10px 2px',
-        borderTop: 'none',
-        borderRight: 'none',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-        borderLeft: 'none',
-        backgroundColor: 'rgba(0,0,0,0)'
-      };
+        var timeString = twoDigitString(start_time.getHours()) + ':' + twoDigitString(start_time.getMinutes());
+        var dateString = getDateString(start_time);
+        return {time: timeString, date: dateString}
+      }
+      var name = models.user.getUserName;
       var option = {label: 'Create', onClick: function(){}};
-      var editing = !!this.props.activity;
-      if (editing) {
+      if (this.props.activity) {
         option = {label: 'Save', onClick: function(){}}
         var timeAndDate = getTimeAndDateFormatted(this.props.activity.start_time);
       }
-      var today = new Date;
-      var todaysDate = getDateString(today);
-      var tomorrow = Date.today().add(1).days()
-      var tomorrowsDate = getDateString(tomorrow);
-      var nextWeeksDate = getDateString(Date.today().add(14).days());
       return (
-        <Card>
-          <div style={{padding: '24px'}}>
-            <b>{this.props.userName}</b> is<br />
-            <input type='text' style={objectAssign({fontSize: '1.2em'}, inputStyle)} className='input-placeholder-lighter' value={this.props.activity.title} placeholder='Watching Frozen' autoCapitalize='words' required></input>
-            <input
-              type='date'
-              style={objectAssign(objectAssign({}, inputStyle), {	float: 'left', fontSize: '1em', width: 'auto'})}
-              className='input-placeholder-lighter'
-              max={nextWeeksDate}
-              min={todaysDate}
-              value={editing ? timeAndDate.date : tomorrowsDate}
-              required>
-            </input>
-            <input
-              type='time'
-              style={objectAssign(objectAssign({}, inputStyle), {	float: 'right', fontSize: '1em', width: '150px'})}
-              className='input-placeholder-lighter'
-              step="900"
-              value={editing ? timeAndDate.time : '13:00'}
-              required>
-            </input>
-            <div style={{clear: 'both'}}></div>
-            <textarea id='description' style={inputStyle} placeholder='Extra information (where? when? what?)' rows='1' value={this.props.activity.description}></textarea>
-          </div>
-          <CardOptions options={[option]}/>
-        </Card>
+        React.createElement(Card, null, 
+          React.createElement(CardOptions, {options: [option]})
+        )
       )
     }
   });
@@ -430,7 +344,7 @@ var view = (function (models) {
       activity = models.activities.getActivity(selectedActivity);
     }
     React.render(
-      <EditActivity activity={activity} userName={models.user.getUserName()} />,
+      React.createElement(EditActivity, {activity: activity}),
       document.getElementById('editActivity')
     );
 
@@ -440,6 +354,23 @@ var view = (function (models) {
     // var tomorrow = Date.today().add(1).days()
     // config.tomorrowsDate = getDateString(tomorrow);
     // config.nextWeeksDate = getDateString(Date.today().add(14).days());
+    // // Add extra data needed to render
+    // if (currentState == STATE.edit) {
+    //   // Get the selected activity if we're editing
+    //   var activity = models.activities.getActivity(selectedActivity);
+    //   config.activity = activity;
+    //   var dateTime = activity.start_time;
+    //   if (!dateTime instanceof Date) {
+    //     alert('An error occurred! Sorry :(. Please refresh.');
+    //     throw("start_time should be a Date but it was a string!");
+    //   }
+    //   var timeString = twoDigitString(dateTime.getHours()) + ':' + twoDigitString(dateTime.getMinutes());
+    //   var dateString = getDateString(dateTime);
+    //   config.activityExtras = {time: timeString, date: dateString};
+    //   config.editing = true;
+    // }
+    //
+    // editSection.innerHTML = template(config);
     //
     // // Make the textarea autoresize
     // var descriptionInputElem = editSection.querySelector('textarea#description');
@@ -638,7 +569,7 @@ var view = (function (models) {
   };
   var redrawActivitiesList = function () {
     React.render(
-      <ActivityList/>,
+      React.createElement(ActivityList, null),
       document.getElementById('activitiesList')
     );
     //   activityElem.onclick = function () {
