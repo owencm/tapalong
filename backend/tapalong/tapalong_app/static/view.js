@@ -194,43 +194,6 @@ var view = (function (models) {
       )
     }
   });
-  var CardOptions = React.createClass({displayName: "CardOptions",
-    getInitialState: function () {
-      return {enabled: [true]};
-    },
-    disableAndCall: function (callback) {
-      this.setState({enabled: [false]})
-    },
-    render: function () {
-      var optionStyle = {
-        textTransform: 'uppercase',
-        fontWeight: '600',
-        fontSize: '14px',
-        /* Put the padding and margin on the options so the click targets are larger */
-        padding: '6px 12px',
-        margin: '8px',
-        /* A default position */
-        float: 'right'
-      };
-      var enabledOptionStyle = {
-        color: '#00BCD4'
-      };
-      var disabledOptionStyle = {
-        color: '#CCC'
-      };
-      return (
-        React.createElement("div", null, 
-          React.createElement("div", {style: optionStyle}, 
-            React.createElement("a", {style: this.state.enabled[0] ? enabledOptionStyle : disabledOptionStyle, 
-              onClick: this.state.enabled[0] ? this.props.options[0].onClick : function(){}}, 
-              this.props.options[0].label
-            )
-          ), 
-          React.createElement("div", {style: {clear: 'both'}})
-        )
-      )
-    }
-  });
   var Card = React.createClass({displayName: "Card",
     render: function () {
       var cardStyle = {
@@ -251,6 +214,37 @@ var view = (function (models) {
       return (
         React.createElement("div", {style: cardStyle}, this.props.children)
       );
+    }
+  });
+  var CardOptions = React.createClass({displayName: "CardOptions",
+    render: function () {
+      var optionStyle = {
+        textTransform: 'uppercase',
+        fontWeight: '600',
+        fontSize: '14px',
+        /* Put the padding and margin on the options so the click targets are larger */
+        padding: '6px 12px',
+        margin: '8px',
+        /* A default position */
+        float: 'right'
+      };
+      var enabledOptionStyle = {
+        color: '#00BCD4'
+      };
+      var disabledOptionStyle = {
+        color: '#CCC'
+      };
+      return (
+        React.createElement("div", null, 
+          React.createElement("div", {style: optionStyle}, 
+            React.createElement("a", {style: this.props.options[0].disabled ? disabledOptionStyle : enabledOptionStyle, 
+              onClick: this.props.options[0].disabled ? function(){} : this.props.options[0].onClick}, 
+              this.props.options[0].label
+            )
+          ), 
+          React.createElement("div", {style: {clear: 'both'}})
+        )
+      )
     }
   });
   var ActivityBox = React.createClass({displayName: "ActivityBox",
@@ -358,7 +352,9 @@ var view = (function (models) {
     getInitialState: function () {
       return {
         title: this.props.activity.title,
-        description: this.props.activity.description
+        description: this.props.activity.description,
+        start_time: new Date(),
+        saving: false
       };
     },
     handleTitleChange: function (e) {
@@ -366,6 +362,57 @@ var view = (function (models) {
     },
     handleDescriptionChange: function (e) {
       this.setState({description: e.target.value});
+    },
+    handleDateTimeChange: function (e) {
+      // TODO: Implement me
+      // date assumes the input was in GMT and then converts to local time
+      var date = editSection.querySelector('input#date').valueAsDate;
+      var dateTime = new Date(date);
+      console.log('DateTime created in the form is ',dateTime);
+      // Make a timezone adjustment
+      dateTime.addMinutes(dateTime.getTimezoneOffset());
+      var time = editSection.querySelector('input#time').value.split(':');
+      dateTime.setHours(time[0]);
+      dateTime.setMinutes(time[1]);
+      console.log('DateTime created in the form is ',dateTime);
+    },
+    handleDateChange: function (e) {
+
+    },
+    handleTimeChange: function (e) {
+
+    },
+    handleSaveClicked: function (e) {
+      var thisButton = e.target;
+      this.setState({saving: true});
+
+      var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
+
+      models.activities.tryUpdateActivity(this.props.activity, activityChanges, function () {
+        swLibrary.hasPushNotificationPermission(function() {
+          changeState(STATE.list, {}, true);
+        }, function () {
+          changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+        });
+      }, function () {
+        alert('An error occurred! Sorry :(. Please refresh.');
+        throw('Editing the activity failed. Help the user understand why.');
+      });
+    },
+    handleCreateClicked: function () {
+      alert('TODO');
+      var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: description};
+      models.activities.tryCreateActivity(newActivity, function () {
+        swLibrary.hasPushNotificationPermission(function() {
+          changeState(STATE.list, {}, true);
+        }, function () {
+          changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+        });
+      }, function () {
+        // thisButton.classList.toggle('disabled', false);
+        alert('Sorry, something went wrong. Please check you entered the information correctly.');
+        throw("Adding to server failed. Help the user understand why");
+      });
     },
     render: function () {
       var getTimeAndDateFormatted = function (dateTime) {
@@ -390,10 +437,14 @@ var view = (function (models) {
         backgroundColor: 'rgba(0,0,0,0)',
         outline: 'none'
       };
-      var option = {label: 'Create', onClick: function(){}};
+      var option = {label: 'Create', onClick: this.handleCreateClicked};
       var editing = !!this.props.activity;
       if (editing) {
-        option = {label: 'Save', onClick: function(){}}
+        option = {label: 'Save', onClick: this.handleSaveClicked};
+        if (this.state.saving) {
+          option.label = 'Saving...';
+          option.disabled = true;
+        }
         var timeAndDate = getTimeAndDateFormatted(this.props.activity.start_time);
       }
       var today = new Date;
