@@ -1,9 +1,9 @@
-var twoDigitString = function (digit) {
+var toTwoDigitString = function (digit) {
   return (digit < 10) ? '0' + digit : '' + digit;
 }
 
 var getDateString = function (dateTime) {
-  return [(1900 + dateTime.getYear()),twoDigitString(dateTime.getMonth()+1),twoDigitString(dateTime.getDate())].join('-');
+  return [(1900 + dateTime.getYear()),toTwoDigitString(dateTime.getMonth()+1),toTwoDigitString(dateTime.getDate())].join('-');
 }
 
 var m = function (obj) {
@@ -37,7 +37,7 @@ var m = function (obj) {
 };
 
 var view = (function (models) {
-  var STATE = {add: 0, list: 1, detail: 2, edit: 3, loggedOut: 4, uninitialized: 5, notificationsOptIn: 6};
+  var STATE = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
   var currentState = STATE.uninitialized;
   var selectedActivity;
   var changeState = function (newState, options, userTriggered) {
@@ -51,7 +51,6 @@ var view = (function (models) {
     if (currentState == STATE.list) {
       hideBackButton();
       setTitle('Upcoming Plans');
-      hideDetails();
       hideNotificationOptIn();
       redrawActivitiesList();
       showActivitiesList();
@@ -72,7 +71,6 @@ var view = (function (models) {
       setTitle('Create');
       hideAddButton();
       hideActivitiesList();
-      hideDetails();
       showCreateActivityForm();
       showBackButton();
       if (userTriggered) {
@@ -82,22 +80,10 @@ var view = (function (models) {
       setTitle('Edit');
       hideAddButton();
       hideActivitiesList();
-      hideDetails();
       showCreateActivityForm();
       showBackButton();
       if (userTriggered) {
         // history.pushState({state: STATE.edit}, 'Edit plan');
-      }
-    } else if (currentState == STATE.detail) {
-      setTitle('View details');
-      hideCreateActivityForm();
-      hideAddButton();
-      hideActivitiesList();
-      hideNotificationOptIn();
-      showBackButton();
-      showDetails();
-      if (userTriggered) {
-        // history.pushState({state: STATE.detail}, 'View details');
       }
     } else if (currentState == STATE.loggedOut) {
       // TODO: Move this state to within the model
@@ -109,7 +95,6 @@ var view = (function (models) {
       setTitle('Stay up to date');
       hideNoActivitiesCard();
       showNotificationOptIn(options.reason, options.nextState);
-      hideDetails();
       hideActivitiesList();
       hideCreateActivityForm();
     } else {
@@ -125,6 +110,59 @@ var view = (function (models) {
     } else {
       // Note safari calls popstate on page load so this is expected
       console.log('Uh oh, no valid state in history to move back to');
+    }
+  });
+  var Card = React.createClass({displayName: "Card",
+    render: function () {
+      var cardStyle = {
+        /* This puts the border inside the edge */
+        boxSizing: 'border-box',
+        maxWidth: '600px',
+        margin: '0 auto',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+        color: '#444',
+        lineHeight: '1.5em',
+        backgroundColor: '#fafafa',
+        /* For fading into 'attending' */
+        /*-webkitTransition: 'background-color 0.5s',*/
+      };
+      if (this.props.backgroundColor !== undefined) {
+        cardStyle = m(cardStyle, {backgroundColor: this.props.backgroundColor});
+      }
+      return (
+        React.createElement("div", {style: cardStyle, onClick: this.props.onClick ? this.props.onClick : function () {}}, this.props.children)
+      );
+    }
+  });
+  var CardOptions = React.createClass({displayName: "CardOptions",
+    render: function () {
+      var optionStyle = {
+        textTransform: 'uppercase',
+        fontWeight: '600',
+        fontSize: '14px',
+        /* Put the padding and margin on the options so the click targets are larger */
+        padding: '6px 12px',
+        margin: '8px',
+        /* A default position */
+        float: 'right'
+      };
+      var enabledOptionStyle = {
+        color: '#00BCD4'
+      };
+      var disabledOptionStyle = {
+        color: '#CCC'
+      };
+      return (
+        React.createElement("div", null, 
+          React.createElement("div", {style: optionStyle}, 
+            React.createElement("a", {style: this.props.options[0].disabled ? disabledOptionStyle : enabledOptionStyle, 
+              onClick: this.props.options[0].disabled ? function(){} : this.props.options[0].onClick}, 
+              this.props.options[0].label
+            )
+          ), 
+          React.createElement("div", {style: {clear: 'both'}})
+        )
+      )
     }
   });
   var ImgFadeInOnLoad = React.createClass({displayName: "ImgFadeInOnLoad",
@@ -146,7 +184,7 @@ var view = (function (models) {
         height: this.props.height,
         backgroundColor: this.props.backgroundColor,
         opacity: '1',
-        transition: 'opacity 600ms',
+        transition: 'opacity 300ms',
         position: 'absolute',
         top: '0',
         left: '0'
@@ -194,117 +232,124 @@ var view = (function (models) {
       )
     }
   });
-  var Card = React.createClass({displayName: "Card",
+  var AttendeesList = React.createClass({displayName: "AttendeesList",
     render: function () {
-      var cardStyle = {
-        /* This puts the border inside the edge */
-        boxSizing: 'border-box',
-        maxWidth: '600px',
-        margin: '0 auto',
-        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-        color: '#444',
-        lineHeight: '1.5em',
-        backgroundColor: '#fafafa',
-        /* For fading into 'attending' */
-        /*-webkitTransition: 'background-color 0.5s',*/
-      };
-      if (this.props.backgroundColor !== undefined) {
-        cardStyle = m(cardStyle, {backgroundColor: this.props.backgroundColor});
-      }
-      return (
-        React.createElement("div", {style: cardStyle}, this.props.children)
-      );
-    }
-  });
-  var CardOptions = React.createClass({displayName: "CardOptions",
-    render: function () {
-      var optionStyle = {
-        textTransform: 'uppercase',
-        fontWeight: '600',
-        fontSize: '14px',
-        /* Put the padding and margin on the options so the click targets are larger */
-        padding: '6px 12px',
-        margin: '8px',
-        /* A default position */
-        float: 'right'
-      };
-      var enabledOptionStyle = {
-        color: '#00BCD4'
-      };
-      var disabledOptionStyle = {
-        color: '#CCC'
-      };
-      return (
-        React.createElement("div", null, 
-          React.createElement("div", {style: optionStyle}, 
-            React.createElement("a", {style: this.props.options[0].disabled ? disabledOptionStyle : enabledOptionStyle, 
-              onClick: this.props.options[0].disabled ? function(){} : this.props.options[0].onClick}, 
-              this.props.options[0].label
-            )
-          ), 
-          React.createElement("div", {style: {clear: 'both'}})
+      if (this.props.attendees < 1) {
+        return null;
+      } else {
+        return (
+          React.createElement("div", null, 
+            React.createElement("p", null, React.createElement("b", null, "People going")), 
+            
+              this.props.attendees.map(function (attendee) {
+                return React.createElement("p", null, "attendee")
+              })
+            
+          )
         )
-      )
+      }
     }
   });
-  var ActivityBox = React.createClass({displayName: "ActivityBox",
+  var ActivityCard = React.createClass({displayName: "ActivityCard",
     getInitialState: function () {
-      var option = this.props.activity.is_creator ?
-        this.OPTIONS.edit : (this.props.activity.is_attending ? this.OPTIONS.undoAttend : this.OPTIONS.attend);
-      return {option: option}
+      return {
+        viewingDetails: false
+      };
     },
     OPTIONS: {
       edit: 0,
       attend: 1,
       undoAttend: 2
     },
+    getCardsOption: function () {
+      if (this.props.activity.is_creator) {
+        return this.OPTIONS.edit;
+      } else if (this.props.activity.is_attending) {
+        return this.OPTIONS.undoAttend;
+      } else {
+        return this.OPTIONS.attend;
+      }
+    },
+    handleCardClicked: function () {
+      this.setState({viewingDetails: !this.state.viewingDetails});
+    },
+    handleEditClicked: function (e) {
+      // Prevent default so we don't also fire a click on the card
+      e.stopPropagation();
+      selectedActivity = this.props.activity.id;
+      changeState(STATE.edit, {}, true);
+    },
+    handleAttendClicked: function (e) {
+      // Prevent default so we don't also fire a click on the card
+      e.stopPropagation();
+      // Optimistically move onto the next page
+      swLibrary.hasPushNotificationPermission(function(){}, function() {
+        changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
+      });
+      // Note no callback since the list will automatically redraw when this changes
+      var optimistic = this.props.activity.dirty == undefined;
+      models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
+        console.log('Uhoh, an optimistic error was a mistake!!');
+        alert('An unexpected error occurred. Please refresh.');
+      });
+    },
+    handleUndoAttendClicked: function (e) {
+      // Prevent default so we don't also fire a click on the card
+      e.stopPropagation();
+      alert('undo attend');
+    },
     render: function() {
-      var optionString = ['Edit', 'Go along', 'Cancel attending'][this.state.option];
-      var optionClicked = function () {
-        if (this.state.option == this.OPTIONS.edit) {
-          selectedActivity = this.props.activity.id;
-          changeState(STATE.edit, {}, true);
-        } else if (option == this.OPTIONS.attend) {
-          // Optimistically move onto the next page
-          swLibrary.hasPushNotificationPermission(function(){}, function() {
-            changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
-          });
-          // Note no callback since the list will automatically redraw when this changes
-          var optimistic = this.props.activity.dirty == undefined;
-          models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
-            console.log('Uhoh, an optimistic error was a mistake!!');
-            alert('An unexpected error occurred. Please refresh.');
-          });
-        } else if (option == this.OPTIONS.undoAttend) {
-          alert('undo attend');
+      var optionString = ['Edit', 'Go along', 'Cancel attending'][this.getCardsOption()];
+      var onOptionClick = (function () {
+        switch(this.getCardsOption()) {
+          case this.OPTIONS.edit:
+            return this.handleEditClicked;
+            break;
+          case this.OPTIONS.attend:
+            return this.handleAttendClicked;
+            break;
+          case this.OPTIONS.undoAttend:
+            return this.handleUndoAttendClicked;
+            break;
         }
-      };
+      }.bind(this))();
+
       return (
-        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined}, 
+        React.createElement(Card, {backgroundColor: this.props.activity.is_attending ? '#cdf9c9' : undefined, onClick: this.handleCardClicked}, 
           React.createElement("div", {style: {padding: '24px'}}, 
             React.createElement(FriendIcon, {thumbnail: this.props.activity.thumbnail}), 
             /* This forces the title to not wrap around the bottom of the icon */
             React.createElement("div", {style: {overflow: 'hidden'}}, 
+              /* Title section */ 
               this.props.activity.is_creator ? (
                 React.createElement("span", null, React.createElement("b", null, "You"), " are ")
               ) : (
                 React.createElement("span", null, React.createElement("b", null, this.props.activity.creator_name), " is ")
-              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time
+              ), React.createElement("b", null, this.props.activity.title), " ", this.props.activity.start_time, 
+              
+                /* Description and attendees */
+                this.state.viewingDetails ? (
+                  React.createElement("div", {style: {marginTop: '16px'}}, 
+                    React.createElement("p", null, React.createElement("b", null, "Description")), 
+                    React.createElement("p", {style: {whiteSpace: 'pre'}}, this.props.activity.description), 
+                    React.createElement(AttendeesList, {attendees: this.props.activity.attendees})
+                  )
+                ) : {}
+              
             )
           ), 
           React.createElement(CardOptions, {
-            options: [{label: optionString, onClick: optionClicked.bind(this)}]}
+            options: [{label: optionString, onClick: onOptionClick}]}
           )
         )
       );
     }
   });
-  var ActivityList = React.createClass({displayName: "ActivityList",
+  var ActivityCardList = React.createClass({displayName: "ActivityCardList",
     render: function () {
       var activitiesList = models.activities.getActivities().map(function (activity) {
-        // TODO: do me properly somehow
         activity.key = activity.id;
-        return React.createElement(ActivityBox, {activity: activity});
+        return React.createElement(ActivityCard, {activity: activity});
       });
       return (
         React.createElement("div", null, 
@@ -315,7 +360,6 @@ var view = (function (models) {
   });
 
   var activitiesSection = document.querySelector('section#activitiesList');
-  var detailSection = document.querySelector('section#activityDetails');
   var editSection = document.querySelector('section#editActivity');
   var addButton = document.querySelector('#addButton');
   var backButton = document.querySelector('#backButton');
@@ -351,8 +395,8 @@ var view = (function (models) {
   var EditActivity = React.createClass({displayName: "EditActivity",
     getInitialState: function () {
       return {
-        title: this.props.activity.title,
-        description: this.props.activity.description,
+        title: this.props.activity ? this.props.activity.title : '',
+        description: this.props.activity ? this.props.activity.description : '',
         start_time: new Date(),
         saving: false
       };
@@ -400,13 +444,22 @@ var view = (function (models) {
       });
     },
     handleCreateClicked: function () {
-      alert('TODO');
-      var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: description};
+      var newActivity = {
+        title: this.state.title,
+        start_time: this.state.start_time,
+        location: '',
+        max_attendees: -1,
+        description: this.state.description
+      };
       models.activities.tryCreateActivity(newActivity, function () {
         swLibrary.hasPushNotificationPermission(function() {
           changeState(STATE.list, {}, true);
         }, function () {
-          changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+          changeState(STATE.notificationsOptIn, {
+            nextState: STATE.list,
+            userTriggered: true,
+            reason: 'when a friend says they want to come along'
+          }, false);
         });
       }, function () {
         // thisButton.classList.toggle('disabled', false);
@@ -415,15 +468,10 @@ var view = (function (models) {
       });
     },
     render: function () {
-      var getTimeAndDateFormatted = function (dateTime) {
-        if (!dateTime instanceof Date) {
-          alert('An error occurred! Sorry :(. Please refresh.');
-          throw("start_time should be a Date but it was a string!");
-        }
-        var timeString = twoDigitString(dateTime.getHours()) + ':' + twoDigitString(dateTime.getMinutes());
-        var dateString = getDateString(dateTime);
-        return {time: timeString, date: dateString};
-      };
+      var editing = !!this.props.activity;
+      /*
+        Set up styles
+      */
       var inputStyle = {
         display: 'block',
         boxSizing: 'border-box',
@@ -437,21 +485,36 @@ var view = (function (models) {
         backgroundColor: 'rgba(0,0,0,0)',
         outline: 'none'
       };
+      /*
+        Set up the options on the card
+      */
       var option = {label: 'Create', onClick: this.handleCreateClicked};
-      var editing = !!this.props.activity;
       if (editing) {
         option = {label: 'Save', onClick: this.handleSaveClicked};
         if (this.state.saving) {
           option.label = 'Saving...';
           option.disabled = true;
         }
-        var timeAndDate = getTimeAndDateFormatted(this.props.activity.start_time);
       }
-      var today = new Date;
-      var todaysDate = getDateString(today);
-      var tomorrow = Date.today().add(1).days()
-      var tomorrowsDate = getDateString(tomorrow);
-      var nextWeeksDate = getDateString(Date.today().add(14).days());
+      /*
+        Set up dates for the form
+      */
+      var getTimeAndDateFormatted = function (dateTime) {
+        if (!dateTime instanceof Date) {
+          alert('An error occurred! Sorry :(. Please refresh.');
+          throw("start_time should be a Date but it was a string!");
+        }
+        var colonSeparatedTime = toTwoDigitString(dateTime.getHours()) + ':' + toTwoDigitString(dateTime.getMinutes());
+        var hyphenSeparatedDate = getDateString(dateTime);
+        return {time: colonSeparatedTime, date: hyphenSeparatedDate};
+      };
+      var hyphenSeparatedToday = getDateString(Date.today());
+      var hyphenSeparatedTomorrow = getDateString(Date.today().add(1).days());
+      if (editing) {
+        var timeAndDate = getTimeAndDateFormatted(this.props.activity.start_time);
+        var hyphenSeparatedEventDate = timeAndDate.date;
+        var hyphenSeparatedEventTime = timeAndDate.time;
+      }
       return (
         React.createElement(Card, null, 
           React.createElement("div", {style: {padding: '24px'}}, 
@@ -469,9 +532,8 @@ var view = (function (models) {
               type: "date", 
               style: m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'}), 
               className: "input-placeholder-lighter focusUnderline", 
-              max: nextWeeksDate, 
-              min: todaysDate, 
-              value: editing ? timeAndDate.date : tomorrowsDate, 
+              min: hyphenSeparatedToday, 
+              value: editing ? hyphenSeparatedEventDate : hyphenSeparatedTomorrow, 
               required: true}
             ), 
             React.createElement("input", {
@@ -479,7 +541,7 @@ var view = (function (models) {
               style: m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'}), 
               className: "input-placeholder-lighter focusUnderline", 
               step: "900", 
-              value: editing ? timeAndDate.time : '13:00', 
+              value: editing ? hyphenSeparatedEventTime : '13:00', 
               required: true}
             ), 
             React.createElement("div", {style: {clear: 'both'}}), 
@@ -510,12 +572,7 @@ var view = (function (models) {
     );
 
     editSection.style.display = '';
-    // var today = new Date;
-    // config.todaysDate = getDateString(today);
-    // var tomorrow = Date.today().add(1).days()
-    // config.tomorrowsDate = getDateString(tomorrow);
-    // config.nextWeeksDate = getDateString(Date.today().add(14).days());
-    //
+
     // // Make the textarea autoresize
     // var descriptionInputElem = editSection.querySelector('textarea#description');
     // function delayedResize (elem) {
@@ -563,91 +620,10 @@ var view = (function (models) {
     //     this.blur();
     //   }
     // });
-    //
-    // editSection.querySelector('.option.save').onclick = function () {
-    //   var thisButton = this;
-    //   thisButton.classList.add('disabled');
-    //   thisButton.innerHTML = 'Saving...';
-    //   var title = editSection.querySelector('input#title').value;
-    //   var description = editSection.querySelector('textarea#description').value;
-    //   // date assumes the input was in GMT and then converts to local time
-    //   var date = editSection.querySelector('input#date').valueAsDate;
-    //   var dateTime = new Date(date);
-    //   console.log('DateTime created in the form is ',dateTime);
-    //   // Make a timezone adjustment
-    //   dateTime.addMinutes(dateTime.getTimezoneOffset());
-    //   var time = editSection.querySelector('input#time').value.split(':');
-    //   dateTime.setHours(time[0]);
-    //   dateTime.setMinutes(time[1]);
-    //   console.log('DateTime created in the form is ',dateTime);
-    //   var activityChanges = {title: title, description: description, start_time: dateTime};
-    //   if (currentState == STATE.edit) {
-    //     var activity = models.activities.getActivity(selectedActivity);
-    //     console.log(activity);
-    //     models.activities.tryUpdateActivity(activity, activityChanges, function () {
-    //       swLibrary.hasPushNotificationPermission(function() {
-    //         changeState(STATE.list, {}, true);
-    //       }, function () {
-    //         changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-    //       });
-    //     }, function () {
-    //       alert('An error occurred! Sorry :(. Please refresh.');
-    //       throw('Editing the activity failed. Help the user understand why.');
-    //     });
-    //   } else {
-    //     var newActivity = {title: title, start_time: dateTime, location: '', max_attendees: -1, description: description};
-    //     models.activities.tryCreateActivity(newActivity, function () {
-    //       swLibrary.hasPushNotificationPermission(function() {
-    //         changeState(STATE.list, {}, true);
-    //       }, function () {
-    //         changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-    //       });
-    //     }, function () {
-    //       // thisButton.classList.toggle('disabled', false);
-    //       alert('Sorry, something went wrong. Please check you entered the information correctly.');
-    //       throw("Adding to server failed. Help the user understand why");
-    //     });
-    //   }
-    // }
-    // editSection.style.display = '';
   };
   var hideCreateActivityForm = function () {
     editSection.style.display = 'none';
-  }
-  var showDetails = function () {
-    // Todo: check selected activity still exists (rather, do this whenever shit changes)
-    if (selectedActivity === undefined) {
-      throw 'No activity selected';
-    };
-    var source = document.querySelector('#activity-details-template').innerHTML;
-    var template = Handlebars.compile(source);
-    var activity = models.activities.getActivity(selectedActivity);
-    var config = {activity: activity, hasAttendees: activity.attendees.length > 0, hasDescription: activity.description !== '', descriptionLines: activity.description.split('\n')};
-    detailSection.innerHTML = template(config);
-    detailSection.querySelector('.option').onclick = function (e) {
-      // Creators edit, non creators attend
-      if (activity.is_creator) {
-        selectedActivity = activity.id;
-        changeState(STATE.edit, {}, true);
-      } else {
-        // Note no callback since the list will automatically redraw when this changes
-        var optimistic = activity.dirty == undefined;
-        models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {
-          console.log('Request to attending was a success');
-        }, function () {
-          console.log('Uhoh, an optimistic error was a mistake!!');
-          alert('An unexpected error occurred. Please refresh.');
-        });
-      }
-      this.classList.add('disabled');
-      e.stopPropagation();
-    }
-    detailSection.style.display = '';
-  }
-  var redrawDetails = showDetails;
-  var hideDetails = function () {
-    detailSection.style.display = 'none';
-  }
+  };
   var showNotificationOptIn = function (reason, nextState) {
     // TODO(owencm): Show something different if the notification permission is denied
     var source = document.querySelector('#notifications-opt-in-template').innerHTML;
@@ -707,13 +683,11 @@ var view = (function (models) {
   var redrawCurrentView = function () {
     if (currentState == STATE.list) {
       redrawActivitiesList();
-    } else if (currentState == STATE.detail) {
-      redrawDetails();
     }
   };
   var redrawActivitiesList = function () {
     React.render(
-      React.createElement(ActivityList, null),
+      React.createElement(ActivityCardList, null),
       document.getElementById('activitiesList')
     );
     //   activityElem.onclick = function () {

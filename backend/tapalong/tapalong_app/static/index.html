@@ -26,7 +26,6 @@
       <section id='notificationsOptIn'></section>
       <section id='editActivity'></section>
       <section id='activitiesList'></section>
-      <section id='activityDetails'></section>
       <div style='height: 100px'></div>
     </div>
     <div id='addButton' style='display: none'></div>
@@ -60,45 +59,6 @@
           <div class='cardTitleContainer'>
             {{#if activity.is_creator}}<b>You</b> are {{else}}<b>{{activity.creator_name}}</b> is {{/if}}<b>{{activity.title}}</b> {{dateInString activity.start_time}}.
           </div>
-        </div>
-        <div class='optionContainer'>
-          <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-            {{#if activity.is_creator}}
-              Edit
-            {{else}}
-              {{#if activity.is_attending}}
-                Cancel Attending
-              {{else}}
-                Go along
-              {{/if}}
-            {{/if}}
-          </div>
-        </div>
-        <div class="clear"></div>
-      </section>
-    </script>
-    <script id='activity-details-template' type='text/x-handlebars-template'>
-      <section class='card detail{{#if activity.is_attending}} attending{{/if}}'>
-        <div class='contentContainer'>
-          <p><b>{{activity.title}}</b></p>
-          <p>{{datetimeString activity.start_time}}</p>
-          <p>Created by: {{activity.creator_name}}</p>
-          {{#if hasDescription}}
-            <p><b>Description</b></p>
-            <div>
-              {{#each descriptionLines}}
-                {{this}}{{#unless @last}}<br />{{/unless}}
-              {{/each}}
-            </div>
-          {{/if}}
-          {{#if hasAttendees}}
-            <p><b>Friends going</b></p>
-            <p>
-              {{#each activity.attendees}}
-                {{this}}{{#unless @last}},{{/unless}}
-              {{/each}}.
-            </p>
-          {{/if}}
         </div>
         <div class='optionContainer'>
           <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
