@@ -1,3 +1,5 @@
+var TextAreaResizing = require('react-textarea-autosize');
+
 var toTwoDigitString = function (digit) {
   return (digit < 10) ? '0' + digit : '' + digit;
 }
@@ -173,7 +175,9 @@ var view = (function (models) {
       if (!this.loadingStarted) {
         this.loadingStarted = true;
         var img = new Image();
-        img.onload = function() { this.setState({loaded: true})}.bind(this);
+        img.onload = function() {
+          this.setState({loaded: true})
+        }.bind(this);
         img.src = src;
       }
     },
@@ -358,40 +362,6 @@ var view = (function (models) {
       );
     }
   });
-
-  var activitiesSection = document.querySelector('section#activitiesList');
-  var editSection = document.querySelector('section#editActivity');
-  var addButton = document.querySelector('#addButton');
-  var backButton = document.querySelector('#backButton');
-  var title = document.querySelector('#title');
-  var noActivitiesCard = document.querySelector('#noActivitiesCard');
-  var notificationsOptInSection = document.querySelector('section#notificationsOptIn');
-  var permissionOverlay = document.querySelector('div#permissionOverlay');
-  var setTitle = function (newTitle) {
-    title.innerHTML = newTitle;
-  };
-  var showHeader = function () {
-    var headerElem = document.querySelector('header');
-    headerElem.style.display = '';
-  };
-  var hideHeader = function () {
-    var headerElem = document.querySelector('header');
-    headerElem.style.display = 'none';
-  };
-  var showLogin = function () {
-    var loginElem = document.querySelector('#login');
-    loginElem.style.display = '';
-  };
-  var hideLogin = function () {
-    var loginElem = document.querySelector('#login');
-    loginElem.style.display = 'none';
-  };
-  var showBackButton = function () {
-    backButton.style.display = '';
-  };
-  var hideBackButton = function () {
-    backButton.style.display = 'none';
-  };
   var EditActivity = React.createClass({
     getInitialState: function () {
       return {
@@ -560,6 +530,40 @@ var view = (function (models) {
       )
     }
   });
+
+  var activitiesSection = document.querySelector('section#activitiesList');
+  var editSection = document.querySelector('section#editActivity');
+  var addButton = document.querySelector('#addButton');
+  var backButton = document.querySelector('#backButton');
+  var title = document.querySelector('#title');
+  var noActivitiesCard = document.querySelector('#noActivitiesCard');
+  var notificationsOptInSection = document.querySelector('section#notificationsOptIn');
+  var permissionOverlay = document.querySelector('div#permissionOverlay');
+  var setTitle = function (newTitle) {
+    title.innerHTML = newTitle;
+  };
+  var showHeader = function () {
+    var headerElem = document.querySelector('header');
+    headerElem.style.display = '';
+  };
+  var hideHeader = function () {
+    var headerElem = document.querySelector('header');
+    headerElem.style.display = 'none';
+  };
+  var showLogin = function () {
+    var loginElem = document.querySelector('#login');
+    loginElem.style.display = '';
+  };
+  var hideLogin = function () {
+    var loginElem = document.querySelector('#login');
+    loginElem.style.display = 'none';
+  };
+  var showBackButton = function () {
+    backButton.style.display = '';
+  };
+  var hideBackButton = function () {
+    backButton.style.display = 'none';
+  };
   var showCreateActivityForm = function () {
     var activity = null;
     if (currentState == STATE.edit) {
@@ -572,24 +576,6 @@ var view = (function (models) {
     );
 
     editSection.style.display = '';
-
-    // // Make the textarea autoresize
-    // var descriptionInputElem = editSection.querySelector('textarea#description');
-    // function delayedResize (elem) {
-    //   return function () {
-    //     window.setTimeout(function () {
-    //       elem.style.height = 'auto';
-    //       elem.style.height = elem.scrollHeight+'px';
-    //    }, 0);
-    //   }
-    // }
-    // var delayedResizeInstance = delayedResize(descriptionInputElem);
-    // delayedResizeInstance();
-    // descriptionInputElem.addEventListener('change',  delayedResizeInstance);
-    // descriptionInputElem.addEventListener('cut',     delayedResizeInstance);
-    // descriptionInputElem.addEventListener('paste',   delayedResizeInstance);
-    // descriptionInputElem.addEventListener('drop',    delayedResizeInstance);
-    // descriptionInputElem.addEventListener('keydown', delayedResizeInstance);
     //
     // // Add interactivity
     // var titleInputElem = editSection.querySelector('input#title');
@@ -738,49 +724,3 @@ var view = (function (models) {
     debugSkipLogin: appLoginSuccess
   };
 })(models);
-
-var getDateTimeString = function (date) {
-  var str = '';
-  var today = Date.today();
-  var tomorrow = Date.today().add(1).days();
-  activityDateCopy = (new Date(date.getTime())).clearTime();
-  if (activityDateCopy.equals(today)) {
-    str += 'today';
-  } else if (activityDateCopy.equals(tomorrow)) {
-    str += 'tomorrow';
-  } else {
-    // alert(date.toLocaleString() + ' is '+ date.getDay());
-    str += 'on ' + ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][date.getDay()];
-  }
-  if (activityDateCopy.compareTo(today.add(7).days()) > 0) {
-    str += ' ' + date.toString('MM/dd');
-  }
-  str += ' at ' + date.toString('HH');
-  if (date.getMinutes !== 0) {
-    str += date.toString(':mm');
-  }
-  return str;
-}
-Handlebars.registerHelper('datetimeString', function(start_time) {
-  if (!start_time instanceof Date) {
-    alert('An error occurred! Sorry :(. Please refresh.');
-    throw("start_time was a string, not a Date in the template");
-  }
-  return start_time.toLocaleString().replace(/:00/g,'');
-});
-Handlebars.registerHelper('dateInString', function(start_time) {
-  if (!start_time instanceof Date) {
-    alert('An error occurred! Sorry :(. Please refresh.');
-    throw("start_time was a string, not a Date in the template");
-  }
-  return getDateTimeString(start_time);
-});
-Handlebars.registerHelper('list', function(items, options) {
-  var out = "<ul>";
-
-  for(var i=0, l=items.length; i<l; i++) {
-    out = out + "<li>" + options.fn(items[i]) + "</li>";
-  }
-
-  return out + "</ul>";
-});
