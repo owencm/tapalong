@@ -38,7 +38,7 @@ var m = function (obj) {
 	return result;
 };
 
-var view = (function (models) {
+window.view = (function (models) {
   var STATE = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
   var currentState = STATE.uninitialized;
   var selectedActivity;

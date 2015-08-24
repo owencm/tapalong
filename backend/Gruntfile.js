@@ -13,6 +13,13 @@ module.exports = function(grunt) {
         }
       }
     },
+    browserify: {
+      dist: {
+        files: {
+          'tapalong/tapalong_app/static/view.js': ['tapalong/tapalong_app/static/view.js']
+        }
+      }
+    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
@@ -24,11 +31,11 @@ module.exports = function(grunt) {
     }
   });
 
-  // Load the plugin that provides the "uglify" task.
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-babel');
+  grunt.loadNpmTasks('grunt-browserify');
 
   // Default task(s).
-  grunt.registerTask('default', ['babel']);
+  grunt.registerTask('default', ['babel', 'browserify']);
 
 };
