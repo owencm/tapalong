@@ -11,3 +11,6 @@
 
 #React files
 .module-cache
+
+#npm files
+node_modules/
