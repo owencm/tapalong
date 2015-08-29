@@ -79,6 +79,7 @@ window.view = (function (models) {
         // history.pushState({state: STATE.add}, 'Create a plan');
       }
     } else if (currentState == STATE.edit) {
+      alert('editing')
       setTitle('Edit');
       hideAddButton();
       hideActivitiesList();
