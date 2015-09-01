@@ -1,3 +1,5 @@
+var view = require('./view.js');
+
 var skipLogin = true;
 
 if (skipLogin) {

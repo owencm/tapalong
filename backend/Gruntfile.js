@@ -9,14 +9,14 @@ module.exports = function(grunt) {
       },
       dist: {
         files: {
-          'tapalong/tapalong_app/static/view.js': 'tapalong/tapalong_app/client/src/view.js'
+          'tapalong/tapalong_app/static/main.js': 'tapalong/tapalong_app/static/main.js'
         }
       }
     },
     browserify: {
       dist: {
         files: {
-          'tapalong/tapalong_app/static/view.js': ['tapalong/tapalong_app/static/view.js']
+          'tapalong/tapalong_app/static/main.js': ['tapalong/tapalong_app/client/src/main.js']
         }
       }
     },
@@ -36,6 +36,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-browserify');
 
   // Default task(s).
-  grunt.registerTask('default', ['babel', 'browserify']);
+  grunt.registerTask('default', ['browserify', 'babel']);
 
 };

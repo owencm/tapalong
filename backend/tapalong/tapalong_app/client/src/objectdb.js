@@ -127,7 +127,7 @@ var objectDB = function() {
       cursor.continue();
     }
   };
-  
+
   return {
     open: function(database, upgrade, version, onError) {
     /** objectDB: {
@@ -135,7 +135,7 @@ var objectDB = function() {
           delete: function(database:string, callback:function(error:undefined|DOMError, blocked:boolean)),
           list: function(callback:function(DOMStringList))
         }
-        
+
         ObjectDB is backed by `indexedDB`. An upgrade transaction runs on `open` if the database version is less than
         the requested version or does not exist. If `upgrade` is a json value, the data stores in the first transaction
         operation on this `Database` will be populated with this value on an upgrade event. Otherwise, an upgrade will
@@ -288,7 +288,7 @@ var objectDB = function() {
             delete: function(path='':string, store='data':string) -> ScopedTransaction,
             close: function
           }
-          
+
           `get`, `put`, `insert`, `append`, and `delete` are convenience methods that operate through `transaction` for
           a single objectStore and return the corresponding `ScopedTransaction`. `get` initiates a read-only
           transaction by default. `transaction` returns a `ScopedTransaction` if a single (string) objectStore is
@@ -307,10 +307,10 @@ var objectDB = function() {
                 delete: null|function(store:string, path='':string) -> Transaction,
                 then: function(callback:function(this:Transaction, json|undefined, ...))
               }
-              
+
               A `Transaction` acting on multiple data stores must specify a data store as the first argument to every
               operation. Otherwise, these methods correspond to `ScopedTransaction` methods. */
-              
+
           /** ScopedTransaction: {
                 get: function(path='':string, cursor=undefined:Cursor) -> ScopedTransaction,
                 put: null|function(path='':string, value:json) -> ScopedTransaction,
@@ -319,22 +319,22 @@ var objectDB = function() {
                 delete: null|function(path='':string) -> ScopedTransaction,
                 then: function(callback:function(this:ScopedTransaction, json|undefined, ...))
               }
-              
+
               All methods except `then` are chainable and execute on the same transaction in parallel. If the
               transaction is not writable, `put`, `insert`, `append`, and `delete` are null.
-              
+
               `path` is a `/`-separated string of array indices and `encodeURIComponent`-encoded object keys denoting
               the path to the desired element within the object store's json data structure; e.g.
               `'users/123/firstName'`. If undefined, `cursor` buffers all data at the requested path as the result of a
               `get` operation. `insert` will splice the given `value` into the parent array at the specified position,
               shifting any subsequent elements forward.
-              
+
               When all pending operations complete, `callback` is called with the result of each queued operation in
               order. More operations can be queued onto the same transaction at that time via `this`.
-              
+
               Results from `put`, `insert`, `append`, and `delete` are error strings or undefined if successful. `get`
               results are json data or undefined if no value exists at the requested path. */
-              
+
           /** Cursor: function(path:[string|number, ...], array:boolean) -> boolean|Action|{
                 lowerBound=null: string|number,
                 lowerExclusive=false: boolean,
@@ -343,9 +343,9 @@ var objectDB = function() {
                 descending=false: boolean,
                 action: Action
               } */
-              
+
           /** Action:function(key:string|number) -> undefined|string
-              
+
               `Cursor` is a function called for each array or object encountered in the requested json structure. It is
               called with a `path` array (of strings and/or numeric indices) relative to the requested path (i.e. `[]`
               represents the path as requested in `get`) and an `array` boolean that is true if the substructure is an
@@ -354,14 +354,14 @@ var objectDB = function() {
               object/array, and the `Action` function is called with each `key` in the requested range, in order. The
               `Action` callback can optionally return either `'skip'` or `'stop'` to exclude the element at the given
               key from the structure or to exclude and stop iterating, respectively.
-              
+
               For example, the following call uses a cursor to fetch only the immediate members of the object at the
               requested path. Object and array values will be empty:
-              
+
              `db.get('path/to/object', function(path) {
                 return !path.length;
               });`
-              
+
               The following call will get immediate members of the requested object sorted lexicographically (by code
               unit value) up to and including key value `'c'`, but excluding key `'abc'` (if any):
 
@@ -464,3 +464,5 @@ var objectDB = function() {
     }
   };
 }();
+
+module.exports = objectDB;
