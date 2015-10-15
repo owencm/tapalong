@@ -3,20 +3,24 @@ module.exports = function(grunt) {
   // Project configuration.
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    clean: ['tapalong/tapalong_app/client/tmp/'],
     babel: {
       options: {
         sourceMap: true
       },
       dist: {
-        files: {
-          'tapalong/tapalong_app/static/main.js': 'tapalong/tapalong_app/static/main.js'
-        }
+        files: [{
+          expand: true,
+          cwd: 'tapalong/tapalong_app/client/src/',
+          src: ['*.js'],
+          dest: 'tapalong/tapalong_app/client/tmp/'
+        }]
       }
     },
     browserify: {
       dist: {
         files: {
-          'tapalong/tapalong_app/static/main.js': ['tapalong/tapalong_app/client/src/main.js']
+          'tapalong/tapalong_app/static/main.js': ['tapalong/tapalong_app/client/tmp/main.js']
         }
       }
     },
@@ -31,11 +35,12 @@ module.exports = function(grunt) {
     }
   });
 
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-browserify');
 
   // Default task(s).
-  grunt.registerTask('default', ['browserify', 'babel']);
+  grunt.registerTask('default', ['clean', 'babel', 'browserify']);
 
 };

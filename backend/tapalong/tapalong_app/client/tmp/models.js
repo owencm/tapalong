@@ -1,12 +1,14 @@
+'use strict';
+
 var Date = require('datejs');
 var ListenerModule = require('./listener.js');
 var network = require('./network.js');
 var objectDB = require('./objectdb.js');
 
-var startLogin = function (fbToken, success, failure) {
+var startLogin = function startLogin(fbToken, success, failure) {
   network.login(fbToken, success, failure);
 };
-var hasNotificationPermission = function (success, failure) {
+var hasNotificationPermission = function hasNotificationPermission(success, failure) {
   return hasPushPermission(success, failure);
 };
 
@@ -15,29 +17,29 @@ var user = (function () {
   var userName;
   var sessionToken;
   var listenerModule = ListenerModule();
-  var setUserId = function (newUserId) {
+  var setUserId = function setUserId(newUserId) {
     userId = newUserId;
     var db = objectDB.open('db-1');
     db.put('userId', userId);
     listenerModule.change();
   };
-  var getUserId = function () {
+  var getUserId = function getUserId() {
     return userId;
   };
-  var setUserName = function (newUserName) {
+  var setUserName = function setUserName(newUserName) {
     userName = newUserName;
     listenerModule.change();
-  }
-  var getUserName = function () {
+  };
+  var getUserName = function getUserName() {
     return userName;
   };
-  var setSessionToken = function (newSessionToken) {
+  var setSessionToken = function setSessionToken(newSessionToken) {
     sessionToken = newSessionToken;
     var db = objectDB.open('db-1');
     db.put('sessionToken', sessionToken);
     listenerModule.change();
   };
-  var getSessionToken = function () {
+  var getSessionToken = function getSessionToken() {
     return sessionToken;
   };
   return {
@@ -56,10 +58,10 @@ var activities = (function () {
   var activities = [];
   var listenerModule = ListenerModule();
   var maxActivityId = 0;
-  var addActivity = function (activity) {
+  var addActivity = function addActivity(activity) {
     var validity = validateNewActivity(activity);
     if (!validity.isValid) {
-      throw Error('Invalid activity attempted to be added: '+validity.reason);
+      throw Error('Invalid activity attempted to be added: ' + validity.reason);
     }
     activity.id = maxActivityId++;
     activities.push(activity);
@@ -68,10 +70,10 @@ var activities = (function () {
     listenerModule.change();
   };
   // Use this so we don't trigger two change events when we remove and readd
-  var updateActivity = function (id, newActivity) {
+  var updateActivity = function updateActivity(id, newActivity) {
     var validity = validateNewActivity(newActivity);
     if (!validity.isValid) {
-      throw Error('Invalid activity attempted to be updated: '+validity.reason);
+      throw Error('Invalid activity attempted to be updated: ' + validity.reason);
     }
     if (newActivity.id !== id) {
       throw new Error('Tried to update an activity to a new activity whose id didn\'t match');
@@ -84,27 +86,29 @@ var activities = (function () {
     }
     fixActivitiesOrder();
     listenerModule.change();
-  }
-  var removeActivity = function (id) {
-    activities = activities.filter(function(activity) {
-      return (activity.id !== id);
+  };
+  var removeActivity = function removeActivity(id) {
+    activities = activities.filter(function (activity) {
+      return activity.id !== id;
     });
     listenerModule.change();
   };
-  var getActivity = function (id) {
-    return activities.filter(function (activity) { return activity.id == id; } )[0];
+  var getActivity = function getActivity(id) {
+    return activities.filter(function (activity) {
+      return activity.id == id;
+    })[0];
   };
-  var getActivities = function () {
+  var getActivities = function getActivities() {
     return activities;
   };
-  var getActivitiesCount = function () {
+  var getActivitiesCount = function getActivitiesCount() {
     return activities.length;
   };
-  var setActivities = function (newActivities) {
-    activities = newActivities.filter(function(activity) {
+  var setActivities = function setActivities(newActivities) {
+    activities = newActivities.filter(function (activity) {
       var validity = validateNewActivity(activity);
       if (!validity.isValid) {
-        console.log('Not showing activity '+activity.activity_id+' from server because '+validity.reason);
+        console.log('Not showing activity ' + activity.activity_id + ' from server because ' + validity.reason);
       } else {
         activity.id = maxActivityId++;
       }
@@ -113,34 +117,34 @@ var activities = (function () {
     fixActivitiesOrder();
     listenerModule.change();
   };
-  var tryCreateActivity = function (newActivity, success, failure) {
+  var tryCreateActivity = function tryCreateActivity(newActivity, success, failure) {
     var validity = validateNewActivity(newActivity);
     if (validity.isValid) {
       console.log(newActivity);
       network.requestCreateActivity(newActivity, success, failure);
     } else {
-      console.log('activity wasn\'t valid because '+validity.reason, newActivity);
+      console.log('activity wasn\'t valid because ' + validity.reason, newActivity);
       failure();
     }
   };
-  var tryUpdateActivity = function (activity, activityChanges, success, failure) {
+  var tryUpdateActivity = function tryUpdateActivity(activity, activityChanges, success, failure) {
     network.requestUpdateActivity(activity, activityChanges, success, failure);
   };
-  var trySetAttending = function (activity, attending, optimistic, success, failure) {
+  var trySetAttending = function trySetAttending(activity, attending, optimistic, success, failure) {
     network.requestSetAttending(activity, attending, optimistic, success, failure);
   };
-  var setAttending = function (id, attending) {
-    throw('Should not be changing is_attending on client side');
+  var setAttending = function setAttending(id, attending) {
+    throw 'Should not be changing is_attending on client side';
     var activity = getActivity(id);
     activity.is_attending = !activity.is_attending;
     listenerModule.change();
   };
-  var tryCancelActivity = function (activity, success, failure) {
+  var tryCancelActivity = function tryCancelActivity(activity, success, failure) {
     network.requestCancelActivity(activity, success, failure);
   };
   // TODO: Make me much more efficient plz!
-  var fixActivitiesOrder = function () {
-    activities.sort(function(activityA, activityB) {
+  var fixActivitiesOrder = function fixActivitiesOrder() {
+    activities.sort(function (activityA, activityB) {
       a = new Date(activityA.start_time).getTime();
       b = new Date(activityB.start_time).getTime();
       if (a > b) {
@@ -148,39 +152,39 @@ var activities = (function () {
       } else if (b > a) {
         return 1;
       } else {
-        return (activityA.id < activityB.id) ? -1 : 1;
+        return activityA.id < activityB.id ? -1 : 1;
       }
     });
     activities.reverse();
   };
-  var validateNewActivity = function (activity) {
+  var validateNewActivity = function validateNewActivity(activity) {
     // TODO: Validate values of the properties
     // TODO: Validate client generated ones separately to server given ones
     var properties = ['max_attendees', 'description', 'start_time', 'title', 'location'];
-    var hasProperties = properties.reduce(function(previous, property) {
-      return (previous && activity.hasOwnProperty(property));
+    var hasProperties = properties.reduce(function (previous, property) {
+      return previous && activity.hasOwnProperty(property);
     }, true);
     if (!hasProperties) {
-      return {isValid: false, reason: 'some properties were missing'};
+      return { isValid: false, reason: 'some properties were missing' };
     }
     if (activity.title == '') {
-      return {isValid: false, reason: 'missing title'};
+      return { isValid: false, reason: 'missing title' };
     }
     if (!activity.start_time || !(activity.start_time instanceof Date)) {
-      return {isValid: false, reason: 'start_time wasnt a date object or was missing'};
+      return { isValid: false, reason: 'start_time wasnt a date object or was missing' };
     }
     if (activity.start_time && activity.start_time instanceof Date) {
       // Allow users to see and edit events up to 2 hours in the past
       console.log(activity.start_time);
-      var now = new Date;
+      var now = new Date();
       now = now.add(-2).hours();
       if (activity.start_time < now) {
-        return {isValid: false, reason: 'date (' + activity.start_time.toString() + ') was in the past'};
+        return { isValid: false, reason: 'date (' + activity.start_time.toString() + ') was in the past' };
       }
     }
-    return {isValid: true};
+    return { isValid: true };
   };
-  var tryRefreshActivities = function (success, failure) {
+  var tryRefreshActivities = function tryRefreshActivities(success, failure) {
     network.getActivitiesFromServer(success, failure);
   };
   return {
@@ -197,14 +201,15 @@ var activities = (function () {
     addActivity: addActivity,
     removeActivity: removeActivity,
     updateActivity: updateActivity,
-    addListener: listenerModule.addListener,
-    // hasActivitiesFromFriends: hasActivitiesFromFriends
-  }
+    addListener: listenerModule.addListener
+  };
 })();
 
+// hasActivitiesFromFriends: hasActivitiesFromFriends
 module.exports = {
   activities: activities,
   user: user,
   startLogin: startLogin,
   hasNotificationPermission: hasNotificationPermission
-}
+};
+//# sourceMappingURL=models.js.map
