@@ -2,7 +2,7 @@
 
 var view = require('./view.js');
 
-var skipLogin = true;
+var skipLogin = false;
 
 if (skipLogin) {
   // view.debugSkipLogin(5, 'Ally Gale', 'letmein');

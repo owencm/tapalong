@@ -4,18 +4,25 @@ var network = require('./network.js');
 var objectDB = require('./objectdb.js');
 
 var startLogin = function (fbToken, success, failure) {
-  network.login(fbToken, success, failure);
+  // Pass in the user so the networking code explicitely knows the user is logged out
+  network.requestLogin(user, fbToken, success, failure);
 };
 var hasNotificationPermission = function (success, failure) {
   return hasPushPermission(success, failure);
 };
 
 var user = (function () {
+  var loggedIn;
   var userId;
   var userName;
   var sessionToken;
   var listenerModule = ListenerModule();
+  var isLoggedIn = function () {
+    return loggedIn;
+  }
   var setUserId = function (newUserId) {
+    // TODO: Implement better login tracking
+    loggedIn = true;
     userId = newUserId;
     var db = objectDB.open('db-1');
     db.put('userId', userId);
@@ -25,6 +32,8 @@ var user = (function () {
     return userId;
   };
   var setUserName = function (newUserName) {
+    // TODO: Implement better login tracking
+    loggedIn = true;
     userName = newUserName;
     listenerModule.change();
   }
@@ -32,6 +41,8 @@ var user = (function () {
     return userName;
   };
   var setSessionToken = function (newSessionToken) {
+    // TODO: Implement better login tracking
+    loggedIn = true;
     sessionToken = newSessionToken;
     var db = objectDB.open('db-1');
     db.put('sessionToken', sessionToken);
@@ -41,6 +52,7 @@ var user = (function () {
     return sessionToken;
   };
   return {
+    isLoggedIn: isLoggedIn,
     setUserId: setUserId,
     getUserId: getUserId,
     setUserName: setUserName,
@@ -50,12 +62,6 @@ var user = (function () {
     addListener: listenerModule.addListener
   };
 })();
-
-// We didn't want to have the network import models so update them when things change
-user.addListener(function () {
-  network.setSessionToken(user.getSessionToken());
-  network.setUserId(user.getUserId());
-});
 
 // TODO: Check that all the activities are still valid with an interval
 var activities = (function () {
@@ -123,7 +129,7 @@ var activities = (function () {
     var validity = validateNewActivity(newActivity);
     if (validity.isValid) {
       console.log(newActivity);
-      network.requestCreateActivity(newActivity, function (activityFromServer) {
+      network.requestCreateActivity(user, newActivity, function (activityFromServer) {
         addActivity(activityFromServer);
         success();
       }, failure);
@@ -133,10 +139,10 @@ var activities = (function () {
     }
   };
   var tryUpdateActivity = function (activity, activityChanges, success, failure) {
-    network.requestUpdateActivity(activity, activityChanges, success, failure);
+    network.requestUpdateActivity(user, activity, activityChanges, success, failure);
   };
   var trySetAttending = function (activity, attending, optimistic, success, failure) {
-    network.requestSetAttending(activity, attending, optimistic, success, failure);
+    network.requestSetAttending(user, activity, attending, optimistic, success, failure);
   };
   var setAttending = function (id, attending) {
     throw('Should not be changing is_attending on client side');
@@ -145,7 +151,7 @@ var activities = (function () {
     listenerModule.change();
   };
   var tryCancelActivity = function (activity, success, failure) {
-    network.requestCancelActivity(activity, success, failure);
+    network.requestCancelActivity(user, activity, success, failure);
   };
   // TODO: Make me much more efficient plz!
   var fixActivitiesOrder = function () {
@@ -190,7 +196,7 @@ var activities = (function () {
     return {isValid: true};
   };
   var tryRefreshActivities = function (success, failure) {
-    network.getActivitiesFromServer(function (activities) {
+    network.requestActivitiesFromServer(user, function (activities) {
       setActivities(activities);
       success();
     }, failure);

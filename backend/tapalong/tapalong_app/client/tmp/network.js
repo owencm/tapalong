@@ -1,26 +1,14 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 // TODO: Refactor out dependency on models
-// var models = require('./models.js');
 
 'use strict';
 
-var sessionToken;
-var userId;
-
-var setSessionToken = function setSessionToken(newSessionToken) {
-  sessionToken = newSessionToken;
-};
-
-var setUserId = function setUserId(newUserId) {
-  userId = newUserId;
-};
-
-var login = function login(fb_token, success, failure) {
+var requestLogin = function requestLogin(user, fb_token, success, failure) {
   console.log('Logging in to the app');
-  sendRequest('/../v1/login/', 'post', JSON.stringify({ fb_token: fb_token }), function () {
+  sendRequest('/../v1/login/', 'post', JSON.stringify({ fb_token: fb_token }), user, function () {
     if (this.status >= 200 && this.status < 400) {
       console.log(this.responseText);
-      response = JSON.parse(this.responseText);
+      var response = JSON.parse(this.responseText);
       if (response.success === 'true') {
         success(response.user_id, response.user_name, response.session_token);
       } else {
@@ -33,7 +21,7 @@ var login = function login(fb_token, success, failure) {
     }
   });
 };
-var getActivitiesFromJSON = function getActivitiesFromJSON(responseText) {
+var parseActivitiesFromJSON = function parseActivitiesFromJSON(responseText) {
   // Strip activity label for each item
   var activities = JSON.parse(responseText).map(function (activity) {
     // Parse the datetimes into actual objects
@@ -42,31 +30,30 @@ var getActivitiesFromJSON = function getActivitiesFromJSON(responseText) {
   });
   return activities;
 };
-var getActivitiesFromServer = function getActivitiesFromServer(success, failure) {
-  sendRequest('/../v1/activities/visible_to_user/', 'get', '', function () {
+var requestActivitiesFromServer = function requestActivitiesFromServer(user, success, failure) {
+  sendRequest('/../v1/activities/visible_to_user/', 'get', '', user, function () {
     if (this.status >= 200 && this.status < 400) {
       // TODO: Check this actually succeeded
-      var activities = getActivitiesFromJSON(this.responseText);
+      var activities = parseActivitiesFromJSON(this.responseText);
       success(activities);
     } else {
       failure();
     }
   });
 };
-var requestCreateActivity = function requestCreateActivity(activity, success, failure) {
-  sendRequest('/../v1/activities/visible_to_user/', 'post', JSON.stringify(activity), function () {
+var requestCreateActivity = function requestCreateActivity(user, activity, success, failure) {
+  sendRequest('/../v1/activities/visible_to_user/', 'post', JSON.stringify(activity), user, function () {
     if (this.status >= 200 && this.status < 400) {
       var activity = JSON.parse(this.responseText).activity;
       activity.start_time = new Date(activity.start_time);
-      // models.activities.addActivity(activity);
-      success();
+      success(activity);
     } else {
       console.log('Server error: ', this.responseText);
       failure();
     }
   });
 };
-var requestSetAttending = function requestSetAttending(activity, attending, optimistic, success, failure) {
+var requestSetAttending = function requestSetAttending(user, activity, attending, optimistic, success, failure) {
   if (optimistic) {
     console.log('Set attending optimistically!');
     // TODO: do a more efficient copy!
@@ -74,18 +61,18 @@ var requestSetAttending = function requestSetAttending(activity, attending, opti
     // Parse the start_time since we serialized it in the copy :(
     activityCopy.start_time = new Date(activityCopy.start_time);
     activityCopy.is_attending = attending;
-    // var userName = models.user.getUserName();
-    // if (attending) {
-    //   activityCopy.attendees.push(userName);
-    // } else {
-    //   activityCopy.attendees = activityCopy.attendees.filter(function(attendeeName) {
-    //     return attendeeName !== userName;
-    //   });
-    // }
+    var userName = models.user.getUserName();
+    if (attending) {
+      activityCopy.attendees.push(userName);
+    } else {
+      activityCopy.attendees = activityCopy.attendees.filter(function (attendeeName) {
+        return attendeeName !== userName;
+      });
+    }
     activityCopy.dirty = true;
-    // models.activities.updateActivity(activityCopy.id, activityCopy);
+    models.activities.updateActivity(activityCopy.id, activityCopy);
   }
-  sendRequest('/../v1/activities/' + activity.activity_id + '/attend/', 'post', JSON.stringify({ attending: attending }), function () {
+  sendRequest('/../v1/activities/' + activity.activity_id + '/attend/', 'post', JSON.stringify({ attending: attending }), user, function () {
     if (this.status >= 200 && this.status < 400) {
       var updatedActivity = JSON.parse(this.responseText).activity;
       updatedActivity.start_time = new Date(updatedActivity.start_time);
@@ -98,8 +85,8 @@ var requestSetAttending = function requestSetAttending(activity, attending, opti
     }
   });
 };
-var requestUpdateActivity = function requestUpdateActivity(activity, activityChanges, success, failure) {
-  sendRequest('/../v1/activities/' + activity.activity_id + '/', 'post', JSON.stringify(activityChanges), function () {
+var requestUpdateActivity = function requestUpdateActivity(user, activity, activityChanges, success, failure) {
+  sendRequest('/../v1/activities/' + activity.activity_id + '/', 'post', JSON.stringify(activityChanges), user, function () {
     if (this.status >= 200 && this.status < 400) {
       var updatedActivity = JSON.parse(this.responseText).activity;
       updatedActivity.start_time = new Date(updatedActivity.start_time);
@@ -111,8 +98,8 @@ var requestUpdateActivity = function requestUpdateActivity(activity, activityCha
     }
   });
 };
-var requestCancelActivity = function requestCancelActivity(activity, success, failure) {
-  sendRequest('/../v1/activities/' + activity.activity_id + '/cancel/', 'post', '', function () {
+var requestCancelActivity = function requestCancelActivity(user, activity, success, failure) {
+  sendRequest('/../v1/activities/' + activity.activity_id + '/cancel/', 'post', '', user, function () {
     if (this.status >= 200 && this.status < 400) {
       models.activities.removeActivity(activity.id);
       success();
@@ -121,17 +108,17 @@ var requestCancelActivity = function requestCancelActivity(activity, success, fa
     }
   });
 };
-var requestCreatePushNotificationsSubscription = function requestCreatePushNotificationsSubscription(subscription) {
-  sendRequest('/../v1/push_subscriptions/', 'post', JSON.stringify(subscription), function () {});
+var requestCreatePushNotificationsSubscription = function requestCreatePushNotificationsSubscription(user, subscription) {
+  sendRequest('/../v1/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
-var sendRequest = function sendRequest(url, method, body, onload) {
+var sendRequest = function sendRequest(url, method, body, user, onload) {
   var req = new XMLHttpRequest();
   req.onload = onload;
   req.open(method, url, true);
-  // Only set session_token and user_id if the user is logged in.
-  if (sessionToken !== undefined && userId !== undefined) {
-    req.setRequestHeader('Session-Token', sessionToken);
-    req.setRequestHeader('User-Id', userId);
+  // The user isn't logged in when they are logging in
+  if (user.isLoggedIn()) {
+    req.setRequestHeader('Session-Token', user.getSessionToken());
+    req.setRequestHeader('User-Id', user.getUserId());
   } else {
     console.log('Sending an unauthenticated request since we haven\'t logged in yet');
   }
@@ -146,14 +133,12 @@ var sendToServiceWorker = function sendToServiceWorker(data) {
 };
 
 module.exports = {
-  setSessionToken: setSessionToken,
-  setUserId: setUserId,
-  getActivitiesFromServer: getActivitiesFromServer,
+  requestActivitiesFromServer: requestActivitiesFromServer,
   requestCreateActivity: requestCreateActivity,
   requestSetAttending: requestSetAttending,
   requestUpdateActivity: requestUpdateActivity,
   requestCancelActivity: requestCancelActivity,
   requestCreatePushNotificationsSubscription: requestCreatePushNotificationsSubscription,
-  login: login
+  requestLogin: requestLogin
 };
 //# sourceMappingURL=network.js.map
