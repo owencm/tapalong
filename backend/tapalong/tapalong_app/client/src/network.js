@@ -1,5 +1,6 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 // TODO: Refactor out dependency on models
+require('datejs');
 
 var requestLogin = function (user, fb_token, success, failure) {
   console.log('Logging in to the app');
@@ -22,8 +23,9 @@ var requestLogin = function (user, fb_token, success, failure) {
 var parseActivitiesFromJSON = function (responseText) {
   // Strip activity label for each item
   var activities = JSON.parse(responseText).map(function (activity) {
-    // Parse the datetimes into actual objects
-    activity.start_time = new Date(activity.start_time);
+    // Note the list looks like [{activity: {...}}, ...]
+    // Parse the datetimes into actual objects.
+    activity.activity.start_time = new Date(activity.activity.start_time);
     return activity.activity;
   });
   return activities;
@@ -59,7 +61,7 @@ var requestSetAttending = function (user, activity, attending, optimistic, succe
     // Parse the start_time since we serialized it in the copy :(
     activityCopy.start_time = new Date(activityCopy.start_time);
     activityCopy.is_attending = attending;
-    var userName = models.user.getUserName();
+    var userName = user.getUserName();
     if (attending) {
       activityCopy.attendees.push(userName);
     } else {
@@ -68,7 +70,7 @@ var requestSetAttending = function (user, activity, attending, optimistic, succe
       });
     }
     activityCopy.dirty = true;
-    models.activities.updateActivity(activityCopy.id, activityCopy);
+    success(activityCopy);
   }
   sendRequest('/../v1/activities/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
     if(this.status >= 200 && this.status < 400) {
@@ -89,8 +91,7 @@ var requestUpdateActivity = function(user, activity, activityChanges, success, f
       var updatedActivity = JSON.parse(this.responseText).activity;
       updatedActivity.start_time = new Date(updatedActivity.start_time);
       updatedActivity.id = activity.id;
-      models.activities.updateActivity(updatedActivity.id, updatedActivity);
-      success();
+      success(updatedActivity);
     } else {
       failure();
     }

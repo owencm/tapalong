@@ -1,6 +1,6 @@
 'use strict';
+var objectDB = require('./objectdb.js');
 
-importScripts('objectdb.js');
 var version = 1;
 var logging = true;
 

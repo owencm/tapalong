@@ -1,4 +1,4 @@
-var Date = require('datejs');
+require('datejs');
 var ListenerModule = require('./listener.js');
 var network = require('./network.js');
 var objectDB = require('./objectdb.js');
@@ -126,6 +126,7 @@ var activities = (function () {
     listenerModule.change();
   };
   var tryCreateActivity = function (newActivity, success, failure) {
+    console.log(newActivity);
     var validity = validateNewActivity(newActivity);
     if (validity.isValid) {
       console.log(newActivity);
@@ -139,10 +140,16 @@ var activities = (function () {
     }
   };
   var tryUpdateActivity = function (activity, activityChanges, success, failure) {
-    network.requestUpdateActivity(user, activity, activityChanges, success, failure);
+    network.requestUpdateActivity(user, activity, activityChanges, function (activityFromServer) {
+      updateActivity(activity.id, activityFromServer);
+      success();
+    }, failure);
   };
   var trySetAttending = function (activity, attending, optimistic, success, failure) {
-    network.requestSetAttending(user, activity, attending, optimistic, success, failure);
+    network.requestSetAttending(user, activity, attending, optimistic, function (updatedActivity) {
+      updateActivity(activity.id, updatedActivity);
+      success();
+    }, failure);
   };
   var setAttending = function (id, attending) {
     throw('Should not be changing is_attending on client side');
@@ -156,8 +163,8 @@ var activities = (function () {
   // TODO: Make me much more efficient plz!
   var fixActivitiesOrder = function () {
     activities.sort(function(activityA, activityB) {
-      a = new Date(activityA.start_time).getTime();
-      b = new Date(activityB.start_time).getTime();
+      var a = new Date(activityA.start_time).getTime();
+      var b = new Date(activityB.start_time).getTime();
       if (a > b) {
         return -1;
       } else if (b > a) {

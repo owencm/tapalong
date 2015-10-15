@@ -1,6 +1,6 @@
 var view = require('./view.js');
 
-var skipLogin = false;
+var skipLogin = true;
 
 if (skipLogin) {
   // view.debugSkipLogin(5, 'Ally Gale', 'letmein');

@@ -1,5 +1,7 @@
 // var TextAreaResizing = require('react-textarea-autosize');
 var models = require('./models.js');
+var swLibrary = require('./swsetup.js')
+
 var m = function (...objs) {
   return Object.assign({}, ...objs);
 }
@@ -31,8 +33,7 @@ var changeState = function (newState, options, userTriggered) {
     redrawActivitiesList();
     showActivitiesList();
     if (userTriggered) {
-      // Disabled due to http://crbug.com/459240
-      // history.pushState({state: STATE.list}, 'Upcoming Plans');
+      history.pushState({state: STATE.list}, 'Upcoming Plans');
     }
     if (models.activities.getActivitiesCount() > 0) {
       hideNoActivitiesCard();
@@ -50,17 +51,16 @@ var changeState = function (newState, options, userTriggered) {
     showCreateActivityForm();
     showBackButton();
     if (userTriggered) {
-      // history.pushState({state: STATE.add}, 'Create a plan');
+      history.pushState({state: STATE.add}, 'Create a plan');
     }
   } else if (currentState == STATE.edit) {
-    alert('editing')
     setTitle('Edit');
     hideAddButton();
     hideActivitiesList();
     showCreateActivityForm();
     showBackButton();
     if (userTriggered) {
-      // history.pushState({state: STATE.edit}, 'Edit plan');
+      history.pushState({state: STATE.edit}, 'Edit plan');
     }
   } else if (currentState == STATE.loggedOut) {
     // TODO: Move this state to within the model
@@ -86,7 +86,7 @@ window.addEventListener('popstate', function(e) {
     changeState(e.state.state, {}, false);
   } else {
     // Note safari calls popstate on page load so this is expected
-    console.log('Uh oh, no valid state in history to move back to');
+    console.log('Uh oh, no valid state in history to move back to (this is expected on safari pageload)');
   }
 });
 var Card = React.createClass({
@@ -354,6 +354,7 @@ var EditActivity = React.createClass({
   },
   handleDateTimeChange: function (e) {
     // TODO: Implement me
+    alert('not yet implemented');
     // date assumes the input was in GMT and then converts to local time
     var date = editSection.querySelector('input#date').valueAsDate;
     var dateTime = new Date(date);
@@ -366,10 +367,10 @@ var EditActivity = React.createClass({
     console.log('DateTime created in the form is ',dateTime);
   },
   handleDateChange: function (e) {
-
+    alert('not yet implemented');
   },
   handleTimeChange: function (e) {
-
+    alert('not yet implemented');
   },
   handleSaveClicked: function (e) {
     var thisButton = e.target;
@@ -479,6 +480,7 @@ var EditActivity = React.createClass({
             className='input-placeholder-lighter focusUnderline'
             min={hyphenSeparatedToday}
             value={editing ? hyphenSeparatedEventDate : hyphenSeparatedTomorrow}
+            onChange={this.handleDateChange}
             required>
           </input>
           <input
@@ -487,6 +489,7 @@ var EditActivity = React.createClass({
             className='input-placeholder-lighter focusUnderline'
             step="900"
             value={editing ? hyphenSeparatedEventTime : '13:00'}
+            onChange={this.handleTimeChange}
             required>
           </input>
           <div style={{clear: 'both'}}></div>

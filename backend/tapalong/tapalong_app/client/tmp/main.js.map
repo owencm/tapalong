@@ -1,1 +1,0 @@
-{"version":3,"sources":["tapalong/tapalong_app/client/src/main.js"],"names":[],"mappings":";;AAAA,IAAI,SAAS,GAAG,OAAO,CAAC,WAAW,CAAC,CAAC;AACrC,SAAS,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC;;AAEzB,OAAO,CAAC,eAAe,CAAC,CAAC","file":"tapalong/tapalong_app/client/src/main.js","sourcesContent":["var FastClick = require('fastclick');\nFastClick(document.body);\n\nrequire('./facebook.js');\n"]}
