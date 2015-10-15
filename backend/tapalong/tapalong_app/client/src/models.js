@@ -51,6 +51,12 @@ var user = (function () {
   };
 })();
 
+// We didn't want to have the network import models so update them when things change
+user.addListener(function () {
+  network.setSessionToken(user.getSessionToken());
+  network.setUserId(user.getUserId());
+});
+
 // TODO: Check that all the activities are still valid with an interval
 var activities = (function () {
   var activities = [];
@@ -117,7 +123,10 @@ var activities = (function () {
     var validity = validateNewActivity(newActivity);
     if (validity.isValid) {
       console.log(newActivity);
-      network.requestCreateActivity(newActivity, success, failure);
+      network.requestCreateActivity(newActivity, function (activityFromServer) {
+        addActivity(activityFromServer);
+        success();
+      }, failure);
     } else {
       console.log('activity wasn\'t valid because '+validity.reason, newActivity);
       failure();
@@ -181,7 +190,10 @@ var activities = (function () {
     return {isValid: true};
   };
   var tryRefreshActivities = function (success, failure) {
-    network.getActivitiesFromServer(success, failure);
+    network.getActivitiesFromServer(function (activities) {
+      setActivities(activities);
+      success();
+    }, failure);
   };
   return {
     tryRefreshActivities: tryRefreshActivities,

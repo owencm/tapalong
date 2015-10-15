@@ -2,7 +2,13 @@
 'use strict';
 
 var models = require('./models.js');
-var m = Object.assign;
+var m = function m() {
+  for (var _len = arguments.length, objs = Array(_len), _key = 0; _key < _len; _key++) {
+    objs[_key] = arguments[_key];
+  }
+
+  return Object.assign.apply(Object, [{}].concat(objs));
+};
 var React = require('react');
 
 var toTwoDigitString = function toTwoDigitString(digit) {

@@ -1,6 +1,8 @@
 // var TextAreaResizing = require('react-textarea-autosize');
 var models = require('./models.js');
-var m = Object.assign;
+var m = function (...objs) {
+  return Object.assign({}, ...objs);
+}
 var React = require('react');
 
 var toTwoDigitString = function (digit) {

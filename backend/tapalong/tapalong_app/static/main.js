@@ -20945,6 +20945,12 @@ var user = (function () {
   };
 })();
 
+// We didn't want to have the network import models so update them when things change
+user.addListener(function () {
+  network.setSessionToken(user.getSessionToken());
+  network.setUserId(user.getUserId());
+});
+
 // TODO: Check that all the activities are still valid with an interval
 var activities = (function () {
   var activities = [];
@@ -21077,7 +21083,10 @@ var activities = (function () {
     return { isValid: true };
   };
   var tryRefreshActivities = function tryRefreshActivities(success, failure) {
-    network.getActivitiesFromServer(success, failure);
+    network.getActivitiesFromServer(function (activities) {
+      setActivities(activities);
+      success();
+    }, failure);
   };
   return {
     tryRefreshActivities: tryRefreshActivities,
@@ -21108,11 +21117,22 @@ module.exports = {
 
 },{"./listener.js":160,"./network.js":163,"./objectdb.js":164,"datejs":1}],163:[function(require,module,exports){
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
+// TODO: Refactor out dependency on models
+// var models = require('./models.js');
+
 'use strict';
 
-var models = require('./models.js');
+var sessionToken;
+var userId;
 
-var firstListOfActivitiesLoadedFlag = false;
+var setSessionToken = function setSessionToken(newSessionToken) {
+  sessionToken = newSessionToken;
+};
+
+var setUserId = function setUserId(newUserId) {
+  userId = newUserId;
+};
+
 var login = function login(fb_token, success, failure) {
   console.log('Logging in to the app');
   sendRequest('/../v1/login/', 'post', JSON.stringify({ fb_token: fb_token }), function () {
@@ -21131,25 +21151,21 @@ var login = function login(fb_token, success, failure) {
     }
   });
 };
-var processActivitiesFromServer = function processActivitiesFromServer(responseText) {
+var getActivitiesFromJSON = function getActivitiesFromJSON(responseText) {
   // Strip activity label for each item
   var activities = JSON.parse(responseText).map(function (activity) {
+    // Parse the datetimes into actual objects
+    activity.start_time = new Date(activity.start_time);
     return activity.activity;
   });
-  // Convert every date from a string into a date object
-  activities.forEach(function (activity) {
-    // alert(activity.start_time);
-    activity.start_time = new Date(activity.start_time);
-  });
-  models.activities.setActivities(activities);
-  firstListOfActivitiesLoadedFlag = true;
+  return activities;
 };
 var getActivitiesFromServer = function getActivitiesFromServer(success, failure) {
   sendRequest('/../v1/activities/visible_to_user/', 'get', '', function () {
     if (this.status >= 200 && this.status < 400) {
       // TODO: Check this actually succeeded
-      processActivitiesFromServer(this.responseText);
-      success();
+      var activities = getActivitiesFromJSON(this.responseText);
+      success(activities);
     } else {
       failure();
     }
@@ -21160,7 +21176,7 @@ var requestCreateActivity = function requestCreateActivity(activity, success, fa
     if (this.status >= 200 && this.status < 400) {
       var activity = JSON.parse(this.responseText).activity;
       activity.start_time = new Date(activity.start_time);
-      models.activities.addActivity(activity);
+      // models.activities.addActivity(activity);
       success();
     } else {
       console.log('Server error: ', this.responseText);
@@ -21176,16 +21192,16 @@ var requestSetAttending = function requestSetAttending(activity, attending, opti
     // Parse the start_time since we serialized it in the copy :(
     activityCopy.start_time = new Date(activityCopy.start_time);
     activityCopy.is_attending = attending;
-    var userName = models.user.getUserName();
-    if (attending) {
-      activityCopy.attendees.push(userName);
-    } else {
-      activityCopy.attendees = activityCopy.attendees.filter(function (attendeeName) {
-        return attendeeName !== userName;
-      });
-    }
+    // var userName = models.user.getUserName();
+    // if (attending) {
+    //   activityCopy.attendees.push(userName);
+    // } else {
+    //   activityCopy.attendees = activityCopy.attendees.filter(function(attendeeName) {
+    //     return attendeeName !== userName;
+    //   });
+    // }
     activityCopy.dirty = true;
-    models.activities.updateActivity(activityCopy.id, activityCopy);
+    // models.activities.updateActivity(activityCopy.id, activityCopy);
   }
   sendRequest('/../v1/activities/' + activity.activity_id + '/attend/', 'post', JSON.stringify({ attending: attending }), function () {
     if (this.status >= 200 && this.status < 400) {
@@ -21231,9 +21247,6 @@ var sendRequest = function sendRequest(url, method, body, onload) {
   req.onload = onload;
   req.open(method, url, true);
   // Only set session_token and user_id if the user is logged in.
-  // TODO: Use state in the model to know whether the user is logged in.
-  var sessionToken = models.user.getSessionToken();
-  var userId = models.user.getUserId();
   if (sessionToken !== undefined && userId !== undefined) {
     req.setRequestHeader('Session-Token', sessionToken);
     req.setRequestHeader('User-Id', userId);
@@ -21241,6 +21254,7 @@ var sendRequest = function sendRequest(url, method, body, onload) {
     console.log('Sending an unauthenticated request since we haven\'t logged in yet');
   }
   req.setRequestHeader('Content-Type', 'application/json');
+  // Why is there a settimeout here?
   setTimeout(function () {
     req.send(body);
   }, 0);
@@ -21248,11 +21262,10 @@ var sendRequest = function sendRequest(url, method, body, onload) {
 var sendToServiceWorker = function sendToServiceWorker(data) {
   navigator.serviceWorker.controller.postMessage(data);
 };
-var firstListOfActivitiesLoaded = function firstListOfActivitiesLoaded() {
-  return firstListOfActivitiesLoadedFlag;
-};
 
 module.exports = {
+  setSessionToken: setSessionToken,
+  setUserId: setUserId,
   getActivitiesFromServer: getActivitiesFromServer,
   requestCreateActivity: requestCreateActivity,
   requestSetAttending: requestSetAttending,
@@ -21263,7 +21276,7 @@ module.exports = {
 };
 
 
-},{"./models.js":162}],164:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 // Copyright 2014, Klaus Ganser <http://kganser.com>
 // MIT Licensed, with this copyright and permission notice
 // <http://opensource.org/licenses/MIT>
@@ -21742,7 +21755,13 @@ module.exports = objectDB;
 'use strict';
 
 var models = require('./models.js');
-var m = Object.assign;
+var m = function m() {
+  for (var _len = arguments.length, objs = Array(_len), _key = 0; _key < _len; _key++) {
+    objs[_key] = arguments[_key];
+  }
+
+  return Object.assign.apply(Object, [{}].concat(objs));
+};
 var React = require('react');
 
 var toTwoDigitString = function toTwoDigitString(digit) {

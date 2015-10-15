@@ -1,7 +1,18 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
-var models = require('./models.js');
+// TODO: Refactor out dependency on models
+// var models = require('./models.js');
 
-var firstListOfActivitiesLoadedFlag = false;
+var sessionToken;
+var userId;
+
+var setSessionToken = function(newSessionToken) {
+  sessionToken = newSessionToken;
+}
+
+var setUserId = function(newUserId) {
+  userId = newUserId;
+}
+
 var login = function (fb_token, success, failure) {
   console.log('Logging in to the app');
   sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), function() {
@@ -20,25 +31,21 @@ var login = function (fb_token, success, failure) {
     }
   });
 };
-var processActivitiesFromServer = function (responseText) {
+var getActivitiesFromJSON = function (responseText) {
   // Strip activity label for each item
   var activities = JSON.parse(responseText).map(function (activity) {
-      return activity.activity;
-  });
-  // Convert every date from a string into a date object
-  activities.forEach(function (activity) {
-    // alert(activity.start_time);
+    // Parse the datetimes into actual objects
     activity.start_time = new Date(activity.start_time);
+    return activity.activity;
   });
-  models.activities.setActivities(activities);
-  firstListOfActivitiesLoadedFlag = true;
+  return activities;
 };
 var getActivitiesFromServer = function (success, failure) {
   sendRequest('/../v1/activities/visible_to_user/', 'get', '', function() {
     if (this.status >= 200 && this.status < 400) {
       // TODO: Check this actually succeeded
-      processActivitiesFromServer(this.responseText);
-      success();
+      var activities = getActivitiesFromJSON(this.responseText);
+      success(activities);
     } else {
       failure();
     }
@@ -49,8 +56,7 @@ var requestCreateActivity = function (activity, success, failure) {
     if(this.status >= 200 && this.status < 400) {
       var activity = JSON.parse(this.responseText).activity;
       activity.start_time = new Date(activity.start_time);
-      models.activities.addActivity(activity);
-      success();
+      success(activity);
     } else {
       console.log('Server error: ', this.responseText)
       failure();
@@ -120,9 +126,6 @@ var sendRequest = function (url, method, body, onload) {
   req.onload = onload;
   req.open(method, url, true);
   // Only set session_token and user_id if the user is logged in.
-  // TODO: Use state in the model to know whether the user is logged in.
-  var sessionToken = models.user.getSessionToken();
-  var userId = models.user.getUserId();
   if (sessionToken !== undefined && userId !== undefined) {
     req.setRequestHeader('Session-Token', sessionToken);
     req.setRequestHeader('User-Id', userId);
@@ -130,6 +133,7 @@ var sendRequest = function (url, method, body, onload) {
     console.log('Sending an unauthenticated request since we haven\'t logged in yet');
   }
   req.setRequestHeader('Content-Type', 'application/json');
+  // Why is there a settimeout here?
   setTimeout(function() {
     req.send(body);
   }, 0);
@@ -137,11 +141,10 @@ var sendRequest = function (url, method, body, onload) {
 var sendToServiceWorker = function (data) {
   navigator.serviceWorker.controller.postMessage(data);
 }
-var firstListOfActivitiesLoaded = function () {
-  return firstListOfActivitiesLoadedFlag;
-}
 
 module.exports = {
+  setSessionToken: setSessionToken,
+  setUserId: setUserId,
   getActivitiesFromServer: getActivitiesFromServer,
   requestCreateActivity: requestCreateActivity,
   requestSetAttending: requestSetAttending,
