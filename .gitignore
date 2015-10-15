@@ -8,3 +8,9 @@
 
 # OSX files
 .DS_STORE
+
+#React files
+.module-cache
+
+#npm files
+node_modules/

@@ -2,10 +2,9 @@
 <html>
   <head>
     <title>Up Dog</title>
-    <meta name="theme-color" content="#00BCD4"> 
+    <meta name="theme-color" content="#00BCD4">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css'>
     <link rel="manifest" href="manifest.json">
     <link rel='stylesheet' href='reset.css'></style>
     <link rel='stylesheet' href='main.css'></style>
@@ -26,7 +25,6 @@
       <section id='notificationsOptIn'></section>
       <section id='editActivity'></section>
       <section id='activitiesList'></section>
-      <section id='activityDetails'></section>
       <div style='height: 100px'></div>
     </div>
     <div id='addButton' style='display: none'></div>
@@ -77,45 +75,6 @@
         <div class="clear"></div>
       </section>
     </script>
-    <script id='activity-details-template' type='text/x-handlebars-template'>
-      <section class='card detail{{#if activity.is_attending}} attending{{/if}}'>
-        <div class='contentContainer'>
-          <p><b>{{activity.title}}</b></p>
-          <p>{{datetimeString activity.start_time}}</p>
-          <p>Created by: {{activity.creator_name}}</p>
-          {{#if hasDescription}}
-            <p><b>Description</b></p>
-            <div>
-              {{#each descriptionLines}}
-                {{this}}{{#unless @last}}<br />{{/unless}}
-              {{/each}}
-            </div>
-          {{/if}}
-          {{#if hasAttendees}}
-            <p><b>Friends going</b></p>
-            <p>
-              {{#each activity.attendees}}
-                {{this}}{{#unless @last}},{{/unless}}
-              {{/each}}.
-            </p>
-          {{/if}}
-        </div>
-        <div class='optionContainer'>
-          <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-            {{#if activity.is_creator}}
-              Edit
-            {{else}}
-              {{#if activity.is_attending}}
-                Cancel Attending
-              {{else}}
-                Go along
-              {{/if}}
-            {{/if}}
-          </div>
-        </div>
-        <div class="clear"></div>
-      </section>
-    </script>
     <script id='edit-activity-template' type='text/x-handlebars-template'>
       <section class='card detail'>
         <div class='contentContainer'>
@@ -133,21 +92,8 @@
         <div class="clear"></div>
       </section>
     </script>
-    <script type='text/javascript' src='fastclick.js'></script>
-    <script type='text/javascript'>
-      if ('addEventListener' in document) {
-        document.addEventListener('DOMContentLoaded', function() {
-          FastClick.attach(document.body);
-        }, false);
-      }
-    </script>
-    <script type='text/javascript' src='date.js'></script>
-    <script type='text/javascript' src='models.js'></script>
-    <script type='text/javascript' src='objectdb.js'></script>
-    <script type='text/javascript' src='network.js'></script>
-    <script type='text/javascript' src='handlebars-v1.3.0.js'></script>
-    <script type='text/javascript' src='swsetup.js'></script>
-    <script type='text/javascript' src='view.js'></script>
-    <script type='text/javascript' src='facebook.js'></script>
+    <script src='main.js'></script>
+    <script src='swsetup.js'></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css' async>
   </body>
 </html>
