@@ -1,0 +1,8 @@
+{
+  "name": "UpDog",
+  "short_name": "UpDog",
+  "start_url": "index.html?homescreen=1",
+  "display": "standalone",
+  "gcm_sender_id": "669073433855",
+  "gcm_user_visible_only": true
+}

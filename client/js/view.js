@@ -633,30 +633,44 @@ var showCreateActivityForm = function () {
 var hideCreateActivityForm = function () {
   editSection.style.display = 'none';
 };
-var showNotificationOptIn = function (reason, nextState) {
-  // TODO(owencm): Show something different if the notification permission is denied
-  var source = document.querySelector('#notifications-opt-in-template').innerHTML;
-  var template = Handlebars.compile(source);
-  var config = {reason: reason};
-  notificationsOptInSection.innerHTML = template(config);
-  notificationsOptInSection.style.display = '';
-  // Add interactivity
-  notificationsOptInSection.querySelector('.option').onclick = function (e) {
+
+var OptIn = React.createClass({
+  handleOKClicked: function (e) {
     showOverlay();
-    this.classList.add('disabled');
-    e.stopPropagation();
+    // 300ms wait until the overlay has shown
     setTimeout(function() {
       swLibrary.requestPushNotificationPermissionAndSubscribe(function (userChoice) {
         hideOverlay();
         if (userChoice == 'granted') {
-          changeState(nextState);
+          changeState(this.props.nextState);
         } else {
           alert('You denied the permission, you naughty person.')
         }
         // TODO Handle rejection or error case
-      });
-    }, 300);
+      }.bind(this));
+    }.bind(this), 300);
+  },
+  render: function () {
+    return (
+      <Card>
+        <div style={{padding: '24px'}}>
+          <p>UpDog will send you a notification {this.props.reason}.</p>
+        </div>
+        <CardOptions
+          options={[{label: 'OK', onClick: this.handleOKClicked}]}
+        />
+      </Card>
+    )
   }
+});
+
+var showNotificationOptIn = function (reason, nextState) {
+  // TODO(owencm): Show something different if the notification permission is denied
+  React.render(
+    <OptIn reason={reason} nextState={nextState} />,
+    notificationsOptInSection
+  );
+  notificationsOptInSection.style.display = '';
 }
 var hideNotificationOptIn = function () {
   notificationsOptInSection.style.display = 'none';

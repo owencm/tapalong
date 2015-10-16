@@ -1,8 +1,9 @@
 // TODO: Refactor this hacked up code!
+// TODO: Don't include the debugSkipLogin code in production
 
 var view = require('./view.js');
 
-var skipLogin = false;
+var skipLogin = true;
 
 if (skipLogin) {
   view.debugSkipLogin(1, 'Owen Campbell-Moore', 'letmein');

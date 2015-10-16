@@ -66,27 +66,8 @@ div#container {
     overflow-y: visible;
 }
 
-section.card p {
-	margin-bottom: 5px;
-}
-
-section.card .optionContainer .option.left {
-	float: left;
-}
-
-section.card .optionContainer .option.bad {
-	color: #D55;
-}
-
 .input-placeholder-lighter::-webkit-input-placeholder {
 	font-weight: lighter;
-}
-
-section.card textarea#description {
-	font-size: 1em;
-	line-height: 1.8em;
-	max-width: 100%;
-	overflow: hidden;
 }
 
 .noOutline:focus {
@@ -97,10 +78,6 @@ section.card textarea#description {
   /* Important is used as using react the default style is inline */
 	border-bottom: 1px solid #00BCD4!important;
 	box-shadow: 0 1px 0 0px #00BCD4;
-}
-
-section#activityDetails {
-	-webkit-animation: fadeIn 0.5s;
 }
 
 @-webkit-keyframes fadeIn {

@@ -1,6 +1,5 @@
-// TODO: Disable source maps and enable uglify when pushing to production
-
 module.exports = function(grunt) {
+  // TODO: Disable source maps and enable uglify when pushing to production
 
   // Project configuration.
   grunt.initConfig({
@@ -50,7 +49,7 @@ module.exports = function(grunt) {
       main: {
         files: [
           // includes files within path and its sub-directories
-          {expand: true, cwd: 'client/', src: ['*.html'], dest: 'tapalong/tapalong_app/static/'},
+          {expand: true, cwd: 'client/', src: ['*.html', 'manifest.json'], dest: 'tapalong/tapalong_app/static/'},
           {expand: true, cwd: 'client/css/', src: ['*.css'], dest: 'tapalong/tapalong_app/static/'},
           {expand: true, cwd: 'client/images/', src: ['**'], dest: 'tapalong/tapalong_app/static/images/'},
         ],
@@ -58,7 +57,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['client/*'],
+        files: ['client/**'],
         tasks: ['default'],
         options: {
           spawn: false,
