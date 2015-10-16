@@ -7,15 +7,6 @@ var m = function (...objs) {
   return Object.assign({}, ...objs);
 }
 
-// TODO: move these functions into a support library
-var toTwoDigitString = function (digit) {
-  return (digit < 10) ? '0' + digit : '' + digit;
-}
-// Returns a string in the format "2000-01-01"
-var getDateString = function (dateTime) {
-  return [(1900 + dateTime.getYear()),toTwoDigitString(dateTime.getMonth()+1),toTwoDigitString(dateTime.getDate())].join('-');
-}
-
 var App = React.createClass({
   shouldShowNoActivitiesCard: function () {
     // TODO: Implement showing if we're in the list but there's no content
@@ -269,25 +260,28 @@ var ActivityCard = React.createClass({
     }
   },
   // E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
+  // TODO: Render 0AM as Midnight
   getDateString: function () {
     var today = Date.today();
     var tomorrow = (Date.today()).add(1).days();
-    var datetimeCopy = new Date(this.props.activity.start_time.toISOString());
-    var date = datetimeCopy.set({ millisecond: 0, second: 0, minute: 0, hour: 0});
+    // This is the full date + time
+    var dateTime = this.props.activity.start_time;
+    // This is a copy of the date (time stripped) used for date comparison
+    var dateCopy = dateTime.clone().clearTime();
     var str = '';
-    if (today.equals(date)) {
+    if (today.equals(dateCopy)) {
       str += 'today ';
-    } else if (tomorrow.equals(date)) {
+    } else if (tomorrow.equals(dateCopy)) {
       str += 'tomorrow ';
     } else {
-      str += 'on ' + date.toString('dddd dS') + ' ';
+      str += 'on ' + dateTime.toString('dddd dS') + ' ';
     }
-    str += 'at ' + date.toString('H');
-    var minutes = date.toString('mm');
+    str += 'at ' + dateTime.toString('h');
+    var minutes = dateTime.toString('mm');
     if (minutes !== '00') {
       str += ':' + minutes;
     }
-    str += date.toString('tt');
+    str += dateTime.toString('tt').toLowerCase();
     return str;
   },
   handleCardClicked: function () {
@@ -383,7 +377,7 @@ var EditActivity = React.createClass({
     return {
       title: this.props.activity ? this.props.activity.title : '',
       description: this.props.activity ? this.props.activity.description : '',
-      start_time: new Date(),
+      start_time: this.props.activity ? this.props.activity.start_time : Date.today().add(1).days().set({hour: 16}),
       saving: false
     };
   },
@@ -393,25 +387,32 @@ var EditActivity = React.createClass({
   handleDescriptionChange: function (e) {
     this.setState({description: e.target.value});
   },
-  handleDateTimeChange: function (e) {
-    // TODO: Implement me
-    alert('not yet implemented');
-    // date assumes the input was in GMT and then converts to local time
-    var date = editSection.querySelector('input#date').valueAsDate;
-    var dateTime = new Date(date);
-    console.log('DateTime created in the form is ',dateTime);
-    // Make a timezone adjustment
-    dateTime.addMinutes(dateTime.getTimezoneOffset());
-    var time = editSection.querySelector('input#time').value.split(':');
-    dateTime.setHours(time[0]);
-    dateTime.setMinutes(time[1]);
-    console.log('DateTime created in the form is ',dateTime);
-  },
   handleDateChange: function (e) {
-    alert('not yet implemented');
+    // Note date will parse the date as if it was UTC, and then convert it into local TZ
+    var newDate = new Date(e.target.value);
+    // To solve the parsing as UTC issue we add the timezone offset
+    newDate.addMinutes(newDate.getTimezoneOffset())
+    var newStartTime = this.state.start_time.clone();
+    // Set the date component of the state without modifying time
+    newStartTime.set({
+      day: newDate.getDate(),
+      month: newDate.getMonth(),
+      // Year values start at 1900
+      year: 1900 + newDate.getYear()
+    });
+    console.log(newStartTime);
+    this.setState({start_time: newStartTime});
   },
   handleTimeChange: function (e) {
-    alert('not yet implemented');
+    var tmp = e.target.value.split(':');
+    var hour = parseInt(tmp[0]);
+    var minute = parseInt(tmp[1]);
+    var oldStartTime = this.state.start_time.clone();
+    var newStartTime = oldStartTime.set({
+      hour: hour,
+      minute: minute
+    });
+    this.setState({start_time: newStartTime});
   },
   handleSaveClicked: function (e) {
     var thisButton = e.target;
@@ -472,9 +473,7 @@ var EditActivity = React.createClass({
       backgroundColor: 'rgba(0,0,0,0)',
       outline: 'none'
     };
-    /*
-      Set up the options on the card
-    */
+    // Set up the options on the card
     var option = {label: 'Create', onClick: this.handleCreateClicked};
     if (editing) {
       option = {label: 'Save', onClick: this.handleSaveClicked};
@@ -483,24 +482,19 @@ var EditActivity = React.createClass({
         option.disabled = true;
       }
     }
-    /*
-      Set up dates for the form
-    */
-    var getTimeAndDateFormatted = function (dateTime) {
-      if (!dateTime instanceof Date) {
-        alert('An error occurred! Sorry :(. Please refresh.');
-        throw("start_time should be a Date but it was a string!");
-      }
-      var colonSeparatedTime = toTwoDigitString(dateTime.getHours()) + ':' + toTwoDigitString(dateTime.getMinutes());
-      var hyphenSeparatedDate = getDateString(dateTime);
-      return {time: colonSeparatedTime, date: hyphenSeparatedDate};
-    };
-    var hyphenSeparatedToday = getDateString(Date.today());
-    var hyphenSeparatedTomorrow = getDateString(Date.today().add(1).days());
-    if (editing) {
-      var timeAndDate = getTimeAndDateFormatted(this.props.activity.start_time);
-      var hyphenSeparatedEventDate = timeAndDate.date;
-      var hyphenSeparatedEventTime = timeAndDate.time;
+    // Provide dates and times for the input elements
+    // Documentation for date formatting: https://code.google.com/p/datejs/wiki/FormatSpecifiers
+    var getHyphenSeparatedTime = function(date) {
+      return date.toString('HH:mm');
+    }
+    var getHyphenSeparatedDate = function(date) {
+      return date.toString('yyyy-MM-dd');
+    }
+    var getHyphenSeparatedToday = function () {
+      return Date.today().toString('yyyy-MM-dd');
+    }
+    var getHyphenSeparatedTomorrow = function () {
+      return Date.today().add(1).days().toString('yyyy-MM-dd');
     }
     return (
       <Card>
@@ -519,8 +513,8 @@ var EditActivity = React.createClass({
             type='date'
             style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
             className='input-placeholder-lighter focusUnderline'
-            min={hyphenSeparatedToday}
-            value={editing ? hyphenSeparatedEventDate : hyphenSeparatedTomorrow}
+            min={getHyphenSeparatedToday()}
+            value={ getHyphenSeparatedDate(this.state.start_time) }
             onChange={this.handleDateChange}
             required>
           </input>
@@ -529,7 +523,7 @@ var EditActivity = React.createClass({
             style={m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'})}
             className='input-placeholder-lighter focusUnderline'
             step="900"
-            value={editing ? hyphenSeparatedEventTime : '13:00'}
+            value={ getHyphenSeparatedTime(this.state.start_time) }
             onChange={this.handleTimeChange}
             required>
           </input>
