@@ -1,4 +1,4 @@
-Instructions
+Getting started
 =========
 
 Install virtualenv and virtualenvwrapper. Activate your workspace and run `pip install -r requirements.txt` 
@@ -15,3 +15,9 @@ To push a new version:
 - Ensure you have production-ready static assets in /static/
 - Commit your changes
 - Run `eb deploy`
+
+Changing the models 
+=========
+
+Modify the models, then run: `./manage.py schemamigration tapalong_app --auto`
+You can now migrate the database with `./manage.py migrate tapalong_app`
