@@ -43,10 +43,11 @@ function getNotifications(resolve, reject) {
     if (sessionToken == undefined || userId == undefined) {
       throw new Error('User was not logged in. Cannot request notifications.');
     }
+    // TODO: Unify networking library with main app
     fetch('/../v1/notifications/', {
       headers: {
-        'SESSION_TOKEN': sessionToken,
-        'USER_ID': userId
+        'Session-Token': sessionToken,
+        'User-Id': userId
       }
     }).then(function(response) {
       response.text().then(function(txt) {
