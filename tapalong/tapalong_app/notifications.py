@@ -52,7 +52,7 @@ def render_notification(note):
 	return {'title': options['activity_title'],
 			'body': options['attending_user_name'] + ' is coming along',
 			'icon': options['icon'],
-			'url': 'https://www.google.com/',
+			'url': 'https://www.updogapp.co/static/',
 			'id': note.id}
 
 def get_active(user_id):

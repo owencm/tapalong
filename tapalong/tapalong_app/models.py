@@ -3,9 +3,9 @@ from django.utils.timezone import utc
 import datetime
 
 class User(models.Model):
-	name = models.CharField(max_length = 30, blank=False)
+	name = models.CharField(max_length = 40, blank=False)
 	password = models.CharField(max_length = 30)
-	fb_id = models.IntegerField(blank=False)
+	fb_id = models.BigIntegerField(blank=False)
 	friends = models.TextField(default='')
 
 	def __unicode__(self):
