@@ -235,7 +235,7 @@ var AttendeesList = React.createClass({
           <p><b>People going</b></p>
           {
             this.props.attendees.map(function (attendee) {
-              return <p>attendee</p>
+              return <p>{attendee}</p>
             })
           }
         </div>
