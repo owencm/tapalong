@@ -108,6 +108,7 @@ var requestCancelActivity = function (user, activity, success, failure) {
   })
 };
 var requestCreatePushNotificationsSubscription = function (user, subscription) {
+  console.log(subscription, JSON.stringify(subscription));
   sendRequest('/../v1/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
 var sendRequest = function (url, method, body, user, onload) {

@@ -35,9 +35,11 @@ var requestPushNotificationPermissionAndSubscribe = function (success) {
   });
 }
 
-var sendSubscriptionToServer = function (subscriptionObj) {
-  // Recreate the object due to https://code.google.com/p/chromium/issues/detail?id=467366
-  var subscription = {subscriptionId: subscriptionObj.subscriptionId, endpoint: subscriptionObj.endpoint};
+var sendSubscriptionToServer = function (subscription) {
+  // Reconstructing this object to avoid https://code.google.com/p/chromium/issues/detail?id=467366 (still neccessary as of Chrome 45)
+  var subscription = {endpoint: subscription.endpoint};
+  // Parse the GCM subscriptionId out of end endpoint as that is what GCM needs
+  subscription.subscriptionId = subscription.endpoint.slice(subscription.endpoint.indexOf('send/')+5, subscription.endpoint.length);
   network.requestCreatePushNotificationsSubscription(models.user, subscription);
 };
 
