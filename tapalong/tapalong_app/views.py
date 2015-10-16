@@ -204,7 +204,7 @@ def updateActivity(activity, activity_info):
 	return
 
 @csrf_exempt
-def notifications_list(request, subscription_id):
+def notifications_list(request):
 
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')

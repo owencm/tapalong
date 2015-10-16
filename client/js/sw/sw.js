@@ -43,24 +43,17 @@ function getNotifications(resolve, reject) {
     if (sessionToken == undefined || userId == undefined) {
       throw new Error('User was not logged in. Cannot request notifications.');
     }
-    self.registration.pushManager.getSubscription().then(function(subscription) {
-      if (subscription) {
-        var subscriptionId = subscription.subscriptionId;
-        fetch('/../v1/notifications/for/'+subscriptionId, {
-          headers: {
-            'SESSION_TOKEN': sessionToken,
-            'USER_ID': userId
-          }
-        }).then(function(response) {
-          response.text().then(function(txt) {
-            log('fetched notifications', txt);
-            var notifications = JSON.parse(txt);
-            resolve(notifications);
-          }).catch(reject)
-        }).catch(reject);
-      } else {
-        console.log('Was asked to get notifications before a subscription was created!')
+    fetch('/../v1/notifications/', {
+      headers: {
+        'SESSION_TOKEN': sessionToken,
+        'USER_ID': userId
       }
+    }).then(function(response) {
+      response.text().then(function(txt) {
+        log('fetched notifications', txt);
+        var notifications = JSON.parse(txt);
+        resolve(notifications);
+      }).catch(reject);
     });
   });
 }

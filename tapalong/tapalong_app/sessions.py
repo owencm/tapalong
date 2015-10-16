@@ -17,9 +17,6 @@ def start_session(user_id):
 	token = system_random.randrange(0, 2**63 - 1)
 	session = Session(user=user, expires_at=expires_at, token=token)
 	session.save()
-	print('started session, issued token: ', token)
-	for s in Session.objects.filter(user=user):
-		print(s.token)
 	return token
 
 # Use this to check if a session token is valid
