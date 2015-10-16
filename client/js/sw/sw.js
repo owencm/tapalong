@@ -80,7 +80,7 @@ function handleNotificationClick(e) {
   }).catch(function(ex) {
       console.log(ex);
   }).then(function(clientList) {
-      return clients.openWindow(e.notification.url);
+      return clients.openWindow(e.notification.data.url);
   });
 }
 
@@ -103,7 +103,8 @@ function showNotificationsIfNotShownPreviously(notifications, success) {
       }
     }
     db.put('notificationIds', data.notificationIds);
-    success();
+    // Resolve one second late for no good reason, other than it may help avoid bugs that cause 'has updated in the background' notifications
+    setTimeout(success, 1000);
   });
 }
 

@@ -1,5 +1,4 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
-// TODO: Refactor out dependency on models
 require('datejs');
 
 var requestLogin = function (user, fb_token, success, failure) {
@@ -78,8 +77,7 @@ var requestSetAttending = function (user, activity, attending, optimistic, succe
       updatedActivity.start_time = new Date(updatedActivity.start_time);
       updatedActivity.id = activity.id;
       // Note updatedAcitivy won't have dirty set
-      models.activities.updateActivity(updatedActivity.id, updatedActivity);
-      success();
+      success(updatedActivity);
     } else {
       failure();
     }
@@ -100,8 +98,7 @@ var requestUpdateActivity = function(user, activity, activityChanges, success, f
 var requestCancelActivity = function (user, activity, success, failure) {
   sendRequest('/../v1/activities/'+activity.activity_id+'/cancel/', 'post', '', user, function () {
     if(this.status >= 200 && this.status < 400) {
-      models.activities.removeActivity(activity.id);
-      success();
+      success(activity);
     } else {
       failure();
     }

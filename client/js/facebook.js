@@ -3,7 +3,7 @@
 
 var view = require('./view.js');
 
-var skipLogin = true;
+var skipLogin = false;
 
 if (skipLogin) {
   view.debugSkipLogin(1, 'Owen Campbell-Moore', 'letmein');

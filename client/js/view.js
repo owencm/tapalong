@@ -314,7 +314,12 @@ var ActivityCard = React.createClass({
   handleUndoAttendClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    alert('undo attend');
+    // Note no callback since the list will automatically redraw when this changes
+    var optimistic = this.props.activity.dirty == undefined;
+    models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
+      console.log('Uhoh, an optimistic error was a mistake!!');
+      alert('An unexpected error occurred. Please refresh.');
+    });
   },
   render: function() {
     var optionString = ['Edit', 'Go along', 'Cancel attending'][this.getCardsOption()];
@@ -703,6 +708,7 @@ var redrawCurrentView = function () {
   }
 };
 var redrawActivitiesList = function () {
+  console.log('redrawing');
   React.render(
     <ActivityCardList/>,
     document.getElementById('activitiesList')
