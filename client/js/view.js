@@ -268,6 +268,28 @@ var ActivityCard = React.createClass({
       return this.OPTIONS.attend;
     }
   },
+  // E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
+  getDateString: function () {
+    var today = Date.today();
+    var tomorrow = (Date.today()).add(1).days();
+    var datetimeCopy = new Date(this.props.activity.start_time.toISOString());
+    var date = datetimeCopy.set({ millisecond: 0, second: 0, minute: 0, hour: 0});
+    var str = '';
+    if (today.equals(date)) {
+      str += 'today ';
+    } else if (tomorrow.equals(date)) {
+      str += 'tomorrow ';
+    } else {
+      str += 'on ' + date.toString('dddd dS') + ' ';
+    }
+    str += 'at ' + date.toString('H');
+    var minutes = date.toString('mm');
+    if (minutes !== '00') {
+      str += ':' + minutes;
+    }
+    str += date.toString('tt');
+    return str;
+  },
   handleCardClicked: function () {
     this.setState({viewingDetails: !this.state.viewingDetails});
   },
@@ -323,7 +345,7 @@ var ActivityCard = React.createClass({
               <span><b>You</b> are </span>
             ) : (
               <span><b>{this.props.activity.creator_name}</b> is </span>
-            )}<b>{this.props.activity.title}</b> {this.props.activity.start_time}
+            )}<b>{this.props.activity.title}</b> {this.getDateString()}
             {
               /* Description and attendees */
               this.state.viewingDetails ? (
