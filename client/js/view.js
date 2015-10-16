@@ -359,13 +359,16 @@ var ActivityCard = React.createClass({
                         <p><b>Description</b></p>
                         <p style={{whiteSpace: 'pre'}}>{this.props.activity.description}</p>
                       </div>
-                    ) : (
-                      <p>No more information available about this plan</p>
-                    )
+                    ) : null
                   }
                   <AttendeesList attendees={this.props.activity.attendees}/>
+                  {
+                    (this.props.activity.description == '' && this.props.activity.attendees.length == 0) ? (
+                      <p>No more information available for this plan</p>
+                    ) : null
+                  }
                 </div>
-              ) : {}
+              ) : null
             }
           </div>
         </div>
@@ -659,7 +662,7 @@ var OptIn = React.createClass({
     return (
       <Card>
         <div style={{padding: '24px'}}>
-          <p>UpDog will send you a notification {this.props.reason}.</p>
+          <p>Up Dog will send you a notification {this.props.reason}.</p>
         </div>
         <CardOptions
           options={[{label: 'OK', onClick: this.handleOKClicked}]}

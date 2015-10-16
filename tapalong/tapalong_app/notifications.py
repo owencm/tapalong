@@ -49,8 +49,8 @@ def send_tickle(subscription):
 def render_notification(note):
 	# Todo, handle different templates
 	options = json.loads(note.options)
-	return {'title': options['activity_title'],
-			'body': options['attending_user_name'] + ' is coming along',
+	return {'title': 'Up Dog',
+			'body': options['attending_user_name'] + ' is in for ' + options['activity_title'],
 			'icon': options['icon'],
 			'url': 'https://www.updogapp.co/static/',
 			'id': note.id}
