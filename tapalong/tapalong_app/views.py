@@ -22,7 +22,7 @@ def login_user(request):
 		facebook = Pyfb(settings.FACEBOOK_APP_ID)
 		#Sets the authentication token
 		facebook.set_access_token(fb_token)
-		# Gets info about myself 
+		# Gets info about myself
 		# Todo: what if this fails?
 		fb_user = facebook.get_myself()
 		try:
@@ -67,12 +67,12 @@ def serialize_activity(activity, user_id):
 	#serialized_attendees_names = json.dumps(attendees_names)
 	debug_start_time = activity.start_time
 
-	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": activity.start_time.isoformat(), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "http://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
+	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": activity.start_time.isoformat(), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "https://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
 # On POST: Accepts and stores a new activity
-# TODO @allygale: Will need to convert start time from str 
+# TODO @allygale: Will need to convert start time from str
 # to datetime, check to make sure user exists?
 @csrf_exempt
 def activities_list(request):
@@ -211,7 +211,7 @@ def notifications_list(request, subscription_id):
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponseForbidden()
 
-	notifications_to_send = notifications.get_active(user_id)	
+	notifications_to_send = notifications.get_active(user_id)
 	json_output = json.dumps(notifications_to_send)
 	return HttpResponse(json_output, mimetype='application/json')
 
@@ -246,8 +246,5 @@ def push_subscriptions_list(request):
 		endpoint = subscription.get('endpoint')
 		notifications.create_subscription(user, subscription_id)
 		return HttpResponse()
-	else: 
+	else:
 		return HttpResponseBadRequest()
-
-
-

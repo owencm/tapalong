@@ -1,3 +1,5 @@
+// TODO: Disable source maps and enable uglify when pushing to production
+
 module.exports = function(grunt) {
 
   // Project configuration.
@@ -40,8 +42,8 @@ module.exports = function(grunt) {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
       build: {
-        src: 'src/<%= pkg.name %>.js',
-        dest: 'build/<%= pkg.name %>.min.js'
+        src: 'tapalong/tapalong_app/static/main.js',
+        dest: 'tapalong/tapalong_app/static/main.js'
       }
     },
     copy: {
