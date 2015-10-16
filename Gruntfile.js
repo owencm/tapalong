@@ -1,3 +1,5 @@
+var isDevMode = false;
+
 module.exports = function(grunt) {
   // TODO: Disable source maps and enable uglify when pushing to production
 
@@ -7,7 +9,7 @@ module.exports = function(grunt) {
     clean: ['tmp/'],
     babel: {
       options: {
-        sourceMap: true
+        sourceMap: isDevMode
       },
       dist: {
         files: [{
@@ -26,7 +28,7 @@ module.exports = function(grunt) {
     browserify: {
       options: {
         browserifyOptions: {
-          debug: true
+          debug: isDevMode
         }
       },
       dist: {
@@ -75,6 +77,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   // Default task(s).
-  grunt.registerTask('default', ['babel', 'browserify', 'copy', 'clean']);
+  var tasks = isDevMode ? ['babel', 'browserify', 'copy', 'clean'] : ['babel', 'browserify', 'uglify', 'copy', 'clean']
+  grunt.registerTask('default', tasks);
 
 };
