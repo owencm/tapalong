@@ -1,11 +1,11 @@
+// TODO: Refactor this hacked up code!
+
 var view = require('./view.js');
 
 var skipLogin = true;
 
 if (skipLogin) {
-  // view.debugSkipLogin(5, 'Ally Gale', 'letmein');
   view.debugSkipLogin(1, 'Owen Campbell-Moore', 'letmein');
-  // view.debugSkipLogin(3, 'Tyler Rigsby', 'letmein');
 } else {
   // This loads the facebook SDK async, then calls window.fbAsyncInit. FB.getLoginStatus does the logging in, and statusChangeCallback is as expected.
 

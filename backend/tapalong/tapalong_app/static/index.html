@@ -17,15 +17,6 @@
       </h1>
     </header>
     <div id='container'>
-      <section id='infoCards' style='text-align: center'>
-        <div style='margin: 20px 0; display: none' id='noActivitiesCard'>
-          Got any plans this week?
-        </div>
-      </section>
-      <section id='notificationsOptIn'></section>
-      <section id='editActivity'></section>
-      <section id='activitiesList'></section>
-      <div style='height: 100px'></div>
     </div>
     <div id='addButton' style='display: none'></div>
     <div id='login' style='display: none'>
@@ -47,47 +38,6 @@
         </div>
         <div class='optionContainer'>
           <div class='option right'>Sounds good</div>
-        </div>
-        <div class="clear"></div>
-      </section>
-    </script>
-    <script id='activity-summary-template' type='text/x-handlebars-template'>
-      <section class='card {{#if activity.is_attending}}attending{{/if}}' id='activity-{{activity.id}}'>
-        <div class='contentContainer'>
-          <img src='{{ activity.thumbnail }}' class='friendIcon'></img>
-          <div class='cardTitleContainer'>
-            {{#if activity.is_creator}}<b>You</b> are {{else}}<b>{{activity.creator_name}}</b> is {{/if}}<b>{{activity.title}}</b> {{dateInString activity.start_time}}.
-          </div>
-        </div>
-        <div class='optionContainer'>
-          <div class='option right {{#if activity.is_creator}}edit{{else}}attend{{/if}}'>
-            {{#if activity.is_creator}}
-              Edit
-            {{else}}
-              {{#if activity.is_attending}}
-                Cancel Attending
-              {{else}}
-                Go along
-              {{/if}}
-            {{/if}}
-          </div>
-        </div>
-        <div class="clear"></div>
-      </section>
-    </script>
-    <script id='edit-activity-template' type='text/x-handlebars-template'>
-      <section class='card detail'>
-        <div class='contentContainer'>
-          <b>{{name}}</b> is<br />
-          <input type='text' value='{{activity.title}}' id='title' placeholder='Watching Frozen' autocapitalize='words' required></input>
-          <input type='date' id='date' max='{{nextWeeksDate}}' min='{{todaysDate}}' value='{{#if editing}}{{activityExtras.date}}{{else}}{{tomorrowsDate}}{{/if}}' required></input>
-          <input type='time' id='time' step="900" {{#if editing}}value='{{activityExtras.time}}'{{else}}value='13:00'{{/if}} required></input>
-          <div class='clear'></div>
-          <textarea id='description' placeholder="Extra information (where? when? what?)" rows=1>{{activity.description}}</textarea>
-        </div>
-        <div class='optionContainer'>
-          {{#if editing}}<div class='option left bad cancel'>Delete plan</div>{{/if}}
-          <div class='option right save'>{{#if editing}}Save{{else}}Create{{/if}}</div>
         </div>
         <div class="clear"></div>
       </section>

@@ -1,19 +1,42 @@
 // var TextAreaResizing = require('react-textarea-autosize');
 var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
+var React = require('react');
 
 var m = function (...objs) {
   return Object.assign({}, ...objs);
 }
-var React = require('react');
 
+// TODO: move these functions into a support library
 var toTwoDigitString = function (digit) {
   return (digit < 10) ? '0' + digit : '' + digit;
 }
-
+// Returns a string in the format "2000-01-01"
 var getDateString = function (dateTime) {
   return [(1900 + dateTime.getYear()),toTwoDigitString(dateTime.getMonth()+1),toTwoDigitString(dateTime.getDate())].join('-');
 }
+
+var App = React.createClass({
+  shouldShowNoActivitiesCard: function () {
+    // TODO: Implement showing if we're in the list but there's no content
+    return true;
+  },
+  render: function() {
+    return (
+      <div>
+        <section id='notificationsOptIn'></section>
+        <section id='editActivity'></section>
+        <section id='activitiesList'></section>
+        <div style={{height: '100px'}}></div>
+      </div>
+    )
+  }
+});
+
+React.render(
+  <App />,
+  document.getElementById('container')
+);
 
 var STATE = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
 var currentState = STATE.uninitialized;
@@ -36,11 +59,9 @@ var changeState = function (newState, options, userTriggered) {
       history.pushState({state: STATE.list}, 'Upcoming Plans');
     }
     if (models.activities.getActivitiesCount() > 0) {
-      hideNoActivitiesCard();
       hideCreateActivityForm();
       showAddButton();
     } else {
-      showNoActivitiesCard();
       showCreateActivityForm();
       hideAddButton();
     }
@@ -66,11 +87,9 @@ var changeState = function (newState, options, userTriggered) {
     // TODO: Move this state to within the model
     hideHeader();
     hideAddButton();
-    hideNoActivitiesCard();
     showLogin();
   } else if (currentState == STATE.notificationsOptIn) {
     setTitle('Stay up to date');
-    hideNoActivitiesCard();
     showNotificationOptIn(options.reason, options.nextState);
     hideActivitiesList();
     hideCreateActivityForm();
@@ -543,11 +562,9 @@ var hideBackButton = function () {
   backButton.style.display = 'none';
 };
 var showCreateActivityForm = function () {
-  var activity = null;
-  if (currentState == STATE.edit) {
-    // Get the selected activity if we're editing
-    activity = models.activities.getActivity(selectedActivity);
-  }
+  var activity = models.activities.getActivity(selectedActivity);
+  // TODO: find the actual way to make react re-render something
+  document.getElementById('editActivity').innerHTML = '';
   React.render(
     <EditActivity activity={activity} userName={models.user.getUserName()} />,
     document.getElementById('editActivity')
@@ -622,12 +639,6 @@ var showAddButton = function () {
 var hideAddButton = function () {
   addButton.style.display = 'none';
 }
-var showNoActivitiesCard = function () {
-  noActivitiesCard.style.display = '';
-};
-var hideNoActivitiesCard = function () {
-  noActivitiesCard.style.display = 'none';
-};
 var showActivitiesList = function () {
   activitiesSection.style.display = '';
 };
@@ -654,16 +665,6 @@ var redrawActivitiesList = function () {
     <ActivityCardList/>,
     document.getElementById('activitiesList')
   );
-  //   activityElem.onclick = function () {
-  //     selectedActivity = activity.id;
-  //     changeState(STATE.detail, {}, true);
-  //   };
-  //   activityElem.querySelector('.option').onclick = function (e) {
-
-  //   if (activity.is_attending) {
-  //     activityElem.classList.add('attending');
-  //   }
-  // });
 };
 var setLoginButtonCallback = function (callback) {
   var loginElem = document.querySelector('#login');
