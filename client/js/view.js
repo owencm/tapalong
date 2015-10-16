@@ -39,6 +39,9 @@ var changeState = function (newState, options, userTriggered) {
     showHeader();
     hideLogin();
   }
+  if (newState !== STATE.edit) {
+    selectedActivity = undefined;
+  }
   currentState = newState;
   if (currentState == STATE.list) {
     hideBackButton();
@@ -344,8 +347,16 @@ var ActivityCard = React.createClass({
               /* Description and attendees */
               this.state.viewingDetails ? (
                 <div style={{marginTop: '16px'}}>
-                  <p><b>Description</b></p>
-                  <p style={{whiteSpace: 'pre'}}>{this.props.activity.description}</p>
+                  {
+                    this.props.activity.description !== '' ? (
+                      <div>
+                        <p><b>Description</b></p>
+                        <p style={{whiteSpace: 'pre'}}>{this.props.activity.description}</p>
+                      </div>
+                    ) : (
+                      <p>No more information available about this plan</p>
+                    )
+                  }
                   <AttendeesList attendees={this.props.activity.attendees}/>
                 </div>
               ) : {}
@@ -578,7 +589,7 @@ var hideBackButton = function () {
   backButton.style.display = 'none';
 };
 var showCreateActivityForm = function () {
-  var activity = models.activities.getActivity(selectedActivity);
+  var activity = selectedActivity !== undefined ? models.activities.getActivity(selectedActivity) : undefined;
   // TODO: find the actual way to make react re-render something
   document.getElementById('editActivity').innerHTML = '';
   React.render(
