@@ -31,6 +31,7 @@ React.render(
 
 var STATE = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
 var currentState = STATE.uninitialized;
+// TODO: Refactor how selectedActivity works. It's super brittle today.
 var selectedActivity;
 var changeState = function (newState, options, userTriggered) {
   console.log('Changing state to '+newState);
