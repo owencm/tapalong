@@ -22,8 +22,9 @@ def login_user(request):
 		facebook = Pyfb(settings.FACEBOOK_APP_ID)
 		#Sets the authentication token
 		facebook.set_access_token(fb_token)
+		# Todo: Handle this failing, for example if the user waits a long time
+		# before pressing login you get 'Error validating access token: ...'
 		# Gets info about myself
-		# Todo: what if this fails?
 		fb_user = facebook.get_myself()
 		try:
 			user = User.objects.get(fb_id=fb_user.id)
