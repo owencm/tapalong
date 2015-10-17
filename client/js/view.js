@@ -288,7 +288,7 @@ var ActivityCard = React.createClass({
     str += dateTime.toString('tt').toLowerCase();
     return str;
   },
-  handleCardClicked: function () {
+  handleCardClicked: function (e) {
     this.setState({viewingDetails: !this.state.viewingDetails});
   },
   handleEditClicked: function (e) {
@@ -338,7 +338,7 @@ var ActivityCard = React.createClass({
     }.bind(this))();
 
     return (
-      <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined} onClick ={this.handleCardClicked}>
+      <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined} onClick={this.handleCardClicked}>
         <div style={{padding: '24px'}}>
           <FriendIcon thumbnail={this.props.activity.thumbnail}/>
           {/* This forces the title to not wrap around the bottom of the icon */}
@@ -357,7 +357,12 @@ var ActivityCard = React.createClass({
                     this.props.activity.description !== '' ? (
                       <div>
                         <p><b>Description</b></p>
-                        <p style={{whiteSpace: 'pre'}}>{this.props.activity.description}</p>
+                        { /* whiteSpace and wordWrap ensure we retain line breaks from the text,
+                          but also wrap if the line is long. userSelect enables selection for
+                          copy pasting */ }
+                        <p style={{whiteSpace: 'pre', wordWrap: 'break-word', WebkitUserSelect: 'text'}}>
+                          {this.props.activity.description}
+                        </p>
                       </div>
                     ) : null
                   }
