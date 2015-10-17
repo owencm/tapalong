@@ -5,7 +5,14 @@ var objectDB = require('./objectdb.js');
 
 var startLogin = function (fbToken, success, failure) {
   // Pass in the user so the networking code explicitely knows the user is logged out
-  network.requestLogin(user, fbToken, success, failure);
+  network.requestLogin(user, fbToken, function (userId, userName, sessionToken) {
+    user.setUserName(userName);
+    user.setUserId(userId);
+    user.setSessionToken(sessionToken);
+    activities.tryRefreshActivities(success, function () {
+      console.log('Failed to download activities')
+    });
+  }, failure);
 };
 var hasNotificationPermission = function (success, failure) {
   return hasPushPermission(success, failure);
