@@ -12,15 +12,11 @@ var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 var m = require('./m.js');
 
-var SCREEN = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
+var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, notificationsOptIn: 5};
 
 var App = React.createClass({
   getInitialState: function() {
     return { screen: SCREEN.loggedOut }
-  },
-  shouldShowNoActivitiesCard: function () {
-    // TODO: Implement showing if we're in the list but there's no content
-    return true;
   },
   shouldShowHeader: function () {
     return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > -1);
@@ -72,51 +68,55 @@ var App = React.createClass({
   },
   render: function() {
     // TODO: Refactor this mess!
-    return (
-      <div>
-        {
-          this.state.screen == SCREEN.loggedOut ?
-            <Login onLoginComplete={this.viewList} /> : (
-              <div>
-                <div id='container'>
-                  {
-                    this.state.screen == SCREEN.list ?
-                      <ActivityCardList
-                        onActivitySelected={this.handleActivitySelected}
-                        onActivityUnselected={this.handleActivityUnselected}
-                        onEditModeEnabled={this.handleEditModeEnabled}
-                        selectedActivity={this.state.selectedActivity}
-                      /> : null }
-                  { this.state.screen == SCREEN.notificationsOptIn ? <OptIn reason={reason} nextState={this.state.nextScreen} /> : null }
-                  {
-                    [SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1 ?
-                    <EditActivity
-                      activity={this.state.selectedActivity}
-                      userName={models.user.getUserName()}
-                      onReturnToList={this.viewList}
-                    /> :
-                    null
-                  }
-                  <div style={{height: '100px'}}></div>
-                </div>
-                {
-                  this.shouldShowHeader() ?
-                    <Header
-                      title={this.getScreenTitle()}
-                      shouldShowBackButton={this.shouldShowBackButton()}
-                      onBackButtonClicked={this.viewList}
-                    /> :
-                    null
-                }
-                {
-                  this.shouldShowCreateButton() ?
-                    <FabButton onClick={this.handleCreateModeEnabled} /> : null
-                }
-              </div>
-            )
-        }
-      </div>
-    )
+    if (this.state.screen == SCREEN.loggedOut) {
+      return <Login onLoginComplete={this.viewList} />;
+    } else {
+      var mainContents;
+      if (this.state.screen == SCREEN.list) {
+        mainContents = (
+          <ActivityCardList
+            onActivitySelected={this.handleActivitySelected}
+            onActivityUnselected={this.handleActivityUnselected}
+            onEditModeEnabled={this.handleEditModeEnabled}
+            selectedActivity={this.state.selectedActivity}
+          />
+        );
+      } else if (this.state.screen == SCREEN.notificationsOptIn) {
+        mainContents = <OptIn reason={reason} nextState={this.state.nextScreen} />;
+      } else if ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1) {
+        mainContents = (
+          <EditActivity
+            activity={this.state.selectedActivity}
+            userName={models.user.getUserName()}
+            onReturnToList={this.viewList}
+          />
+        );
+      }
+      var headerIfNeeded = null;
+      if (this.shouldShowHeader()) {
+        headerIfNeeded = (
+          <Header
+            title={this.getScreenTitle()}
+            shouldShowBackButton={this.shouldShowBackButton()}
+            onBackButtonClicked={this.viewList}
+          />
+        );
+      }
+      var createButtonIfNeeded = null;
+      if (this.shouldShowCreateButton()) {
+        createButtonIfNeeded = <FabButton onClick={this.handleCreateModeEnabled} />;
+      }
+      return (
+        <div>
+          <div id='container'>
+            {mainContents}
+            <div style={{height: '100px'}}></div>
+          </div>
+          { headerIfNeeded }
+          { createButtonIfNeeded }
+        </div>
+      )
+    }
   }
 });
 
@@ -133,14 +133,14 @@ var App = React.createClass({
 //   }
 // });
 
-var permissionOverlay = document.querySelector('div#permissionOverlay');
-
 // TODO: set form fields to blur after enter pressed
   // titleInputElem.addEventListener('keydown', function(key) {
   //   if (key.keyCode == 13) {
   //     this.blur();
   //   }
   // });
+
+var permissionOverlay = document.querySelector('div#permissionOverlay');
 
 var showOverlay = function  () {
   permissionOverlay.style.display = '';
