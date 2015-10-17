@@ -14,6 +14,7 @@ var startLogin = function (fbToken, success, failure) {
     });
   }, failure);
 };
+
 var hasNotificationPermission = function (success, failure) {
   return hasPushPermission(success, failure);
 };

@@ -19,8 +19,12 @@ module.exports = React.createClass({
     };
   },
   componentDidMount: function () {
-    // Ensure the title input is in view
-    this.refs.titleInput.getDOMNode().scrollIntoView();
+    // Focus the title input if we're creating
+    if (!this.props.activity) {
+      this.refs.titleInput.getDOMNode().focus();
+    }
+    // Disabled as it scrolled poorly on iOS
+    // this.refs.titleInput.getDOMNode().scrollIntoView();
     // TODO: If we scrolled into view the elem may be hidden behind the header
   },
   handleTitleChange: function (e) {
@@ -180,7 +184,6 @@ module.exports = React.createClass({
             placeholder='Watching Frozen'
             autoCapitalize='words'
             required
-            autoFocus
             onChange={this.handleTitleChange}>
           </input>
           <input

@@ -35,37 +35,22 @@ module.exports = React.createClass({
      var js, fjs = d.getElementsByTagName(s)[0];
      if (d.getElementById(id)) {return;}
      js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/pt_BR/sdk.js";
+     js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
-  },
-
-  responseApi: function( authResponse ) {
-    FB.api('/me', function(response) {
-
-      response.status = 'connected';
-      response.accessToken = authResponse.accessToken;
-      response.expiresIn = authResponse.expiresIn;
-      response.signedRequest = authResponse.signedRequest;
-
-      if ( this.props.loginHandler ) {
-        this.props.loginHandler( response );
-      }
-
-
-    }.bind(this));
   },
 
   checkLoginState: function(response) {
     if (response.authResponse) {
 
-      this.responseApi(response.authResponse);
+      this.props.loginHandler(response.authResponse);
 
     } else {
 
-      if ( this.props.loginHandler ) {
-        this.props.loginHandler( { status: response.status } );
-      }
+      // If we failed trying to log in automatically, let the user take an action
+      // if ( this.props.loginHandler ) {
+      //   this.props.loginHandler( { status: response.status } );
+      // }
 
     }
   },

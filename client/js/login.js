@@ -23,23 +23,23 @@ module.exports = React.createClass({
     // });
   },
   render: function () {
-    // <div id='login'>
-    //   <div id='splash'>
-    //   </div>
-    //   <div id='slogan'>
-    //     <img src='images/slogan.png'></img>
-    //   </div>
-    //   <div id='loginButton' onClick={this.handleLogin}>
-    //     <img src='images/login-button.png' id='loginButtonImg'></img>
-    //   </div>
-    // </div>
     return (
       <FacebookLogin
         appId='175370155978273'
         class='facebook-login'
         scope='public_profile'
+        autoLoad
         loginHandler={ this.handleLogin } >
-        <p>Hello world</p>
+          <div id='login'>
+            <div id='splash'>
+            </div>
+            <div id='slogan'>
+              <img src='images/slogan.png'></img>
+            </div>
+            <div id='loginButton'>
+              <img src='images/login-button.png' id='loginButtonImg'></img>
+            </div>
+          </div>
       </FacebookLogin>
     )
   }

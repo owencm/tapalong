@@ -108,12 +108,13 @@ var App = React.createClass({
       }
       return (
         <div>
-          { headerIfNeeded }
-          { createButtonIfNeeded }
           <div id='container'>
             {mainContents}
             <div style={{height: '100px'}}></div>
           </div>
+          { /* Note these must be below the container to capture the clicks */ }
+          { headerIfNeeded }
+          { createButtonIfNeeded }
         </div>
       )
     }
