@@ -132,25 +132,37 @@ var CardOptions = React.createClass({
       fontWeight: '600',
       fontSize: '14px',
       /* Put the padding and margin on the options so the click targets are larger */
-      padding: '6px 12px',
-      margin: '8px',
+      padding: '14px 20px',
+      margin: '0px',
       /* A default position */
       float: 'right'
     };
     var enabledOptionStyle = {
       color: '#00BCD4'
     };
+    var badEnabledOptionStyle = {
+      color: '#e33'
+    };
     var disabledOptionStyle = {
       color: '#CCC'
     };
-    return (
-      <div>
-        <div style={optionStyle}>
-          <a style={this.props.options[0].disabled ? disabledOptionStyle : enabledOptionStyle}
-            onClick={this.props.options[0].disabled ? function(){} : this.props.options[0].onClick}>
-            {this.props.options[0].label}
+    var optionCards = this.props.options.map(function (option) {
+      return (
+        <div style={m(optionStyle, option.position == 'left' ? {float: 'left'} : {})}>
+          <a style={
+              option.disabled ? disabledOptionStyle : (
+                option.type == 'bad' ? badEnabledOptionStyle : enabledOptionStyle
+              )
+            }
+            onClick={option.disabled ? function(){} : option.onClick}>
+            {option.label}
           </a>
         </div>
+      )
+    }.bind(this));
+    return (
+      <div>
+        { optionCards }
         <div style={{clear: 'both'}}></div>
       </div>
     )
@@ -356,6 +368,7 @@ var ActivityCard = React.createClass({
               /* Description and attendees */
               this.state.viewingDetails ? (
                 <div style={{marginTop: '16px'}}>
+                  { /* TODO: Tidy up this crap! */ }
                   {
                     this.props.activity.description !== '' ? (
                       <div>
@@ -368,6 +381,10 @@ var ActivityCard = React.createClass({
                         </p>
                       </div>
                     ) : null
+                  }
+                  {
+                    (this.props.activity.description !== '' && this.props.activity.attendees.length > 0) ?
+                      <br /> : null
                   }
                   <AttendeesList attendees={this.props.activity.attendees}/>
                   {
@@ -492,6 +509,18 @@ var EditActivity = React.createClass({
       throw("Adding to server failed. Help the user understand why");
     });
   },
+  handleDeleteClicked: function () {
+    if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
+       models.activities.tryCancelActivity(this.props.activity, function () {
+         changeState(STATE.list, {}, true);
+       }, function () {
+         alert('An error occurred! Sorry :(. Please refresh.');
+         throw("Cancelling on server failed. Help the user understand why");
+       });
+     } else {
+       // Do nothing
+     }
+  },
   render: function () {
     var editing = !!this.props.activity;
     /*
@@ -513,14 +542,20 @@ var EditActivity = React.createClass({
       borderRadius: 0
     };
     // Set up the options on the card
-    var option = {label: 'Create', onClick: this.handleCreateClicked};
+    var options = [];
+    var defaultOption;
     if (editing) {
-      option = {label: 'Save', onClick: this.handleSaveClicked};
+      defaultOption = {label: 'Save', onClick: this.handleSaveClicked};
       if (this.state.saving) {
-        option.label = 'Saving...';
-        option.disabled = true;
+        defaultOption.label = 'Saving...';
+        defaultOption.disabled = true;
       }
+      var deleteOption = {label: 'Delete', onClick: this.handleDeleteClicked, position: 'left', type: 'bad'};
+      options.push(deleteOption);
+    } else {
+      defaultOption = {label: 'Create', onClick: this.handleCreateClicked};
     }
+    options.push(defaultOption);
     // Provide dates and times for the input elements
     // Documentation for date formatting: https://code.google.com/p/datejs/wiki/FormatSpecifiers
     var getHyphenSeparatedTime = function(date) {
@@ -577,7 +612,7 @@ var EditActivity = React.createClass({
             onChange={this.handleDescriptionChange}>
           </TextAreaAutoResize>
         </div>
-        <CardOptions options={[option]}/>
+        <CardOptions options={options}/>
       </Card>
     )
   }
@@ -629,27 +664,10 @@ var showCreateActivityForm = function () {
   //
   // // Add interactivity
   // var titleInputElem = editSection.querySelector('input#title');
-  // if (currentState == STATE.edit) {
-  //   editSection.querySelector('.option.cancel').onclick = function () {
-  //     if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
-  //       this.classList.add('disabled');
-  //       models.activities.tryCancelActivity(activity, function () {
-  //         changeState(STATE.list, {}, true);
-  //       }, function () {
-  //         alert('An error occurred! Sorry :(. Please refresh.');
-  //         throw("Cancelling on server failed. Help the user understand why");
-  //       });
-  //     } else {
-  //       // Do nothing
-  //     }
-  //   }
-  // } else if (currentState == STATE.add) {
-  //   // Why this needs a timeout is totally beyond me
   //   setTimeout(function() {
   //     titleInputElem.focus();
   //     titleInputElem.scrollIntoView();
   //   },0);
-  // }
   //
   // titleInputElem.addEventListener('keydown', function(key) {
   //   if (key.keyCode == 13) {
