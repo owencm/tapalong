@@ -1,4 +1,4 @@
-// var TextAreaResizing = require('react-textarea-autosize');
+var TextAreaAutoResize = require('react-textarea-autosize');
 var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 var React = require('react');
@@ -567,7 +567,7 @@ var EditActivity = React.createClass({
             required>
           </input>
           <div style={{clear: 'both'}}></div>
-          <textarea
+          <TextAreaAutoResize
             id='description'
             style={inputStyle}
             className='focusUnderline'
@@ -575,7 +575,7 @@ var EditActivity = React.createClass({
             rows='1'
             value={this.state.description}
             onChange={this.handleDescriptionChange}>
-          </textarea>
+          </TextAreaAutoResize>
         </div>
         <CardOptions options={[option]}/>
       </Card>
