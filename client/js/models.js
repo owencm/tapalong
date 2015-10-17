@@ -161,7 +161,8 @@ var activities = (function () {
     network.requestCancelActivity(user, activity, function (activity) {
       // Note activity is the same as the other variable named activity,
       // just plumbed through as that's how we do it elsewhere
-      activities.removeActivity(activity.id);
+      removeActivity(activity.id);
+      success();
     }, failure);
   };
   // TODO: Make me much more efficient plz!

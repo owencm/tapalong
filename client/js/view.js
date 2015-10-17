@@ -148,13 +148,16 @@ var CardOptions = React.createClass({
     };
     var optionCards = this.props.options.map(function (option) {
       return (
-        <div style={m(optionStyle, option.position == 'left' ? {float: 'left'} : {})}>
+        <div
+          style={m(optionStyle, option.position == 'left' ? {float: 'left'} : {})}
+          onClick={option.disabled ? function(){} : option.onClick}
+        >
           <a style={
               option.disabled ? disabledOptionStyle : (
                 option.type == 'bad' ? badEnabledOptionStyle : enabledOptionStyle
               )
             }
-            onClick={option.disabled ? function(){} : option.onClick}>
+          >
             {option.label}
           </a>
         </div>
