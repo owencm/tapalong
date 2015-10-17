@@ -7,102 +7,154 @@ var m = function (...objs) {
   return Object.assign({}, ...objs);
 }
 
+var SCREEN = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
+
 var App = React.createClass({
+  getInitialState: function() {
+    return { screen: SCREEN.loggedOut }
+  },
   shouldShowNoActivitiesCard: function () {
     // TODO: Implement showing if we're in the list but there's no content
     return true;
   },
+  shouldShowHeader: function () {
+    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > 0);
+  },
+  shouldShowBackButton: function () {
+    return ([SCREEN.add, SCREEN.edit].indexOf(this.state.screen) > 0);
+  },
+  handleStateChange: function (newScreen, options, userTriggered) {
+    // TODO: do something with options and userTriggered
+    console.log('Changing state to '+newScreen);
+    this.setState({screen: newScreen});
+    if (newScreen !== SCREEN.edit) {
+      this.setState({selectedActivity: undefined});
+    }
+    // TODO: Read nextScreen from options
+  },
+  handleActivitySelected: function (activity) {
+    this.setState({selectedActivity: activity});
+  },
+  handleEditModeEnabled: function () {
+    this.setState({screen: SCREEN.edit});
+  },
+  // Syntactic sugar since we call this all the time
+  viewList: function () {
+    this.handleStateChange(SCREEN.list);
+  },
+  getScreenTitle: function() {
+    if (this.state.screen == SCREEN.list) {
+      return 'Upcoming Plans';
+    } else if (this.state.screen == SCREEN.edit) {
+      return 'Edit';
+    } else if (this.state.screen == SCREEN.add) {
+      return 'Create'
+    } else if (this.state.screen == SCREEN.notificationsOptIn) {
+      return 'Stay up to date'
+    } else {
+      return 'Uh oh: title shouldn\'t be showing';
+    }
+  },
   render: function() {
     return (
       <div>
-        <section id='notificationsOptIn'></section>
-        <section id='editActivity'></section>
-        <section id='activitiesList'></section>
-        <div style={{height: '100px'}}></div>
+        {
+          this.state.screen == SCREEN.loggedOut ?
+            <Login onLoginComplete={this.viewList} /> : (
+              <div>
+                <div id='container'>
+                  {
+                    this.state.screen == SCREEN.list ?
+                      <ActivityCardList
+                        onActivitySelected={this.handleActivitySelected}
+                        onEditModeEnabled={this.handleEditModeEnabled}
+                        selectedActivity={this.state.selectedActivity}
+                      /> : null }
+                  { this.state.screen == SCREEN.notificationsOptIn ? <OptIn reason={reason} nextState={this.state.nextScreen} /> : null }
+                  {
+                    [SCREEN.add, SCREEN.edit].indexOf(this.state.screen) > 0 ?
+                    <EditActivity
+                      activity={this.state.selectedActivity}
+                      userName={models.user.getUserName()}
+                      onReturnToList={this.viewList}
+                    /> :
+                    null
+                  }
+                  <div style={{height: '100px'}}></div>
+                </div>
+                {
+                  this.shouldShowHeader() ?
+                    <Header
+                      title={this.getScreenTitle()}
+                      shouldShowBackButton={this.shouldShowBackButton()}
+                      onBackButtonClicked={this.viewList}
+                    /> :
+                    null
+                }
+              </div>
+            )
+        }
       </div>
     )
   }
 });
 
-React.render(
-  <App />,
-  document.getElementById('container')
-);
-
-var STATE = {add: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
-var currentState = STATE.uninitialized;
-// TODO: Refactor how selectedActivity works. It's super brittle today.
-var selectedActivity;
-var changeState = function (newState, options, userTriggered) {
-  console.log('Changing state to '+newState);
-  var lastState = currentState;
-  if (lastState == STATE.loggedOut) {
-    showHeader();
-    hideLogin();
-  }
-  if (newState !== STATE.edit) {
-    selectedActivity = undefined;
-  }
-  currentState = newState;
-  if (currentState == STATE.list) {
-    hideBackButton();
-    setTitle('Upcoming Plans');
-    hideNotificationOptIn();
-    redrawActivitiesList();
-    showActivitiesList();
-    if (userTriggered) {
-      history.pushState({state: STATE.list}, 'Upcoming Plans');
-    }
-    if (models.activities.getActivitiesCount() > 0) {
-      hideCreateActivityForm();
-      showAddButton();
-    } else {
-      showCreateActivityForm();
-      hideAddButton();
-    }
-  } else if (currentState == STATE.add) {
-    setTitle('Create');
-    hideAddButton();
-    hideActivitiesList();
-    showCreateActivityForm();
-    showBackButton();
-    if (userTriggered) {
-      history.pushState({state: STATE.add}, 'Create a plan');
-    }
-  } else if (currentState == STATE.edit) {
-    setTitle('Edit');
-    hideAddButton();
-    hideActivitiesList();
-    showCreateActivityForm();
-    showBackButton();
-    if (userTriggered) {
-      history.pushState({state: STATE.edit}, 'Edit plan');
-    }
-  } else if (currentState == STATE.loggedOut) {
-    // TODO: Move this state to within the model
-    hideHeader();
-    hideAddButton();
-    showLogin();
-  } else if (currentState == STATE.notificationsOptIn) {
-    setTitle('Stay up to date');
-    showNotificationOptIn(options.reason, options.nextState);
-    hideActivitiesList();
-    hideCreateActivityForm();
-  } else {
-    throw('Unknown state');
-  }
-};
-window.addEventListener('popstate', function(e) {
-  console.log('User pressed back, popping a state');
-  console.log(e);
-  if (e.state !== null && e.state.state !== undefined) {
-    console.log('Moving back in history to state '+e.state.state);
-    changeState(e.state.state, {}, false);
-  } else {
-    // Note safari calls popstate on page load so this is expected
-    console.log('Uh oh, no valid state in history to move back to (this is expected on safari pageload)');
+var Login = React.createClass({
+  handleLogin: function () {
+    var userId = 1;
+    var userName = 'Owen Campbell-Moore';
+    var sessionToken = 'letmein';
+    models.user.setUserName(userName);
+    models.user.setUserId(userId);
+    models.user.setSessionToken(sessionToken);
+    models.activities.tryRefreshActivities(function () {
+      this.props.onLoginComplete();
+    }.bind(this), function () {
+      console.log('Failed to download activities')
+    });
+  },
+  render: function () {
+    return (
+      <div id='login'>
+        <div id='splash'>
+        </div>
+        <div id='slogan'>
+          <img src='images/slogan.png'></img>
+        </div>
+        <div id='loginButton' onClick={this.handleLogin}>
+          <img src='images/login-button.png' id='loginButtonImg'></img>
+        </div>
+      </div>
+    )
   }
 });
+
+var Header = React.createClass({
+  render: function () {
+    return (
+      <header>
+        { this.props.shouldShowBackButton ? <img src='images/back-icon.svg' id='backButton'></img> : null }
+        <h1 id='title'>
+          {this.props.title}
+        </h1>
+      </header>
+    );
+  }
+})
+
+// TODO: Re-add history support
+// window.addEventListener('popstate', function(e) {
+//   console.log('User pressed back, popping a state');
+//   console.log(e);
+//   if (e.state !== null && e.state.state !== undefined) {
+//     console.log('Moving back in history to state '+e.state.state);
+//     changeState(e.state.state, {}, false);
+//   } else {
+//     // Note safari calls popstate on page load so this is expected
+//     console.log('Uh oh, no valid state in history to move back to (this is expected on safari pageload)');
+//   }
+// });
+
 var Card = React.createClass({
   render: function () {
     var cardStyle = {
@@ -125,6 +177,7 @@ var Card = React.createClass({
     );
   }
 });
+
 var CardOptions = React.createClass({
   render: function () {
     var optionStyle = {
@@ -171,6 +224,7 @@ var CardOptions = React.createClass({
     )
   }
 });
+
 var ImgFadeInOnLoad = React.createClass({
   getInitialState: function () {
     return { loading: false, loaded: false };
@@ -240,6 +294,7 @@ var FriendIcon = React.createClass({
     )
   }
 });
+
 var AttendeesList = React.createClass({
   render: function () {
     if (this.props.attendees < 1) {
@@ -258,12 +313,8 @@ var AttendeesList = React.createClass({
     }
   }
 });
+
 var ActivityCard = React.createClass({
-  getInitialState: function () {
-    return {
-      viewingDetails: false
-    };
-  },
   OPTIONS: {
     edit: 0,
     attend: 1,
@@ -304,13 +355,13 @@ var ActivityCard = React.createClass({
     return str;
   },
   handleCardClicked: function (e) {
-    this.setState({viewingDetails: !this.state.viewingDetails});
+    this.props.onActivitySelected(this.props.activity);
   },
   handleEditClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    selectedActivity = this.props.activity.id;
-    changeState(STATE.edit, {}, true);
+    this.props.onActivitySelected(this.props.activity);
+    this.props.onEditClicked();
   },
   handleAttendClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
@@ -369,7 +420,7 @@ var ActivityCard = React.createClass({
             )}<b>{this.props.activity.title}</b> {this.getDateString()}
             {
               /* Description and attendees */
-              this.state.viewingDetails ? (
+              this.props.selected ? (
                 <div style={{marginTop: '16px'}}>
                   { /* TODO: Tidy up this crap! */ }
                   {
@@ -406,12 +457,26 @@ var ActivityCard = React.createClass({
     );
   }
 });
+
 var ActivityCardList = React.createClass({
+  handleSelected: function (activity) {
+    this.props.onActivitySelected(activity);
+  },
+  handleEditClicked: function () {
+    this.props.onEditModeEnabled();
+  },
   render: function () {
     var activitiesList = models.activities.getActivities().map(function (activity) {
       activity.key = activity.id;
-      return <ActivityCard activity={activity}/>;
-    });
+      return (
+        <ActivityCard
+          activity={activity}
+          onActivitySelected={this.handleSelected}
+          onEditClicked={this.handleEditClicked}
+          selected={this.props.selectedActivity == activity}
+        />
+      );
+    }.bind(this));
     return (
       <div>
         {activitiesList}
@@ -419,6 +484,7 @@ var ActivityCardList = React.createClass({
     );
   }
 });
+
 var EditActivity = React.createClass({
   getInitialState: function () {
     return {
@@ -476,14 +542,14 @@ var EditActivity = React.createClass({
       // Don't ask the user to grant permission unless the browser supports it
       if (swLibrary.browserSupportsSWAndNotifications()) {
         swLibrary.hasPushNotificationPermission(function() {
-          changeState(STATE.list, {}, true);
-        }, function () {
+          this.props.onReturnToList();
+        }.bind(this), function () {
           changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
         });
       } else {
-        changeState(STATE.list, {}, true);
+        this.props.onReturnToList();
       }
-    }, function () {
+    }.bind(this), function () {
       alert('An error occurred! Sorry :(. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
     });
@@ -499,8 +565,8 @@ var EditActivity = React.createClass({
     models.activities.tryCreateActivity(newActivity, function () {
       if (swLibrary.browserSupportsSWAndNotifications()) {
         swLibrary.hasPushNotificationPermission(function() {
-          changeState(STATE.list, {}, true);
-        }, function () {
+          this.props.onReturnToList();
+        }.bind(this), function () {
           changeState(STATE.notificationsOptIn, {
             nextState: STATE.list,
             userTriggered: true,
@@ -508,7 +574,7 @@ var EditActivity = React.createClass({
           }, false);
         });
       } else {
-        changeState(STATE.list, {}, true);
+        this.props.onReturnToList();
       }
     }, function () {
       // thisButton.classList.toggle('disabled', false);
@@ -519,8 +585,8 @@ var EditActivity = React.createClass({
   handleDeleteClicked: function () {
     if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
        models.activities.tryCancelActivity(this.props.activity, function () {
-         changeState(STATE.list, {}, true);
-       }, function () {
+         this.props.onReturnToList();
+       }.bind(this), function () {
          alert('An error occurred! Sorry :(. Please refresh.');
          throw("Cancelling on server failed. Help the user understand why");
        });
@@ -629,59 +695,14 @@ var EditActivity = React.createClass({
   }
 });
 
-var activitiesSection = document.querySelector('section#activitiesList');
-var editSection = document.querySelector('section#editActivity');
-var addButton = document.querySelector('#addButton');
-var backButton = document.querySelector('#backButton');
-var title = document.querySelector('#title');
-var noActivitiesCard = document.querySelector('#noActivitiesCard');
-var notificationsOptInSection = document.querySelector('section#notificationsOptIn');
 var permissionOverlay = document.querySelector('div#permissionOverlay');
-var setTitle = function (newTitle) {
-  title.innerHTML = newTitle;
-};
-var showHeader = function () {
-  var headerElem = document.querySelector('header');
-  headerElem.style.display = '';
-};
-var hideHeader = function () {
-  var headerElem = document.querySelector('header');
-  headerElem.style.display = 'none';
-};
-var showLogin = function () {
-  var loginElem = document.querySelector('#login');
-  loginElem.style.display = '';
-};
-var hideLogin = function () {
-  var loginElem = document.querySelector('#login');
-  loginElem.style.display = 'none';
-};
-var showBackButton = function () {
-  backButton.style.display = '';
-};
-var hideBackButton = function () {
-  backButton.style.display = 'none';
-};
-var showCreateActivityForm = function () {
-  var activity = selectedActivity !== undefined ? models.activities.getActivity(selectedActivity) : undefined;
-  // TODO: find the actual way to make react re-render something
-  document.getElementById('editActivity').innerHTML = '';
-  React.render(
-    <EditActivity activity={activity} userName={models.user.getUserName()} />,
-    document.getElementById('editActivity')
-  );
 
-  editSection.style.display = '';
-  //
+// TODO: set form fields to blur after enter pressed
   // titleInputElem.addEventListener('keydown', function(key) {
   //   if (key.keyCode == 13) {
   //     this.blur();
   //   }
   // });
-};
-var hideCreateActivityForm = function () {
-  editSection.style.display = 'none';
-};
 
 var OptIn = React.createClass({
   handleOKClicked: function (e) {
@@ -710,29 +731,6 @@ var OptIn = React.createClass({
   }
 });
 
-var showNotificationOptIn = function (reason, nextState) {
-  // TODO(owencm): Show something different if the notification permission is denied
-  React.render(
-    <OptIn reason={reason} nextState={nextState} />,
-    notificationsOptInSection
-  );
-  notificationsOptInSection.style.display = '';
-}
-var hideNotificationOptIn = function () {
-  notificationsOptInSection.style.display = 'none';
-}
-var showAddButton = function () {
-  addButton.style.display = '';
-}
-var hideAddButton = function () {
-  addButton.style.display = 'none';
-}
-var showActivitiesList = function () {
-  activitiesSection.style.display = '';
-};
-var hideActivitiesList = function () {
-  activitiesSection.style.display = 'none';
-};
 var showOverlay = function  () {
   permissionOverlay.style.display = '';
   permissionOverlay.offsetTop;
@@ -744,31 +742,14 @@ var hideOverlay = function () {
   permissionOverlay.style.opacity = 0;
 };
 var redrawCurrentView = function () {
-  if (currentState == STATE.list) {
-    redrawActivitiesList();
-  }
-};
-var redrawActivitiesList = function () {
-  console.log('redrawing');
   React.render(
-    <ActivityCardList/>,
-    document.getElementById('activitiesList')
+    <App />,
+    document.getElementById('appShell')
   );
 };
 var setLoginButtonCallback = function (callback) {
   var loginElem = document.querySelector('#login');
   loginElem.onclick = callback;
-};
-var appLoginSuccess = function (userId, userName, sessionToken) {
-  models.user.setUserName(userName);
-  models.user.setUserId(userId);
-  models.user.setSessionToken(sessionToken);
-  // TODO: Change to the list before we even have the activities to avoid an extra RTT on first load
-  models.activities.tryRefreshActivities(function () {
-    changeState(STATE.list, {}, true);
-  }, function () {
-    console.log('Failed to download activities')
-  });
 };
 var fbLoginSuccess = function (fbToken) {
   models.startLogin(fbToken, appLoginSuccess, function () {
@@ -776,20 +757,11 @@ var fbLoginSuccess = function (fbToken) {
   });
 };
 
-addButton.onclick = function () {
-  changeState(STATE.add, {}, true);
-};
-
-backButton.onclick = function () {
-  changeState(STATE.list, {}, true);
-};
-
 models.activities.addListener(redrawCurrentView);
-
-changeState(STATE.loggedOut, {}, false);
+redrawCurrentView();
 
 module.exports = {
   setLoginButtonCallback: setLoginButtonCallback,
   fbLoginSuccess: fbLoginSuccess,
-  debugSkipLogin: appLoginSuccess
+  // debugSkipLogin: appLoginSuccess
 };
