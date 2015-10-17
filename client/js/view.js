@@ -18,10 +18,13 @@ var App = React.createClass({
     return true;
   },
   shouldShowHeader: function () {
-    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > 0);
+    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > -1);
   },
   shouldShowBackButton: function () {
-    return ([SCREEN.add, SCREEN.edit].indexOf(this.state.screen) > 0);
+    return ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1);
+  },
+  shouldShowCreateButton: function () {
+    return (this.state.screen == SCREEN.list);
   },
   handleStateChange: function (newScreen, options, userTriggered) {
     // TODO: do something with options and userTriggered
@@ -35,8 +38,15 @@ var App = React.createClass({
   handleActivitySelected: function (activity) {
     this.setState({selectedActivity: activity});
   },
+  // Activity is plumbed through here but not used
+  handleActivityUnselected: function (activity) {
+    this.setState({selectedActivity: undefined});
+  },
   handleEditModeEnabled: function () {
     this.setState({screen: SCREEN.edit});
+  },
+  handleCreateModeEnabled: function () {
+    this.setState({screen: SCREEN.create});
   },
   // Syntactic sugar since we call this all the time
   viewList: function () {
@@ -47,7 +57,7 @@ var App = React.createClass({
       return 'Upcoming Plans';
     } else if (this.state.screen == SCREEN.edit) {
       return 'Edit';
-    } else if (this.state.screen == SCREEN.add) {
+    } else if (this.state.screen == SCREEN.create) {
       return 'Create'
     } else if (this.state.screen == SCREEN.notificationsOptIn) {
       return 'Stay up to date'
@@ -56,6 +66,7 @@ var App = React.createClass({
     }
   },
   render: function() {
+    // TODO: Refactor this mess!
     return (
       <div>
         {
@@ -67,12 +78,13 @@ var App = React.createClass({
                     this.state.screen == SCREEN.list ?
                       <ActivityCardList
                         onActivitySelected={this.handleActivitySelected}
+                        onActivityUnselected={this.handleActivityUnselected}
                         onEditModeEnabled={this.handleEditModeEnabled}
                         selectedActivity={this.state.selectedActivity}
                       /> : null }
                   { this.state.screen == SCREEN.notificationsOptIn ? <OptIn reason={reason} nextState={this.state.nextScreen} /> : null }
                   {
-                    [SCREEN.add, SCREEN.edit].indexOf(this.state.screen) > 0 ?
+                    [SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1 ?
                     <EditActivity
                       activity={this.state.selectedActivity}
                       userName={models.user.getUserName()}
@@ -91,11 +103,21 @@ var App = React.createClass({
                     /> :
                     null
                 }
+                {
+                  this.shouldShowCreateButton() ?
+                    <FabButton onClick={this.handleCreateModeEnabled} /> : null
+                }
               </div>
             )
         }
       </div>
     )
+  }
+});
+
+var FabButton = React.createClass({
+  render: function () {
+    return <div id='addButton' onClick={this.props.onClick}></div>
   }
 });
 
@@ -133,7 +155,15 @@ var Header = React.createClass({
   render: function () {
     return (
       <header>
-        { this.props.shouldShowBackButton ? <img src='images/back-icon.svg' id='backButton'></img> : null }
+        {
+          this.props.shouldShowBackButton ?
+            <img
+              src='images/back-icon.svg'
+              id='backButton'
+              onClick={this.props.onBackButtonClicked}
+            /> :
+            null
+        }
         <h1 id='title'>
           {this.props.title}
         </h1>
@@ -354,8 +384,13 @@ var ActivityCard = React.createClass({
     str += dateTime.toString('tt').toLowerCase();
     return str;
   },
+  // Toggle the selected state
   handleCardClicked: function (e) {
-    this.props.onActivitySelected(this.props.activity);
+    if (this.props.selected) {
+      this.props.onActivityUnselected(this.props.activity);
+    } else {
+      this.props.onActivitySelected(this.props.activity);
+    }
   },
   handleEditClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
@@ -462,6 +497,9 @@ var ActivityCardList = React.createClass({
   handleSelected: function (activity) {
     this.props.onActivitySelected(activity);
   },
+  handleUnselected: function (activity) {
+    this.props.onActivityUnselected(activity);
+  },
   handleEditClicked: function () {
     this.props.onEditModeEnabled();
   },
@@ -472,6 +510,7 @@ var ActivityCardList = React.createClass({
         <ActivityCard
           activity={activity}
           onActivitySelected={this.handleSelected}
+          onActivityUnselected={this.handleUnselected}
           onEditClicked={this.handleEditClicked}
           selected={this.props.selectedActivity == activity}
         />
@@ -550,7 +589,7 @@ var EditActivity = React.createClass({
         this.props.onReturnToList();
       }
     }.bind(this), function () {
-      alert('An error occurred! Sorry :(. Please refresh.');
+      alert('An error occurred! Sorry. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
     });
   },
@@ -572,11 +611,11 @@ var EditActivity = React.createClass({
             userTriggered: true,
             reason: 'when a friend says they want to come along'
           }, false);
-        });
+        }.bind(this));
       } else {
         this.props.onReturnToList();
       }
-    }, function () {
+    }.bind(this), function () {
       // thisButton.classList.toggle('disabled', false);
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
       throw("Adding to server failed. Help the user understand why");
