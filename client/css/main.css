@@ -35,7 +35,7 @@ header {
 	background-color: #00BCD4;
 	height: 56px;
 	padding: 18px;
-	box-shadow: 0 2px 5px rgba(0,0,0,.26);
+	box-shadow: 0 1px 6px rgba(0,0,0,.2);
 	position: fixed;
 	width: 100%;
 	z-index: 1;
@@ -47,6 +47,9 @@ header h1 {
 	text-align: center;
 	color: white;
 	font-weight: bolder;
+  // Very minor visual alignment adjustment
+  position: relative;
+  top: -1px;
 }
 
 header #backButton {

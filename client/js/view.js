@@ -376,10 +376,9 @@ var ActivityCard = React.createClass({
                     this.props.activity.description !== '' ? (
                       <div>
                         <p><b>Description</b></p>
-                        { /* whiteSpace and wordWrap ensure we retain line breaks from the text,
-                          but also wrap if the line is long. userSelect enables selection for
-                          copy pasting */ }
-                        <p style={{whiteSpace: 'pre', wordWrap: 'break-word', WebkitUserSelect: 'text'}}>
+                        { /* whiteSpace ensures we retain line breaks from the text.
+                          userSelect enables selection for copy pasting */ }
+                        <p style={{whiteSpace: 'pre-wrap', WebkitUserSelect: 'text'}}>
                           {this.props.activity.description}
                         </p>
                       </div>
@@ -428,6 +427,11 @@ var EditActivity = React.createClass({
       start_time: this.props.activity ? this.props.activity.start_time : Date.today().add(1).days().set({hour: 16}),
       saving: false
     };
+  },
+  componentDidMount: function () {
+    // Ensure the title input is in view
+    this.refs.titleInput.getDOMNode().scrollIntoView();
+    // TODO: If we scrolled into view the elem may be hidden behind the header
   },
   handleTitleChange: function (e) {
     this.setState({title: e.target.value});
@@ -577,13 +581,16 @@ var EditActivity = React.createClass({
       <Card>
         <div style={{padding: '24px'}}>
           <b>{this.props.userName}</b> is<br />
-          <input type='text'
+          <input
+            ref='titleInput'
+            type='text'
             style={m(inputStyle, {fontSize: '1.2em'})}
             className='input-placeholder-lighter focusUnderline'
             value={this.state.title}
             placeholder='Watching Frozen'
             autoCapitalize='words'
             required
+            autoFocus
             onChange={this.handleTitleChange}>
           </input>
           <input
@@ -611,6 +618,7 @@ var EditActivity = React.createClass({
             className='focusUnderline'
             placeholder='Extra information (where? when? what?)'
             rows='1'
+            maxRows='8'
             value={this.state.description}
             onChange={this.handleDescriptionChange}>
           </TextAreaAutoResize>
@@ -664,13 +672,6 @@ var showCreateActivityForm = function () {
   );
 
   editSection.style.display = '';
-  //
-  // // Add interactivity
-  // var titleInputElem = editSection.querySelector('input#title');
-  //   setTimeout(function() {
-  //     titleInputElem.focus();
-  //     titleInputElem.scrollIntoView();
-  //   },0);
   //
   // titleInputElem.addEventListener('keydown', function(key) {
   //   if (key.keyCode == 13) {
