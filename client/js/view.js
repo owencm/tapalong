@@ -300,10 +300,13 @@ var ActivityCard = React.createClass({
   handleAttendClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    // Optimistically move onto the next page
-    swLibrary.hasPushNotificationPermission(function(){}, function() {
-      changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
-    });
+    // If the browser supports notifications but doesn't have permission,
+    // optimistically go to the opt in without waiting
+    if (swLibrary.browserSupportsSWAndNotifications()) {
+      swLibrary.hasPushNotificationPermission(function(){}, function() {
+        changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
+      });
+    }
     // Note no callback since the list will automatically redraw when this changes
     var optimistic = this.props.activity.dirty == undefined;
     models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
@@ -446,11 +449,16 @@ var EditActivity = React.createClass({
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
     models.activities.tryUpdateActivity(this.props.activity, activityChanges, function () {
-      swLibrary.hasPushNotificationPermission(function() {
+      // Don't ask the user to grant permission unless the browser supports it
+      if (swLibrary.browserSupportsSWAndNotifications()) {
+        swLibrary.hasPushNotificationPermission(function() {
+          changeState(STATE.list, {}, true);
+        }, function () {
+          changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+        });
+      } else {
         changeState(STATE.list, {}, true);
-      }, function () {
-        changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-      });
+      }
     }, function () {
       alert('An error occurred! Sorry :(. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
@@ -465,15 +473,19 @@ var EditActivity = React.createClass({
       description: this.state.description
     };
     models.activities.tryCreateActivity(newActivity, function () {
-      swLibrary.hasPushNotificationPermission(function() {
+      if (swLibrary.browserSupportsSWAndNotifications()) {
+        swLibrary.hasPushNotificationPermission(function() {
+          changeState(STATE.list, {}, true);
+        }, function () {
+          changeState(STATE.notificationsOptIn, {
+            nextState: STATE.list,
+            userTriggered: true,
+            reason: 'when a friend says they want to come along'
+          }, false);
+        });
+      } else {
         changeState(STATE.list, {}, true);
-      }, function () {
-        changeState(STATE.notificationsOptIn, {
-          nextState: STATE.list,
-          userTriggered: true,
-          reason: 'when a friend says they want to come along'
-        }, false);
-      });
+      }
     }, function () {
       // thisButton.classList.toggle('disabled', false);
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
@@ -496,7 +508,9 @@ var EditActivity = React.createClass({
       borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
       borderLeft: 'none',
       backgroundColor: 'rgba(0,0,0,0)',
-      outline: 'none'
+      outline: 'none',
+      // This prevents iOS from rounding corners on input elements
+      borderRadius: 0
     };
     // Set up the options on the card
     var option = {label: 'Create', onClick: this.handleCreateClicked};
@@ -652,15 +666,12 @@ var OptIn = React.createClass({
     showOverlay();
     // 300ms wait until the overlay has shown
     setTimeout(function() {
-      swLibrary.requestPushNotificationPermissionAndSubscribe(function (userChoice) {
+      swLibrary.requestPushNotificationPermissionAndSubscribe(function () {
         hideOverlay();
-        if (userChoice == 'granted') {
-          changeState(this.props.nextState);
-        } else {
-          alert('You denied the permission, you naughty person.')
-        }
-        // TODO Handle rejection or error case
-      }.bind(this));
+        changeState(this.props.nextState);
+      }, function () {
+        // TODO: Handle failure or permission rejection
+      });
     }.bind(this), 300);
   },
   render: function () {

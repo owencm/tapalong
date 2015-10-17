@@ -2,13 +2,12 @@
 var models = require('./models.js');
 var network = require('./network.js');
 
-var browserSupportsSWAndNotifications = false;
-if ('serviceWorker' in navigator && typeof Notification !== 'undefined') {
-  browserSupportsSWAndNotifications = true
+var browserSupportsSWAndNotifications = function () {
+  return ('serviceWorker' in navigator && typeof Notification !== 'undefined');
 }
 
 var hasPushNotificationPermission = function(success, failure) {
-  if (!browserSupportsSWAndNotifications) {
+  if (!browserSupportsSWAndNotifications()) {
     failure();
     return;
   }
@@ -20,18 +19,24 @@ var hasPushNotificationPermission = function(success, failure) {
   }
 };
 
-// Calls success with either 'granted' or 'denied'
-var requestPushNotificationPermission = function (success) {
+var requestPushNotificationPermission = function (success, failure) {
   console.log('Requesting push permission');
-  Notification.requestPermission(success);
+  Notification.requestPermission(function (decision) {
+    if (decision == 'granted') {
+      success();
+    } else {
+      failure();
+    }
+  });
 };
 
-var requestPushNotificationPermissionAndSubscribe = function (success) {
-  requestPushNotificationPermission(function(decision){
-    if (decision == 'granted') {
-      subscribeForPushNotifications(sendSubscriptionToServer);
-    }
-    success(decision);
+var requestPushNotificationPermissionAndSubscribe = function (success, failure) {
+  requestPushNotificationPermission(function(){
+    subscribeForPushNotifications(sendSubscriptionToServer);
+    success();
+  }, function () {
+    // TODO: Handle failure
+    failure();
   });
 }
 
@@ -92,44 +97,44 @@ var _unsubscribeAndResubscribe = function () {
 }
 
 var init = function () {
-  if (browserSupportsSWAndNotifications) {
+  if (browserSupportsSWAndNotifications()) {
     navigator.serviceWorker.register('./sw.js').then(function(registration) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     });
-  }
-
-  // Ensure the SW always knows who the user is and what their sessionToken is!
-  // TODO: Handle logout here where we have no userid or session token
-  // Note these will fire whenever either changes, so if both change this will fire twice
-  var userChanged = function() {
-    var userId = models.user.getUserId();
-    var sessionToken = models.user.getSessionToken();
-    navigator.serviceWorker.ready.then(function(registration) {
-      hasPushNotificationPermission(function () {
-        if (userId !== undefined && sessionToken !== undefined) {
+    // Ensure the SW always knows who the user is and what their sessionToken is!
+    // TODO: Handle logout here where we have no userid or session token
+    // Note these will fire whenever either changes, so if both change this will fire twice
+    var userChanged = function() {
+      var userId = models.user.getUserId();
+      var sessionToken = models.user.getSessionToken();
+      navigator.serviceWorker.ready.then(function(registration) {
+        hasPushNotificationPermission(function () {
+          if (userId !== undefined && sessionToken !== undefined) {
+            registration.pushManager.getSubscription().then(function(pushSubscription) {
+              if (!pushSubscription) {
+                console.log('ruh roh, we lost our push subscription (or we never managed to make one - were you offline?). Better make a new one...');
+                subscribeForPushNotifications(sendSubscriptionToServer);
+              }
+            });
+          }
+        }, function () {
+          // If we don't have permission for push messages make sure we've cleared subscriptions (Chrome has a bug where it doesn't do this)
           registration.pushManager.getSubscription().then(function(pushSubscription) {
-            if (!pushSubscription) {
-              console.log('ruh roh, we lost our push subscription (or we never managed to make one - were you offline?). Better make a new one...');
-              subscribeForPushNotifications(sendSubscriptionToServer);
-            }
+            if (pushSubscription) { unsubscribe(pushSubscription); }
           });
-        }
-      }, function () {
-        // If we don't have permission for push messages make sure we've cleared subscriptions (Chrome has a bug where it doesn't do this)
-        registration.pushManager.getSubscription().then(function(pushSubscription) {
-          if (pushSubscription) { unsubscribe(pushSubscription); }
         });
       });
-    });
-  };
-  userChanged();
-  models.user.addListener(userChanged);
+    };
+    userChanged();
+    models.user.addListener(userChanged);
+  }
 }
 
 init();
 
 module.exports = {
+  browserSupportsSWAndNotifications: browserSupportsSWAndNotifications,
   hasPushNotificationPermission: hasPushNotificationPermission,
   requestPushNotificationPermissionAndSubscribe: requestPushNotificationPermissionAndSubscribe,
   _unsubscribeAndResubscribe: _unsubscribeAndResubscribe
