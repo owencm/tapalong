@@ -1,4 +1,4 @@
-var isDevMode = true;
+var isDevMode = false;
 
 module.exports = function(grunt) {
   // TODO: Disable source maps and enable uglify when pushing to production
