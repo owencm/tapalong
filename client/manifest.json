@@ -1,6 +1,6 @@
 {
-  "name": "UpDog",
-  "short_name": "UpDog",
+  "name": "Up Dog",
+  "short_name": "Up Dog",
   "start_url": "index.html?homescreen=1",
   "display": "standalone",
   "gcm_sender_id": "669073433855",
