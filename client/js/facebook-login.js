@@ -11,6 +11,13 @@ module.exports = React.createClass({
     )
   },
 
+  getInitialState: function() {
+    return {
+      clicked: false,
+      fbResponse: undefined
+    }
+  },
+
   componentDidMount: function() {
 
     window.fbAsyncInit = function() {
@@ -23,7 +30,8 @@ module.exports = React.createClass({
       if ( this.props.autoLoad ) {
 
         FB.getLoginStatus(function(response) {
-          this.checkLoginState(response);
+          this.setState({fbResponse: response});
+          this.gotLoginStatus();
         }.bind(this));
 
       }
@@ -47,6 +55,9 @@ module.exports = React.createClass({
 
     } else {
 
+      var valueScope = this.props.scope || 'public_profile, email, user_birthday';
+      FB.login(this.checkLoginState, { scope: valueScope });
+
       // If we failed trying to log in automatically, let the user take an action
       // if ( this.props.loginHandler ) {
       //   this.props.loginHandler( { status: response.status } );
@@ -55,9 +66,17 @@ module.exports = React.createClass({
     }
   },
 
-  handleClick: function() {
-    var valueScope = this.props.scope || 'public_profile, email, user_birthday';
+  gotLoginStatus: function () {
+    if (this.state.clicked) {
+      this.checkLoginState(this.state.fbResponse);
+    }
+  },
 
-    FB.login(this.checkLoginState, { scope: valueScope });
+  handleClick: function() {
+    // If we're ready, start. Otherwise wait for the callback to checkLoginState
+    if (this.state.fbResponse) {
+      this.checkLoginState(this.state.fbResponse);
+    }
+    this.setState({clicked: true});
   }
 });
