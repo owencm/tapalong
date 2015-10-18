@@ -14,8 +14,8 @@ module.exports = React.createClass({
     setTimeout(function() {
       swLibrary.requestPushNotificationPermissionAndSubscribe(function () {
         hideOverlay();
-        changeState(this.props.nextState);
-      }, function () {
+        this.props.onOptInComplete();
+      }.bind(this), function () {
         // TODO: Handle failure or permission rejection
       });
     }.bind(this), 300);
@@ -33,3 +33,16 @@ module.exports = React.createClass({
     )
   }
 });
+
+var permissionOverlay = document.querySelector('div#permissionOverlay');
+
+var showOverlay = function  () {
+  permissionOverlay.style.display = '';
+  permissionOverlay.offsetTop;
+  permissionOverlay.style.opacity = 1;
+};
+var hideOverlay = function () {
+  permissionOverlay.style.display = 'none';
+  permissionOverlay.offsetTop;
+  permissionOverlay.style.opacity = 0;
+};

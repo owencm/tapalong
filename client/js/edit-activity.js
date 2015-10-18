@@ -67,16 +67,7 @@ module.exports = React.createClass({
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
     models.activities.tryUpdateActivity(this.props.activity, activityChanges, function () {
-      // Don't ask the user to grant permission unless the browser supports it
-      if (swLibrary.browserSupportsSWAndNotifications()) {
-        swLibrary.hasPushNotificationPermission(function() {
-          this.props.onReturnToList();
-        }.bind(this), function () {
-          changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-        });
-      } else {
-        this.props.onReturnToList();
-      }
+      this.props.onSaveComplete();
     }.bind(this), function () {
       alert('An error occurred! Sorry. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
@@ -91,19 +82,7 @@ module.exports = React.createClass({
       description: this.state.description
     };
     models.activities.tryCreateActivity(newActivity, function () {
-      if (swLibrary.browserSupportsSWAndNotifications()) {
-        swLibrary.hasPushNotificationPermission(function() {
-          this.props.onReturnToList();
-        }.bind(this), function () {
-          changeState(STATE.notificationsOptIn, {
-            nextState: STATE.list,
-            userTriggered: true,
-            reason: 'when a friend says they want to come along'
-          }, false);
-        }.bind(this));
-      } else {
-        this.props.onReturnToList();
-      }
+      this.props.onCreateComplete();
     }.bind(this), function () {
       // thisButton.classList.toggle('disabled', false);
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
@@ -111,9 +90,9 @@ module.exports = React.createClass({
     });
   },
   handleDeleteClicked: function () {
-    if (confirm('This will notify everyone coming that the event is cancelled and remove it from the app. Confirm?')) {
+    if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
        models.activities.tryCancelActivity(this.props.activity, function () {
-         this.props.onReturnToList();
+         this.onDeleteComplete();
        }.bind(this), function () {
          alert('An error occurred! Sorry :(. Please refresh.');
          throw("Cancelling on server failed. Help the user understand why");

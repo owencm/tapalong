@@ -27,14 +27,12 @@ var App = React.createClass({
   shouldShowCreateButton: function () {
     return (this.state.screen == SCREEN.list);
   },
-  handleStateChange: function (newScreen, options, userTriggered) {
-    // TODO: do something with options and userTriggered
+  handleScreenChange: function (newScreen, options, userTriggered) {
+    if (options && options.nextScreen) {
+      this.setState({nextScreen: options.nextScreen, optInReason: options.reason});
+    }
     console.log('Changing state to '+newScreen);
     this.setState({screen: newScreen});
-    if (newScreen !== SCREEN.edit) {
-      this.setState({selectedActivity: undefined});
-    }
-    // TODO: Read nextScreen from options
   },
   handleActivitySelected: function (activity) {
     this.setState({selectedActivity: activity});
@@ -43,15 +41,15 @@ var App = React.createClass({
   handleActivityUnselected: function (activity) {
     this.setState({selectedActivity: undefined});
   },
-  handleEditModeEnabled: function () {
+  handleStartEditing: function () {
     this.setState({screen: SCREEN.edit});
   },
-  handleCreateModeEnabled: function () {
+  handleStartCreating: function () {
     this.setState({screen: SCREEN.create});
   },
   // Syntactic sugar since we call this all the time
-  viewList: function () {
-    this.handleStateChange(SCREEN.list);
+  handleViewList: function () {
+    this.handleScreenChange(SCREEN.list);
   },
   getScreenTitle: function() {
     if (this.state.screen == SCREEN.list) {
@@ -66,10 +64,29 @@ var App = React.createClass({
       return 'Uh oh: title shouldn\'t be showing';
     }
   },
+  handleOptInComplete: function () {
+    this.setState({screen: this.state.nextScreen});
+  },
+  handleActivitySaveComplete: function () {
+    // Don't ask the user to grant permission unless the browser supports it
+    if (swLibrary.browserSupportsSWAndNotifications()) {
+      swLibrary.hasPushNotificationPermission(function() {
+        this.handleViewList();
+      }.bind(this), function () {
+        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+      }.bind(this));
+    } else {
+      this.handleViewList();
+    }
+  },
+  handleActivityCreateComplete: function () {
+    // From a flow standpoint we do the same when creating as saving
+    this.handleActivitySaveComplete();
+  },
   render: function() {
     // TODO: Refactor this mess!
     if (this.state.screen == SCREEN.loggedOut) {
-      return <Login onLoginComplete={this.viewList} />;
+      return <Login onLoginComplete={this.handleViewList} />;
     } else {
       var mainContents;
       if (this.state.screen == SCREEN.list) {
@@ -77,18 +94,26 @@ var App = React.createClass({
           <ActivityCardList
             onActivitySelected={this.handleActivitySelected}
             onActivityUnselected={this.handleActivityUnselected}
-            onEditModeEnabled={this.handleEditModeEnabled}
+            onEditModeEnabled={this.handleStartEditing}
             selectedActivity={this.state.selectedActivity}
           />
         );
       } else if (this.state.screen == SCREEN.notificationsOptIn) {
-        mainContents = <OptIn reason={reason} nextState={this.state.nextScreen} />;
+        mainContents = (
+          <OptIn
+            reason={this.state.optInReason}
+            nextState={this.state.nextScreen}
+            onOptInComplete={this.handleOptInComplete}
+          />
+        );
       } else if ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1) {
         mainContents = (
           <EditActivity
             activity={this.state.selectedActivity}
             userName={models.user.getUserName()}
-            onReturnToList={this.viewList}
+            onSaveComplete={this.handleActivitySaveComplete}
+            onCreateComplete={this.handleActivityCreateComplete}
+            onDeleteComplete={this.props.onReturnToList}
           />
         );
       }
@@ -98,13 +123,13 @@ var App = React.createClass({
           <Header
             title={this.getScreenTitle()}
             shouldShowBackButton={this.shouldShowBackButton()}
-            onBackButtonClicked={this.viewList}
+            onBackButtonClicked={this.handleViewList}
           />
         );
       }
       var createButtonIfNeeded = null;
       if (this.shouldShowCreateButton()) {
-        createButtonIfNeeded = <FabButton onClick={this.handleCreateModeEnabled} />;
+        createButtonIfNeeded = <FabButton onClick={this.handleStartCreating} />;
       }
       return (
         <div>
@@ -141,39 +166,12 @@ var App = React.createClass({
   //   }
   // });
 
-var permissionOverlay = document.querySelector('div#permissionOverlay');
-
-var showOverlay = function  () {
-  permissionOverlay.style.display = '';
-  permissionOverlay.offsetTop;
-  permissionOverlay.style.opacity = 1;
-};
-var hideOverlay = function () {
-  permissionOverlay.style.display = 'none';
-  permissionOverlay.offsetTop;
-  permissionOverlay.style.opacity = 0;
-};
 var redrawCurrentView = function () {
   React.render(
     <App />,
     document.getElementById('appShell')
   );
 };
-var setLoginButtonCallback = function (callback) {
-  var loginElem = document.querySelector('#login');
-  loginElem.onclick = callback;
-};
-var fbLoginSuccess = function (fbToken) {
-  models.startLogin(fbToken, appLoginSuccess, function () {
-    throw('login to app failed');
-  });
-};
 
 models.activities.addListener(redrawCurrentView);
 redrawCurrentView();
-
-module.exports = {
-  setLoginButtonCallback: setLoginButtonCallback,
-  fbLoginSuccess: fbLoginSuccess,
-  // debugSkipLogin: appLoginSuccess
-};
