@@ -33,8 +33,6 @@ input, textarea {
 
 header {
 	background-color: #00BCD4;
-	height: 56px;
-	padding: 18px;
 	box-shadow: 0 1px 6px rgba(0,0,0,.2);
 	position: fixed;
 	width: 100%;
@@ -43,21 +41,17 @@ header {
 }
 
 header h1 {
-	font-size: 1.1em;
-	text-align: center;
+	font-size: 16px;
 	color: white;
-	font-weight: bolder;
-  // Very minor visual alignment adjustment
-  position: relative;
-  top: -1px;
+	font-weight: bold;
+  padding: 20px;
+  float: left;
 }
 
 header #backButton {
 	width: 20px;
-	position: absolute;
-	top: 0;
-	left: 0;
 	padding: 18px;
+  float: left;
 }
 
 div#container {
