@@ -167,7 +167,7 @@ module.exports = React.createClass({
           </input>
           <input
             type='date'
-            style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto', maxWidth: '156px', paddingRight: 0})}
+            style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
             className='input-placeholder-lighter focusUnderline'
             min={getHyphenSeparatedToday()}
             value={ getHyphenSeparatedDate(this.state.start_time) }

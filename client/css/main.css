@@ -48,6 +48,10 @@ header h1 {
   float: left;
 }
 
+#backButton + h1 {
+  padding-left: 0;
+}
+
 header #backButton {
 	width: 20px;
 	padding: 18px;
