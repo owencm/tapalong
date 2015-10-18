@@ -47,7 +47,9 @@ module.exports = React.createClass({
     }
     return (
       <div style={{position: 'relative'}}>
-        { this.state.loaded ? (<img src={this.props.src} style={imgStyle} />) : {} }
+        { this.state.loaded ? (
+          <img src = { this.props.src } style = { imgStyle } />
+        ) : null }
         <div style={overlayStyle} />
       </div>
     )

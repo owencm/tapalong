@@ -2,7 +2,7 @@
 var React = require('react');
 var m = require('./m.js');
 
-module.exports = React.createClass({
+var CardOptions = React.createClass({
   render: function () {
     var optionStyle = {
       textTransform: 'uppercase',
@@ -26,8 +26,9 @@ module.exports = React.createClass({
     var optionCards = this.props.options.map(function (option) {
       return (
         <div
-          style={m(optionStyle, option.position == 'left' ? {float: 'left'} : {})}
-          onClick={option.disabled ? function(){} : option.onClick}
+          style = { m(optionStyle, option.position == 'left' ? {float: 'left'} : {}) }
+          onClick = { option.disabled ? function(){} : option.onClick }
+          key = { option.label }
         >
           <a style={
               option.disabled ? disabledOptionStyle : (
@@ -48,3 +49,5 @@ module.exports = React.createClass({
     )
   }
 });
+
+module.exports = CardOptions;

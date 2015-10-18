@@ -45,6 +45,9 @@ var App = React.createClass({
     this.setState({screen: SCREEN.edit});
   },
   handleStartCreating: function () {
+    // TODO: Tidy up how selection works to avoid issues like this
+    // Unset a selected activity as otherwise EditActivity doesn't work in creation mode
+    this.setState({selectedActivity: undefined});
     this.setState({screen: SCREEN.create});
   },
   // Syntactic sugar since we call this all the time

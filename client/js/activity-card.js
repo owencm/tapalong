@@ -5,12 +5,13 @@ var Card = require('./card.js');
 var CardOptions = require('./card-options.js');
 var AttendeesList = require('./attendees-list.js');
 var FriendIcon = require('./friend-icon.js');
+var Collapse = require('react-collapse');
 
 // Require core logic
 var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 
-module.exports = React.createClass({
+var ActivityCard = React.createClass({
   OPTIONS: {
     edit: 0,
     attend: 1,
@@ -114,15 +115,18 @@ module.exports = React.createClass({
           {/* This forces the title to not wrap around the bottom of the icon */}
           <div style={{overflow: 'hidden'}}>
             { /* Title section */ }
-            {this.props.activity.is_creator ? (
-              <span><b>You</b> are </span>
-            ) : (
-              <span><b>{this.props.activity.creator_name}</b> is </span>
-            )}<b>{this.props.activity.title}</b> {this.getDateString()}
+            {
+              this.props.activity.is_creator ? (
+                <span><b>You</b> are </span>
+              ) : (
+                <span><b>{this.props.activity.creator_name}</b> is </span>
+              )
+            }
+            <b>{this.props.activity.title}</b> {this.getDateString()}
             {
               /* Description and attendees */
-              this.props.selected ? (
-                <div style={{marginTop: '16px'}}>
+              <Collapse isOpened = { this.props.selected } >
+                <div style={{paddingTop: '16px'}}>
                   { /* TODO: Tidy up this crap! */ }
                   {
                     this.props.activity.description !== '' ? (
@@ -147,7 +151,7 @@ module.exports = React.createClass({
                     ) : null
                   }
                 </div>
-              ) : null
+              </Collapse>
             }
           </div>
         </div>
@@ -158,3 +162,5 @@ module.exports = React.createClass({
     );
   }
 });
+
+module.exports = ActivityCard;

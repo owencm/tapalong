@@ -2,7 +2,7 @@
 var React = require('react');
 var m = require('./m.js');
 
-module.exports = React.createClass({
+var AttendeesList = React.createClass({
   render: function () {
     if (this.props.attendees < 1) {
       return null;
@@ -11,8 +11,8 @@ module.exports = React.createClass({
         <div>
           <p><b>People going</b></p>
           {
-            this.props.attendees.map(function (attendee) {
-              return <p>{attendee}</p>
+            this.props.attendees.map(function (attendee, index) {
+              return <p key = { index }>{attendee}</p>
             })
           }
         </div>
@@ -20,3 +20,5 @@ module.exports = React.createClass({
     }
   }
 });
+
+module.exports = AttendeesList;

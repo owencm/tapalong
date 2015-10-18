@@ -6,7 +6,7 @@ var ActivityCard = require('./activity-card.js');
 // Require core logic
 var models = require('./models.js');
 
-module.exports = React.createClass({
+var ActivityCardList = React.createClass({
   handleSelected: function (activity) {
     this.props.onActivitySelected(activity);
   },
@@ -18,21 +18,23 @@ module.exports = React.createClass({
   },
   render: function () {
     var activitiesList = models.activities.getActivities().map(function (activity) {
-      activity.key = activity.id;
       return (
         <ActivityCard
-          activity={activity}
-          onActivitySelected={this.handleSelected}
-          onActivityUnselected={this.handleUnselected}
-          onEditClicked={this.handleEditClicked}
-          selected={this.props.selectedActivity == activity}
+          activity = { activity }
+          onActivitySelected = { this.handleSelected }
+          onActivityUnselected = { this.handleUnselected }
+          onEditClicked = { this.handleEditClicked }
+          selected = { this.props.selectedActivity == activity }
+          key = { activity.id }
         />
       );
     }.bind(this));
     return (
       <div>
-        {activitiesList}
+        { activitiesList }
       </div>
     );
   }
 });
+
+module.exports = ActivityCardList;
