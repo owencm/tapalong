@@ -1,0 +1,1 @@
+{"version":3,"sources":["../client/js/main.js"],"names":[],"mappings":";;AAAA,IAAI,SAAS,GAAG,OAAO,CAAC,WAAW,CAAC,CAAC;AACrC,SAAS,CAAC,QAAQ,CAAC,IAAI,CAAC,CAAC;;AAEzB,OAAO,CAAC,WAAW,CAAC,CAAC","file":"main.js","sourcesContent":["var FastClick = require('fastclick');\nFastClick(document.body);\n\nrequire('./view.js');\n"]}

@@ -68,19 +68,7 @@ var ActivityCard = React.createClass({
   handleAttendClicked: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    // If the browser supports notifications but doesn't have permission,
-    // optimistically go to the opt in without waiting
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(function(){}, function() {
-        changeState(STATE.notificationsOptIn, {nextState: STATE.list, userTriggered: true, reason: 'if the plan changes'}, false);
-      });
-    }
-    // Note no callback since the list will automatically redraw when this changes
-    var optimistic = this.props.activity.dirty == undefined;
-    models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
+    this.props.onAttendClicked(this.props.activity);
   },
   handleUndoAttendClicked: function (e) {
     // Prevent default so we don't also fire a click on the card

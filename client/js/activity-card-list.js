@@ -16,6 +16,9 @@ var ActivityCardList = React.createClass({
   handleEditClicked: function () {
     this.props.onEditModeEnabled();
   },
+  handleAttendClicked: function (activity) {
+    this.props.onAttendClicked(activity);
+  },
   render: function () {
     var activitiesList = models.activities.getActivities().map(function (activity) {
       return (
@@ -23,8 +26,12 @@ var ActivityCardList = React.createClass({
           activity = { activity }
           onActivitySelected = { this.handleSelected }
           onActivityUnselected = { this.handleUnselected }
+          onAttendClicked = { this.handleAttendClicked }
           onEditClicked = { this.handleEditClicked }
-          selected = { this.props.selectedActivity == activity }
+          selected = {
+            this.props.selectedActivity &&
+            this.props.selectedActivity.id == activity.id
+          }
           key = { activity.id }
         />
       );

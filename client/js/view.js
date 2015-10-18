@@ -86,6 +86,25 @@ var App = React.createClass({
     // From a flow standpoint we do the same when creating as saving
     this.handleActivitySaveComplete();
   },
+  handleAttendClicked: function (activity) {
+    // Note we change screen without waiting for network to complete
+    // Don't ask the user to grant permission unless the browser supports it
+    if (swLibrary.browserSupportsSWAndNotifications()) {
+      swLibrary.hasPushNotificationPermission(function() {
+        this.handleViewList();
+      }.bind(this), function () {
+        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
+      }.bind(this));
+    } else {
+      this.handleViewList();
+    }
+    // Note no callback since the list will automatically redraw when this changes
+    var optimistic = activity.dirty == undefined;
+    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {}, function () {
+      console.log('Uhoh, an optimistic error was a mistake!!');
+      alert('An unexpected error occurred. Please refresh.');
+    });
+  },
   render: function() {
     // TODO: Refactor this mess!
     if (this.state.screen == SCREEN.loggedOut) {
@@ -97,6 +116,7 @@ var App = React.createClass({
           <ActivityCardList
             onActivitySelected={this.handleActivitySelected}
             onActivityUnselected={this.handleActivityUnselected}
+            onAttendClicked={this.handleAttendClicked}
             onEditModeEnabled={this.handleStartEditing}
             selectedActivity={this.state.selectedActivity}
           />
