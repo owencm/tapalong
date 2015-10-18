@@ -29,7 +29,7 @@ var ActivityCardList = React.createClass({
           onAttendClicked = { this.handleAttendClicked }
           onEditClicked = { this.handleEditClicked }
           selected = {
-            this.props.selectedActivity &&
+            !!this.props.selectedActivity &&
             this.props.selectedActivity.id == activity.id
           }
           key = { activity.id }

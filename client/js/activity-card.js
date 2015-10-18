@@ -113,7 +113,7 @@ var ActivityCard = React.createClass({
             <b>{this.props.activity.title}</b> {this.getDateString()}
             {
               /* Description and attendees */
-              <Collapse isOpened = { this.props.selected } >
+              <Collapse isOpened={this.props.selected}>
                 <div style={{paddingTop: '16px'}}>
                   { /* TODO: Tidy up this crap! */ }
                   {

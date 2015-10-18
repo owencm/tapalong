@@ -189,8 +189,8 @@ module.exports = React.createClass({
             style={inputStyle}
             className='focusUnderline'
             placeholder='Extra information (where? when? what?)'
-            rows='1'
-            maxRows='8'
+            rows={1}
+            maxRows={8}
             value={this.state.description}
             onChange={this.handleDescriptionChange}>
           </TextAreaAutoResize>
