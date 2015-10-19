@@ -1,0 +1,1 @@
+{"version":3,"sources":["../client/js/m.js"],"names":[],"mappings":";;;;AAEA,MAAM,CAAC,OAAO,GAAG,YAAmB;oCAAN,IAAI;AAAJ,QAAI;;;AAChC,SAAO,MAAM,CAAC,MAAM,MAAA,CAAb,MAAM,GAAQ,EAAE,SAAK,IAAI,EAAC,CAAC;CACnC,CAAA","file":"m.js","sourcesContent":["// This function merges styles\n\nmodule.exports = function (...objs) {\n  return Object.assign({}, ...objs);\n}\n"]}
