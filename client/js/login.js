@@ -41,8 +41,7 @@ var Login = React.createClass({
 var LoginInner = React.createClass({
   // Note not using arrow functions as that causes this to be undefined
   render: function () {
-    // TODO: use this to modify the rendering
-    console.log(this.props.readyToLogin);
+    // TODO: use this.props.readyToLogin to modify the rendering
     return (
       <div id='login'>
         <div id='splash'>

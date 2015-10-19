@@ -21,6 +21,7 @@ var ActivityCardList = React.createClass({
           activity = { activity }
           onClick = { this.handleActivityClick }
           onAttendClick = { this.handleAttendClick }
+          onUnattendClick = { this.handleUnattendClick }
           onEditClick = { this.handleEditClick }
           selected = {
             !!this.state.selectedActivity &&
@@ -53,6 +54,10 @@ var ActivityCardList = React.createClass({
 
   handleAttendClick: function (activity) {
     this.props.onAttendClick(activity);
+  },
+
+  handleUnattendClick: function (activity) {
+    this.props.onUnattendClick(activity);
   }
 
 });

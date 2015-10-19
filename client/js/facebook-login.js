@@ -60,6 +60,7 @@ var FacebookLogin = React.createClass({
     } else {
 
       var valueScope = this.props.scope || 'public_profile, email, user_birthday';
+      // TODO: Don't allow this to recurse
       FB.login(this.checkLoginState, { scope: valueScope });
 
       // If we failed trying to log in automatically, let the user take an action

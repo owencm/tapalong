@@ -29,7 +29,8 @@ var App = React.createClass({
       if (this.state.screen == SCREEN.list) {
         mainContents = (
           <ActivityCardList
-            onAttendClick={this.handleAttendClick}
+            onAttendClick={this.handleAttend}
+            onUnattendClick={this.handleUnattend}
             onEditClick={this.handleStartEditing}
           />
         );
@@ -151,7 +152,7 @@ var App = React.createClass({
     this.handleActivitySaveComplete();
   },
 
-  handleAttendClick: function (activity) {
+  handleAttend: function (activity) {
     // Note we change screen without waiting for network to complete
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
@@ -163,6 +164,15 @@ var App = React.createClass({
     } else {
       this.handleViewList();
     }
+    // Note no callback since the list will automatically redraw when this changes
+    var optimistic = activity.dirty == undefined;
+    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+      console.log('Uhoh, an optimistic error was a mistake!!');
+      alert('An unexpected error occurred. Please refresh.');
+    });
+  },
+
+  handleUnattend: function (activity) {
     // Note no callback since the list will automatically redraw when this changes
     var optimistic = activity.dirty == undefined;
     models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {

@@ -66,15 +66,10 @@ var ActivityCard = React.createClass({
     e.stopPropagation();
     this.props.onAttendClick(this.props.activity);
   },
-  handleUndoAttendClick: function (e) {
+  handleUnattendClick: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    // Note no callback since the list will automatically redraw when this changes
-    var optimistic = this.props.activity.dirty == undefined;
-    models.activities.trySetAttending(this.props.activity, !this.props.activity.is_attending, optimistic, function () {}, function () {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
+    this.props.onUnattendClick(this.props.activity);
   },
   render: function() {
     var optionString = ['Edit', 'Go along', 'Cancel attending'][this.getCardsOption()];
@@ -87,7 +82,7 @@ var ActivityCard = React.createClass({
           return this.handleAttendClick;
           break;
         case OPTIONS.undoAttend:
-          return this.handleUndoAttendClick;
+          return this.handleUnattendClick;
           break;
       }
     })();
