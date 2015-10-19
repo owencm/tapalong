@@ -23,7 +23,7 @@ var CardOptions = React.createClass({
     var disabledOptionStyle = {
       color: '#CCC'
     };
-    var optionCards = this.props.options.map(function (option) {
+    var optionCards = this.props.options.map((option) => {
       return (
         <div
           style = { m(optionStyle, option.position == 'left' ? {float: 'left'} : {}) }
@@ -40,7 +40,7 @@ var CardOptions = React.createClass({
           </a>
         </div>
       )
-    }.bind(this));
+    });
     return (
       <div>
         { optionCards }

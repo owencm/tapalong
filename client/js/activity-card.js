@@ -82,7 +82,7 @@ var ActivityCard = React.createClass({
   },
   render: function() {
     var optionString = ['Edit', 'Go along', 'Cancel attending'][this.getCardsOption()];
-    var onOptionClick = (function () {
+    var onOptionClick = (() => {
       switch(this.getCardsOption()) {
         case this.OPTIONS.edit:
           return this.handleEditClicked;
@@ -94,7 +94,7 @@ var ActivityCard = React.createClass({
           return this.handleUndoAttendClicked;
           break;
       }
-    }.bind(this))();
+    })();
 
     return (
       <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined} onClick={this.handleCardClicked}>

@@ -73,11 +73,11 @@ var App = React.createClass({
   handleActivitySaveComplete: function () {
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(function() {
+      swLibrary.hasPushNotificationPermission(() => {
         this.handleViewList();
-      }.bind(this), function () {
+      }, () => {
         this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-      }.bind(this));
+      });
     } else {
       this.handleViewList();
     }
@@ -90,17 +90,17 @@ var App = React.createClass({
     // Note we change screen without waiting for network to complete
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(function() {
+      swLibrary.hasPushNotificationPermission(() => {
         this.handleViewList();
-      }.bind(this), function () {
+      }, () => {
         this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
-      }.bind(this));
+      });
     } else {
       this.handleViewList();
     }
     // Note no callback since the list will automatically redraw when this changes
     var optimistic = activity.dirty == undefined;
-    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, function () {}, function () {
+    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
       console.log('Uhoh, an optimistic error was a mistake!!');
       alert('An unexpected error occurred. Please refresh.');
     });

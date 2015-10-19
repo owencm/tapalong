@@ -20,7 +20,7 @@ var ActivityCardList = React.createClass({
     this.props.onAttendClicked(activity);
   },
   render: function () {
-    var activitiesList = models.activities.getActivities().map(function (activity) {
+    var activitiesList = models.activities.getActivities().map((activity) => {
       return (
         <ActivityCard
           activity = { activity }
@@ -35,7 +35,7 @@ var ActivityCardList = React.createClass({
           key = { activity.id }
         />
       );
-    }.bind(this));
+    });
     return (
       <div>
         { activitiesList }

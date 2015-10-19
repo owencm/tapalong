@@ -66,9 +66,9 @@ module.exports = React.createClass({
 
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
-    models.activities.tryUpdateActivity(this.props.activity, activityChanges, function () {
+    models.activities.tryUpdateActivity(this.props.activity, activityChanges, () => {
       this.props.onSaveComplete();
-    }.bind(this), function () {
+    }, () => {
       alert('An error occurred! Sorry. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
     });
@@ -81,9 +81,9 @@ module.exports = React.createClass({
       max_attendees: -1,
       description: this.state.description
     };
-    models.activities.tryCreateActivity(newActivity, function () {
+    models.activities.tryCreateActivity(newActivity, () => {
       this.props.onCreateComplete();
-    }.bind(this), function () {
+    }, function () {
       // thisButton.classList.toggle('disabled', false);
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
       throw("Adding to server failed. Help the user understand why");
@@ -91,9 +91,9 @@ module.exports = React.createClass({
   },
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
-       models.activities.tryCancelActivity(this.props.activity, function () {
+       models.activities.tryCancelActivity(this.props.activity, () => {
          this.onDeleteComplete();
-       }.bind(this), function () {
+       }, function () {
          alert('An error occurred! Sorry :(. Please refresh.');
          throw("Cancelling on server failed. Help the user understand why");
        });

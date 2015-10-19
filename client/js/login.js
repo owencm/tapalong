@@ -6,7 +6,21 @@ var FacebookLogin = require('./facebook-login.js');
 // Require core logic
 var models = require('./models.js');
 
-module.exports = React.createClass({
+var Login = React.createClass({
+
+  render: function () {
+    return (
+      <FacebookLogin
+        appId='175370155978273'
+        class='facebook-login'
+        scope='public_profile'
+        autoLoad
+        loginHandler={ this.handleLogin } >
+        <LoginInner />
+      </FacebookLogin>
+    )
+  },
+
   handleLogin: function (result) {
     console.log(result);
     models.startLogin(result.accessToken, this.props.onLoginComplete, function(){});
@@ -21,26 +35,24 @@ module.exports = React.createClass({
     // }.bind(this), function () {
     //   console.log('Failed to download activities')
     // });
-  },
-  render: function () {
-    return (
-      <FacebookLogin
-        appId='175370155978273'
-        class='facebook-login'
-        scope='public_profile'
-        autoLoad
-        loginHandler={ this.handleLogin } >
-          <div id='login'>
-            <div id='splash'>
-            </div>
-            <div id='slogan'>
-              <img src='images/slogan.png'></img>
-            </div>
-            <div id='loginButton'>
-              <img src='images/login-button.png' id='loginButtonImg'></img>
-            </div>
-          </div>
-      </FacebookLogin>
-    )
   }
 });
+
+var LoginInner = React.createClass({
+  render: () => {
+    return (
+      <div id='login'>
+        <div id='splash'>
+        </div>
+        <div id='slogan'>
+          <img src='images/slogan.png'></img>
+        </div>
+        <div id='loginButton'>
+          <img src='images/login-button.png' id='loginButtonImg'></img>
+        </div>
+      </div>
+    );
+  }
+});
+
+module.exports = Login;

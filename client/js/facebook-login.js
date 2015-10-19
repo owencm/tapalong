@@ -1,11 +1,15 @@
 var React = require('react');
 
-module.exports = React.createClass({
+var FacebookLogin = React.createClass({
 
   render: function() {
+    // Clone the children so we can set props on them indicating the state of the login process
+    var children = React.Children.map(this.props.children, (child) => {
+      return React.cloneElement(child, {readyToLogin: this.state.readyToLogin});
+    });
     return (
       <div onClick={ this.handleClick }>
-        { this.props.children }
+        { children }
         <div id="fb-root"></div>
       </div>
     )
@@ -13,7 +17,7 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      clicked: false,
+      readyToLogin: false,
       fbResponse: undefined
     }
   },
@@ -30,8 +34,8 @@ module.exports = React.createClass({
       if ( this.props.autoLoad ) {
 
         FB.getLoginStatus(function(response) {
-          this.setState({fbResponse: response});
-          this.gotLoginStatus();
+          this.setState({readyToLogin: true, fbResponse: response});
+          // TODO: Enable UI here
         }.bind(this));
 
       }
@@ -66,17 +70,11 @@ module.exports = React.createClass({
     }
   },
 
-  gotLoginStatus: function () {
-    if (this.state.clicked) {
-      this.checkLoginState(this.state.fbResponse);
-    }
-  },
-
   handleClick: function() {
-    // If we're ready, start. Otherwise wait for the callback to checkLoginState
     if (this.state.fbResponse) {
       this.checkLoginState(this.state.fbResponse);
     }
-    this.setState({clicked: true});
   }
 });
+
+module.exports = FacebookLogin;

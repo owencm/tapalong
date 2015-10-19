@@ -11,14 +11,14 @@ module.exports = React.createClass({
   handleOKClicked: function (e) {
     showOverlay();
     // 300ms wait until the overlay has shown
-    setTimeout(function() {
-      swLibrary.requestPushNotificationPermissionAndSubscribe(function () {
+    setTimeout(() => {
+      swLibrary.requestPushNotificationPermissionAndSubscribe(() => {
         hideOverlay();
         this.props.onOptInComplete();
-      }.bind(this), function () {
+      }, function () {
         // TODO: Handle failure or permission rejection
       });
-    }.bind(this), 300);
+    }, 300);
   },
   render: function () {
     return (
