@@ -7,30 +7,24 @@ var ActivityCard = require('./activity-card.js');
 var models = require('./models.js');
 
 var ActivityCardList = React.createClass({
-  handleSelected: function (activity) {
-    this.props.onActivitySelected(activity);
+
+  getInitialState: function () {
+    return {
+      selectedActivity: undefined
+    }
   },
-  handleUnselected: function (activity) {
-    this.props.onActivityUnselected(activity);
-  },
-  handleEditClicked: function () {
-    this.props.onEditModeEnabled();
-  },
-  handleAttendClicked: function (activity) {
-    this.props.onAttendClicked(activity);
-  },
+
   render: function () {
     var activitiesList = models.activities.getActivities().map((activity) => {
       return (
         <ActivityCard
           activity = { activity }
-          onActivitySelected = { this.handleSelected }
-          onActivityUnselected = { this.handleUnselected }
-          onAttendClicked = { this.handleAttendClicked }
-          onEditClicked = { this.handleEditClicked }
+          onClick = { this.handleActivityClick }
+          onAttendClick = { this.handleAttendClick }
+          onEditClick = { this.handleEditClick }
           selected = {
-            !!this.props.selectedActivity &&
-            this.props.selectedActivity.id == activity.id
+            !!this.state.selectedActivity &&
+            this.state.selectedActivity.id == activity.id
           }
           key = { activity.id }
         />
@@ -41,7 +35,26 @@ var ActivityCardList = React.createClass({
         { activitiesList }
       </div>
     );
+  },
+
+  handleActivityClick: function (activity) {
+    // If something is selected, and it's the activity clicked...
+    if (this.state.selectedActivity &&
+        this.state.selectedActivity.id == activity.id) {
+      this.setState({selectedActivity: undefined});
+    } else {
+      this.setState({selectedActivity: activity});
+    }
+  },
+
+  handleEditClick: function (activity) {
+    this.props.onEditClick(activity);
+  },
+
+  handleAttendClick: function (activity) {
+    this.props.onAttendClick(activity);
   }
+
 });
 
 module.exports = ActivityCardList;

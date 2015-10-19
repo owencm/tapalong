@@ -83,7 +83,7 @@ module.exports = React.createClass({
     };
     models.activities.tryCreateActivity(newActivity, () => {
       this.props.onCreateComplete();
-    }, function () {
+    }, () => {
       // thisButton.classList.toggle('disabled', false);
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
       throw("Adding to server failed. Help the user understand why");
@@ -92,8 +92,9 @@ module.exports = React.createClass({
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
        models.activities.tryCancelActivity(this.props.activity, () => {
-         this.onDeleteComplete();
-       }, function () {
+         console.log(this);
+         this.props.onDeleteComplete();
+       }, () => {
          alert('An error occurred! Sorry :(. Please refresh.');
          throw("Cancelling on server failed. Help the user understand why");
        });

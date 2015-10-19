@@ -15,96 +15,11 @@ var m = require('./m.js');
 var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, notificationsOptIn: 5};
 
 var App = React.createClass({
-  getInitialState: function() {
+
+  getInitialState: function () {
     return { screen: SCREEN.loggedOut }
   },
-  shouldShowHeader: function () {
-    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > -1);
-  },
-  shouldShowBackButton: function () {
-    return ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1);
-  },
-  shouldShowCreateButton: function () {
-    return (this.state.screen == SCREEN.list);
-  },
-  handleScreenChange: function (newScreen, options, userTriggered) {
-    if (options && options.nextScreen) {
-      this.setState({nextScreen: options.nextScreen, optInReason: options.reason});
-    }
-    console.log('Changing state to '+newScreen);
-    this.setState({screen: newScreen});
-  },
-  handleActivitySelected: function (activity) {
-    this.setState({selectedActivity: activity});
-  },
-  // Activity is plumbed through here but not used
-  handleActivityUnselected: function (activity) {
-    this.setState({selectedActivity: undefined});
-  },
-  handleStartEditing: function () {
-    this.setState({screen: SCREEN.edit});
-  },
-  handleStartCreating: function () {
-    // TODO: Tidy up how selection works to avoid issues like this
-    // Unset a selected activity as otherwise EditActivity doesn't work in creation mode
-    this.setState({selectedActivity: undefined});
-    this.setState({screen: SCREEN.create});
-  },
-  // Syntactic sugar since we call this all the time
-  handleViewList: function () {
-    this.handleScreenChange(SCREEN.list);
-  },
-  getScreenTitle: function() {
-    if (this.state.screen == SCREEN.list) {
-      return 'Upcoming Plans';
-    } else if (this.state.screen == SCREEN.edit) {
-      return 'Edit';
-    } else if (this.state.screen == SCREEN.create) {
-      return 'Create'
-    } else if (this.state.screen == SCREEN.notificationsOptIn) {
-      return 'Stay up to date'
-    } else {
-      return 'Uh oh: title shouldn\'t be showing';
-    }
-  },
-  handleOptInComplete: function () {
-    this.setState({screen: this.state.nextScreen});
-  },
-  handleActivitySaveComplete: function () {
-    // Don't ask the user to grant permission unless the browser supports it
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(() => {
-        this.handleViewList();
-      }, () => {
-        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-      });
-    } else {
-      this.handleViewList();
-    }
-  },
-  handleActivityCreateComplete: function () {
-    // From a flow standpoint we do the same when creating as saving
-    this.handleActivitySaveComplete();
-  },
-  handleAttendClicked: function (activity) {
-    // Note we change screen without waiting for network to complete
-    // Don't ask the user to grant permission unless the browser supports it
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(() => {
-        this.handleViewList();
-      }, () => {
-        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
-      });
-    } else {
-      this.handleViewList();
-    }
-    // Note no callback since the list will automatically redraw when this changes
-    var optimistic = activity.dirty == undefined;
-    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
-  },
+
   render: function() {
     // TODO: Refactor this mess!
     if (this.state.screen == SCREEN.loggedOut) {
@@ -114,11 +29,8 @@ var App = React.createClass({
       if (this.state.screen == SCREEN.list) {
         mainContents = (
           <ActivityCardList
-            onActivitySelected={this.handleActivitySelected}
-            onActivityUnselected={this.handleActivityUnselected}
-            onAttendClicked={this.handleAttendClicked}
-            onEditModeEnabled={this.handleStartEditing}
-            selectedActivity={this.state.selectedActivity}
+            onAttendClick={this.handleAttendClick}
+            onEditClick={this.handleStartEditing}
           />
         );
       } else if (this.state.screen == SCREEN.notificationsOptIn) {
@@ -132,11 +44,11 @@ var App = React.createClass({
       } else if ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1) {
         mainContents = (
           <EditActivity
-            activity={this.state.selectedActivity}
+            activity={this.state.activityForEditing}
             userName={models.user.getUserName()}
             onSaveComplete={this.handleActivitySaveComplete}
             onCreateComplete={this.handleActivityCreateComplete}
-            onDeleteComplete={this.props.onReturnToList}
+            onDeleteComplete={this.handleViewList}
           />
         );
       }
@@ -146,7 +58,7 @@ var App = React.createClass({
           <Header
             title={this.getScreenTitle()}
             shouldShowBackButton={this.shouldShowBackButton()}
-            onBackButtonClicked={this.handleViewList}
+            onBackButtonClick={this.handleViewList}
           />
         );
       }
@@ -166,7 +78,99 @@ var App = React.createClass({
         </div>
       )
     }
+  },
+
+  shouldShowHeader: function () {
+    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > -1);
+  },
+
+  shouldShowBackButton: function () {
+    return ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1);
+  },
+
+  shouldShowCreateButton: function () {
+    return (this.state.screen == SCREEN.list);
+  },
+
+  handleScreenChange: function (newScreen, options, userTriggered) {
+    if (options && options.nextScreen) {
+      this.setState({nextScreen: options.nextScreen, optInReason: options.reason});
+    }
+    console.log('Changing state to '+newScreen);
+    this.setState({screen: newScreen});
+  },
+
+  handleStartEditing: function (activity) {
+    this.setState({screen: SCREEN.edit, activityForEditing: activity});
+  },
+
+  handleStartCreating: function () {
+    // Create mode and edit are the same, so make sure we aren't still referring
+    // to another activity for editing
+    this.setState({screen: SCREEN.create, activityForEditing: undefined});
+  },
+
+  // Syntactic sugar since we call this all the time
+  handleViewList: function () {
+    this.handleScreenChange(SCREEN.list);
+  },
+
+  getScreenTitle: function() {
+    if (this.state.screen == SCREEN.list) {
+      return 'Upcoming Plans';
+    } else if (this.state.screen == SCREEN.edit) {
+      return 'Edit';
+    } else if (this.state.screen == SCREEN.create) {
+      return 'Create'
+    } else if (this.state.screen == SCREEN.notificationsOptIn) {
+      return 'Stay up to date'
+    } else {
+      return 'Uh oh: title shouldn\'t be showing';
+    }
+  },
+
+  handleOptInComplete: function () {
+    this.setState({screen: this.state.nextScreen});
+  },
+
+  handleActivitySaveComplete: function () {
+    // Don't ask the user to grant permission unless the browser supports it
+    if (swLibrary.browserSupportsSWAndNotifications()) {
+      swLibrary.hasPushNotificationPermission(() => {
+        this.handleViewList();
+      }, () => {
+        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+      });
+    } else {
+      this.handleViewList();
+    }
+  },
+
+  handleActivityCreateComplete: function () {
+    // From a flow standpoint we do the same when creating as saving
+    this.handleActivitySaveComplete();
+  },
+
+  handleAttendClick: function (activity) {
+    // Note we change screen without waiting for network to complete
+    // Don't ask the user to grant permission unless the browser supports it
+    if (swLibrary.browserSupportsSWAndNotifications()) {
+      swLibrary.hasPushNotificationPermission(() => {
+        this.handleViewList();
+      }, () => {
+        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
+      });
+    } else {
+      this.handleViewList();
+    }
+    // Note no callback since the list will automatically redraw when this changes
+    var optimistic = activity.dirty == undefined;
+    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+      console.log('Uhoh, an optimistic error was a mistake!!');
+      alert('An unexpected error occurred. Please refresh.');
+    });
   }
+
 });
 
 // TODO: Re-add history support

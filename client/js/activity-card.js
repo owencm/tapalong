@@ -11,19 +11,20 @@ var Collapse = require('react-collapse');
 var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 
+var OPTIONS = {
+  edit: 0,
+  attend: 1,
+  undoAttend: 2
+};
+
 var ActivityCard = React.createClass({
-  OPTIONS: {
-    edit: 0,
-    attend: 1,
-    undoAttend: 2
-  },
   getCardsOption: function () {
     if (this.props.activity.is_creator) {
-      return this.OPTIONS.edit;
+      return OPTIONS.edit;
     } else if (this.props.activity.is_attending) {
-      return this.OPTIONS.undoAttend;
+      return OPTIONS.undoAttend;
     } else {
-      return this.OPTIONS.attend;
+      return OPTIONS.attend;
     }
   },
   // E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
@@ -52,25 +53,20 @@ var ActivityCard = React.createClass({
     return str;
   },
   // Toggle the selected state
-  handleCardClicked: function (e) {
-    if (this.props.selected) {
-      this.props.onActivityUnselected(this.props.activity);
-    } else {
-      this.props.onActivitySelected(this.props.activity);
-    }
+  handleCardClick: function (e) {
+    this.props.onClick(this.props.activity);
   },
-  handleEditClicked: function (e) {
+  handleEditClick: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    this.props.onActivitySelected(this.props.activity);
-    this.props.onEditClicked();
+    this.props.onEditClick(this.props.activity);
   },
-  handleAttendClicked: function (e) {
+  handleAttendClick: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
-    this.props.onAttendClicked(this.props.activity);
+    this.props.onAttendClick(this.props.activity);
   },
-  handleUndoAttendClicked: function (e) {
+  handleUndoAttendClick: function (e) {
     // Prevent default so we don't also fire a click on the card
     e.stopPropagation();
     // Note no callback since the list will automatically redraw when this changes
@@ -84,20 +80,20 @@ var ActivityCard = React.createClass({
     var optionString = ['Edit', 'Go along', 'Cancel attending'][this.getCardsOption()];
     var onOptionClick = (() => {
       switch(this.getCardsOption()) {
-        case this.OPTIONS.edit:
-          return this.handleEditClicked;
+        case OPTIONS.edit:
+          return this.handleEditClick;
           break;
-        case this.OPTIONS.attend:
-          return this.handleAttendClicked;
+        case OPTIONS.attend:
+          return this.handleAttendClick;
           break;
-        case this.OPTIONS.undoAttend:
-          return this.handleUndoAttendClicked;
+        case OPTIONS.undoAttend:
+          return this.handleUndoAttendClick;
           break;
       }
     })();
 
     return (
-      <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined} onClick={this.handleCardClicked}>
+      <Card backgroundColor={this.props.activity.is_attending ? '#cdf9c9' : undefined} onClick={this.handleCardClick}>
         <div style={{padding: '24px'}}>
           <FriendIcon thumbnail={this.props.activity.thumbnail}/>
           {/* This forces the title to not wrap around the bottom of the icon */}

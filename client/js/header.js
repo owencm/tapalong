@@ -11,7 +11,7 @@ module.exports = React.createClass({
             <img
               src='images/back-icon.svg'
               id='backButton'
-              onClick={this.props.onBackButtonClicked}
+              onClick={this.props.onBackButtonClick}
             /> :
             null
         }
