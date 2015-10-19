@@ -47,11 +47,18 @@ var LoginInner = React.createClass({
         <div id='splash'>
         </div>
         <div id='slogan'>
-          <img src='images/slogan.png'></img>
+          <h1 style={{
+            fontSize: '2.5em',
+            color: 'white',
+            padding: '40px'
+          }}>Do more together with friends</h1>
         </div>
-        <div id='loginButton'>
-          <img src='images/login-button.png' id='loginButtonImg'></img>
-        </div>
+        { this.props.readyToLogin ?
+          (
+            <div id='loginButton'>
+              <img src='images/login-button.png' id='loginButtonImg'></img>
+            </div>
+          ) : null }
       </div>
     );
   }
