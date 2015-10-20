@@ -9,7 +9,7 @@
 # OSX files
 .DS_STORE
 
-#R eact files
+# React files
 .module-cache
 
 # npm files
