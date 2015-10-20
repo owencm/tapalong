@@ -14,6 +14,8 @@ DATABASES = {
     }
 }
 
+# Note this doesn't provide reasonable security as static HTML/JS resources are being served by the webserver
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 SECURE_REDIRECT_EXEMPT = ['health']
