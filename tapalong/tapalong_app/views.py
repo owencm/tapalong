@@ -17,6 +17,10 @@ import notifications
 def index(request):
 	return redirect('/static/index.html')
 
+# Elastic beanstalk needs a URL to check for a 200 OK response to see if the server is running
+def health(request):
+	return HttpResponse()
+
 # return user id and session token
 @csrf_exempt
 def login_user(request):
