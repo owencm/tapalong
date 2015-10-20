@@ -16,20 +16,11 @@ MANAGERS = ADMINS
 FACEBOOK_APP_ID = '416549371775324'
 FACEBOOK_APP_SECRET = 'f29bad19065dfa433ec0b89815e86f64'
 
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-)
+# Not using built in auth
+AUTHENTICATION_BACKENDS = ()
 
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'django.core.context_processors.tz',
-    'django.core.context_processors.request',
-    'django.contrib.messages.context_processors.messages',
-)
+# Not using templates
+TEMPLATE_CONTEXT_PROCESSORS = ()
 
 # DATABASES = {
 #     'default': {
@@ -120,19 +111,15 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = '@9*^j3#0x86f!)b%%=)26n7$7hyqt1i)5gh0zq92wwb=fioto_'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
+# Not using templates
+TEMPLATE_LOADERS = ()
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.security.SecurityMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     # 'django.contrib.messages.middleware.MessageMiddleware',
-    # 'django.middleware.security.SecurityMiddleware'
     # 'django.middleware.gzip.GZipMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -193,7 +180,3 @@ LOGGING = {
 }
 
 GCM_API_KEY = 'AIzaSyAAxf-66b5V2lsH7Son8Bd0scLtKMcYztA'
-
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = True
-SECURE_REDIRECT_EXEMPT = ['health']
