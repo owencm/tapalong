@@ -4,6 +4,7 @@ from django.utils.timezone import utc
 from django.http import HttpResponse, HttpResponseForbidden
 from django.http import QueryDict
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import redirect
 from django.template import RequestContext, loader
 from pyfb import Pyfb
 from django.conf import settings
@@ -12,6 +13,9 @@ from datetime import date, timedelta
 import dateutil.parser
 import sessions
 import notifications
+
+def index(request):
+	return redirect('/static/index.html')
 
 # return user id and session token
 @csrf_exempt

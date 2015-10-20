@@ -10,4 +10,5 @@ urlpatterns = patterns('',
     url(r'^v1/notifications/$', views.notifications_list, name='notifications_list'),
     url(r'^v1/push_subscriptions/$', views.push_subscriptions_list, name='push_subscriptions_list'),
     url(r'^v1/login/$', views.login_user, name='login_user'),
+    url('', views.index)
 )
