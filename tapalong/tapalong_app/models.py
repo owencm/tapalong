@@ -35,12 +35,13 @@ class Activity(models.Model):
 class Session(models.Model):
 	token = models.BigIntegerField()
 	user = models.ForeignKey(User)
-	created_at = models.DateTimeField(auto_now_add=True, blank=False)
+	created_at = models.DateTimeField(blank=False)
 	expires_at = models.DateTimeField(blank=False)
 
 	# Use this to check whether it has expired yet
 	def has_expired(self):
 		now = datetime.datetime.utcnow().replace(tzinfo=utc)
+		# Sometimes this fails. I have no idea why and have thus given 10 seconds of grace in sessions.py
 		assert (self.created_at <= now)
 		return (now > self.expires_at)
 

@@ -2,7 +2,7 @@ Django==1.8.5
 MySQL-python==1.2.5
 Pillow==2.4.0
 pyfb==0.4.2
-python-dateutil==2.1
-requests==2.5.3
-simplejson==3.8.0
-six==1.9.0
+python-dateutil==2.4.2
+requests==2.6.2
+six==1.10.0
+awsebcli==3.5.4
