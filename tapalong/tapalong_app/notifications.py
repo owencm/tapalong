@@ -1,6 +1,6 @@
 from tapalong_app.models import User, Activity, Session, Notification, PushSubscription
-from django.utils import simplejson as json
 from django.conf import settings
+import json
 import requests
 
 # When a subscription is created, send a tickle if it has notifications

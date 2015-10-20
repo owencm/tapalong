@@ -1,15 +1,14 @@
 from tapalong_app.models import User, Activity, Session, Notification, PushSubscription
-from django.utils import simplejson as json
 from django.utils.timezone import utc
-from django.http import HttpResponse, HttpResponseForbidden
-from django.http import QueryDict
+from django.http import HttpResponse, HttpResponseForbidden, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.template import RequestContext, loader
 from pyfb import Pyfb
 from django.conf import settings
-import datetime
 from datetime import date, timedelta
+import json
+import datetime
 import dateutil.parser
 import sessions
 import notifications
@@ -42,7 +41,7 @@ def login_user(request):
 			session_token = sessions.start_session(user.id)
 			# Stringify the session token since if JS reads it as an int it doesn't have enough precision
 			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": str(session_token), "first_login": "false"})
-			return HttpResponse(json_output, mimetype='application/json')
+			return HttpResponse(json_output, content_type='application/json')
 		except User.DoesNotExist:
 			# TODO: catch errors here
 			user = User(name=fb_user.name, fb_id=fb_user.id)
@@ -51,7 +50,7 @@ def login_user(request):
 			session_token = sessions.start_session(user.id)
 			# Stringify the session token since if JS reads it as an int it doesn't have enough precision
 			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": str(session_token), "first_login": "true"})
-			return HttpResponse(json_output, mimetype='application/json')
+			return HttpResponse(json_output, content_type='application/json')
 	else:
 		raise Exception('Requests to /login/ must be post, not get.')
 
@@ -110,7 +109,7 @@ def activities_list(request):
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
 		# serialized_activities = []
 		json_output = json.dumps(serialized_activities)
-		return HttpResponse(json_output, mimetype='application/json')
+		return HttpResponse(json_output, content_type='application/json')
 	elif request.method == 'POST':
 		# Get current time for activity creation timestamp
 		# now = datetime.datetime.utcnow().replace(tzinfo=utc)
@@ -120,7 +119,7 @@ def activities_list(request):
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
-		return HttpResponse(json_output, mimetype='application/json')
+		return HttpResponse(json_output, content_type='application/json')
 
 @csrf_exempt
 def attending(request, activity_id):
@@ -152,7 +151,7 @@ def attending(request, activity_id):
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
-		return HttpResponse(json_output, mimetype='application/json')
+		return HttpResponse(json_output, content_type='application/json')
 	else:
 		return HttpResonse('This URL does not support non-post requests');
 
@@ -171,7 +170,7 @@ def cancel(request, activity_id):
 		# TODO: Just mark it as cancelled, don't actually delete it
 		# TODO: Try/catch this in case it fails
 		activity.delete()
-		return HttpResponse('', mimetype='application/json')
+		return HttpResponse('', content_type='application/json')
 	else:
 		return HttpResonse('This URL does not support non-post requests');
 
@@ -198,7 +197,7 @@ def activity(request, activity_id):
 		updateActivity(activity, activity_info)
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
-		return HttpResponse(json_output, mimetype='application/json')
+		return HttpResponse(json_output, content_type='application/json')
 	else:
 		return HttpResonse('This URL does not support non-post requests');
 
@@ -222,7 +221,7 @@ def notifications_list(request):
 
 	notifications_to_send = notifications.get_active(user_id)
 	json_output = json.dumps(notifications_to_send)
-	return HttpResponse(json_output, mimetype='application/json')
+	return HttpResponse(json_output, content_type='application/json')
 
 @csrf_exempt
 def dismiss_notification(request, note_id):

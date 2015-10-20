@@ -1,9 +1,9 @@
 from tapalong_app.models import User, Activity, Session
 from django.utils.timezone import utc
+from django.utils.crypto import constant_time_compare
 import datetime
 import random
 import math
-from django.utils.crypto import constant_time_compare
 
 # This generates and returns a new session token for the user. ***ONLY*** call it once they've been fully authenticated via Facebook.
 # It may be modified to take a user rather than the ID.
