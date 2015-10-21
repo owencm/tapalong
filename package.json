@@ -30,6 +30,7 @@
     "iso8601": "^1.1.1",
     "react": "^0.14",
     "react-collapse": "^1.0.1",
+    "react-dom": "^0.14.0",
     "react-textarea-autosize": "^2.5.4"
   }
 }

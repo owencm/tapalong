@@ -1,5 +1,6 @@
 // Require react and UI components
 var React = require('react');
+var ReactDOM = require('react-dom');
 var Login = require('./login.js');
 var ActivityCardList = require('./activity-card-list.js');
 var EditActivity = require('./edit-activity-card.js');
@@ -99,7 +100,6 @@ var App = React.createClass({
     if (options && options.nextScreen) {
       this.setState({nextScreen: options.nextScreen, optInReason: options.reason});
     }
-    console.log('Changing state to '+newScreen);
     this.setState({screen: newScreen});
   },
 
@@ -206,7 +206,7 @@ var App = React.createClass({
   // });
 
 var redrawCurrentView = function () {
-  React.render(
+  ReactDOM.render(
     <App />,
     document.getElementById('appShell')
   );

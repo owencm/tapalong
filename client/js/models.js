@@ -206,7 +206,6 @@ var activities = (function () {
     }
     if (activity.start_time && activity.start_time instanceof Date) {
       // Allow users to see and edit events up to 2 hours in the past
-      console.log(activity.start_time);
       var now = new Date;
       now = now.add(-2).hours();
       if (activity.start_time < now) {
