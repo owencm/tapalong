@@ -6,18 +6,20 @@ module.exports = React.createClass({
   getInitialState: function () {
     return { loading: false, loaded: false };
   },
+  componentDidMount: function () {
+    this.loadImage(this.props.src);
+  },
   loadImage: function (src) {
-    if (!this.loadingStarted) {
-      this.loadingStarted = true;
+    if (!this.state.loadingStarted) {
+      this.setState({loadingStarted: true});
       var img = new Image();
-      img.onload = function() {
+      img.onload = () => {
         this.setState({loaded: true})
-      }.bind(this);
+      };
       img.src = src;
     }
   },
   render: function () {
-    this.loadImage(this.props.src);
     var overlayStyle = {
       width: this.props.width,
       height: this.props.height,

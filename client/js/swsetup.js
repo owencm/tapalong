@@ -22,6 +22,7 @@ var hasPushNotificationPermission = function(success, failure) {
 var requestPushNotificationPermission = function (success, failure) {
   console.log('Requesting push permission');
   Notification.requestPermission(function (decision) {
+    console.log(decision);
     if (decision == 'granted') {
       success();
     } else {
@@ -31,10 +32,10 @@ var requestPushNotificationPermission = function (success, failure) {
 };
 
 var requestPushNotificationPermissionAndSubscribe = function (success, failure) {
-  requestPushNotificationPermission(function(){
+  requestPushNotificationPermission(() => {
     subscribeForPushNotifications(sendSubscriptionToServer);
     success();
-  }, function () {
+  }, () => {
     // TODO: Handle failure
     failure();
   });
