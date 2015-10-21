@@ -21,6 +21,7 @@ var App = React.createClass({
   },
 
   render: function() {
+    var activities = models.activities.getActivities();
     // TODO: Refactor this mess!
     if (this.state.screen == SCREEN.loggedOut) {
       return <Login onLoginComplete={this.handleViewList} />;
@@ -29,6 +30,7 @@ var App = React.createClass({
       if (this.state.screen == SCREEN.list) {
         mainContents = (
           <ActivityCardList
+            activities ={activities}
             onAttendClick={this.handleAttend}
             onUnattendClick={this.handleUnattend}
             onEditClick={this.handleStartEditing}

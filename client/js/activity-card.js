@@ -8,7 +8,6 @@ var FriendIcon = require('./friend-icon.js');
 var Collapse = require('react-collapse');
 
 // Require core logic
-var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 
 var OPTIONS = {

@@ -3,9 +3,6 @@ var React = require('react');
 var m = require('./m.js');
 var ActivityCard = require('./activity-card.js');
 
-// Require core logic
-var models = require('./models.js');
-
 var ActivityCardList = React.createClass({
 
   getInitialState: function () {
@@ -15,7 +12,7 @@ var ActivityCardList = React.createClass({
   },
 
   render: function () {
-    var activitiesList = models.activities.getActivities().map((activity) => {
+    var activitiesList = this.props.activities.map((activity) => {
       return (
         <ActivityCard
           activity = { activity }
