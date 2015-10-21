@@ -2,8 +2,8 @@
 var React = require('react');
 var Login = require('./login.js');
 var ActivityCardList = require('./activity-card-list.js');
+var EditActivity = require('./edit-activity-card.js');
 var OptIn = require('./opt-in.js');
-var EditActivity = require('./edit-activity.js');
 var Header = require('./header.js');
 var FabButton = require('./fab.js');
 
