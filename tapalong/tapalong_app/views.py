@@ -75,7 +75,23 @@ def serialize_activity(activity, user_id):
 	#serialized_attendees_names = json.dumps(attendees_names)
 	debug_start_time = activity.start_time
 
-	return {"activity": {"activity_id": activity.id, "is_creator": is_creator, "creator_name": activity.creator.name, "creator_id": activity.creator.id, "title": activity.title, "start_time": activity.start_time.isoformat(), "description": activity.description, "location": activity.location, "max_attendees": activity.max_attendees, "attendees": attendees_names, "is_attending": is_attending, "thumbnail": "https://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"}}
+	return {
+		"activity":
+			{
+				"activity_id": activity.id,
+				"is_creator": is_creator,
+				"creator_name": activity.creator.name,
+				"creator_id": activity.creator.id,
+				"title": activity.title,
+				"start_time": activity.start_time.isoformat(),
+				"description": activity.description,
+				"location": activity.location,
+				"max_attendees": activity.max_attendees,
+				"attendees": attendees_names,
+				"is_attending": is_attending,
+				"thumbnail": "https://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"
+			 }
+		 }
 
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
@@ -213,31 +229,15 @@ def updateActivity(activity, activity_info):
 
 @csrf_exempt
 def notifications_list(request):
-
 	token = request.META.get('HTTP_SESSION_TOKEN')
 	user_id = request.META.get('HTTP_USER_ID')
 	if not (sessions.is_valid_token_for_user(token, user_id)):
 		return HttpResponseForbidden()
 
-	notifications_to_send = notifications.get_active(user_id)
+	active_notifications = notifications.get_active_notifications(user_id)
+	notifications_to_send = notifications.render_notifications(active_notifications)
 	json_output = json.dumps(notifications_to_send)
 	return HttpResponse(json_output, content_type='application/json')
-
-@csrf_exempt
-def dismiss_notification(request, note_id):
-	# Get the notification, set dismissed = true
-	token = request.META.get('HTTP_SESSION_TOKEN')
-	user_id = request.META.get('HTTP_USER_ID')
-	if not (sessions.is_valid_token_for_user(token, user_id)):
-		return HttpResponseForbidden()
-
-	note = Notification.objects.get(id = note_id)
-	if (note.user != User.objects.get(id=user_id)):
-		return HttpResponse('Error: This notification was not for you.')
-
-	note.dismissed = True
-	note.save()
-	return HttpResponse()
 
 @csrf_exempt
 def push_subscriptions_list(request):

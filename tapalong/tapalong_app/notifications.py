@@ -10,14 +10,15 @@ def create_subscription(user, subscription_id):
 	print 'Created a subscription'
 	push_subscription = PushSubscription(subscription_id=subscription_id, recipient=user)
 	push_subscription.save()
-	if (get_active(user.id).__len__() > 0):
+	if (len(get_active_notifications(user.id)) > 0):
 		send_tickle(push_subscription)
 	return
 
 def create_notification(user_id, template, options):
 	user = User.objects.get(id=user_id)
 	serialized_options = json.dumps(options)
-	note = Notification(user = user, template = template, options = serialized_options)
+	now = datetime.datetime.utcnow().replace(tzinfo=utc)
+	note = Notification(user = user, template = template, options = serialized_options, created_at = now)
 	note.save()
 	send_tickles_for(note)
 
@@ -55,17 +56,23 @@ def render_notification(note):
 			'body': options['attending_user_name'] + ' is in for ' + options['activity_title'],
 			'icon': options['icon'],
 			'url': 'https://www.updogapp.co/static/',
-			'id': note.id}
+			'id': note.id,
+			'fetched_previously': note.fetched_previously,
+			'created_at': note.created_at.isoformat()}
 
-def get_active(user_id):
-	print 'getting active for '+str(user_id)
-	potential_notifications = Notification.objects.filter(dismissed = False, expired = False, user = User.objects.get(id=user_id))
+def render_notifications(note_list):
+	return map(lambda note: render_notification(note), note_list)
+
+def get_active_notifications(user_id):
+	potential_notifications = Notification.objects.filter(expired = False, user = User.objects.get(id=user_id))
 	active_notifications = []
 	for note in potential_notifications:
 		options = json.loads(note.options)
+		# Try catch to handle the activity was deleted
 		try:
 			activity = Activity.objects.get(id=options['activity_id'])
 			now = datetime.datetime.utcnow().replace(tzinfo=utc)
+			# Only send notifications if the activity isn't in the past
 			if activity.start_time < now:
 				note.expired = True
 				note.save()
@@ -74,8 +81,7 @@ def get_active(user_id):
 		except Activity.DoesNotExist:
 			note.expired = True
 			note.save()
-	notifications_to_send = map(lambda note: render_notification(note), active_notifications)
-	return notifications_to_send
+	return active_notifications
 
 def delete_all_notifications():
 	for note in Notification.objects.all:

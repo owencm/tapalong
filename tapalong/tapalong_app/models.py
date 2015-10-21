@@ -50,8 +50,9 @@ class Notification(models.Model):
 	template = models.CharField(max_length=60, blank=False)
 	# This is serialized JSON
 	options = models.TextField(default='')
-	dismissed = models.BooleanField(default=False)
 	expired = models.BooleanField(default=False)
+	fetched_previously = models.BooleanField(default=False)
+	created_at = models.DateTimeField(blank=False)
 
 	def __unicode__(self):
 		return 'Notificaiton object: ' + self.template + ' for ' + self.user.name
