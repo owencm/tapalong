@@ -63,6 +63,10 @@ def render_notification(note):
 def render_notifications(note_list):
 	return map(lambda note: render_notification(note), note_list)
 
+def mark_notification_fetched(note):
+	note.fetched_previously = True
+	note.save()
+
 def get_active_notifications(user_id):
 	potential_notifications = Notification.objects.filter(expired = False, user = User.objects.get(id=user_id))
 	active_notifications = []

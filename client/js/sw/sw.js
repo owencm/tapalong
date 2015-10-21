@@ -9,8 +9,6 @@ var log = function () {
     console.log.apply(console, arguments);
   }
 }
-var userId;
-var sessionToken;
 
 self.addEventListener('install', function(e) {
     //Automatically take over the previous worker.
@@ -25,36 +23,47 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('push', function(e) {
   log('push listener', e);
   e.waitUntil(new Promise(function(resolve, reject) {
-    getNotifications(function (notifications) {
+    getNotifications().then(function (notifications) {
       // This is async so resolve once it's done and the notifications are showing
-      showNotificationsIfNotShownPreviously(notifications, resolve);
+      notifications = notifications.filter((notification)=>{
+        return (notification.fetched_previously == false);
+      });
+      notShownOnThisClientBefore(notifications).then((notifications) => {
+        return showNotifications(notifications);
+      }).then(resolve);
     }, function (reason) {
       reject(reason);
     });
   }));
 });
 
-function getNotifications(resolve, reject) {
-  // Get the session tokens etc from IDB
-  var db = objectDB.open('db-1');
-  db.get().then(function(data) {
-    var sessionToken = data.sessionToken;
-    var userId = data.userId;
-    if (sessionToken == undefined || userId == undefined) {
-      throw new Error('User was not logged in. Cannot request notifications.');
-    }
-    // TODO: Unify networking library with main app
-    fetch('/../v1/notifications/', {
-      headers: {
-        'Session-Token': sessionToken,
-        'User-Id': userId
+function getNotifications() {
+  return new Promise((resolve, reject) => {
+    // Get the session tokens etc from IDB
+    var db = objectDB.open('db-1');
+    // Note objectDB does not use actual promises so we can't properly chain this
+    db.get().then(function(data) {
+      var sessionToken = data.sessionToken;
+      var userId = data.userId;
+      if (sessionToken == undefined || userId == undefined) {
+        throw new Error('User was not logged in. Cannot request notifications.');
       }
-    }).then(function(response) {
-      response.text().then(function(txt) {
-        log('fetched notifications', txt);
+      // TODO: Unify networking library with main app
+      fetch('/../v1/notifications/', {
+        headers: {
+          'Session-Token': sessionToken,
+          'User-Id': userId
+        }
+      }).then(function(response) {
+      return response.text();
+      }).then(function(txt) {
         var notifications = JSON.parse(txt);
+        log('Fetched notifications: ', notifications);
         resolve(notifications);
-      }).catch(reject);
+      }).catch(function(ex) {
+        reject();
+        console.log(ex);
+      });
     });
   });
 }
@@ -78,27 +87,45 @@ function handleNotificationClick(e) {
   });
 }
 
-function showNotificationsIfNotShownPreviously(notifications, success) {
-  var db = objectDB.open('db-1');
-  db.get().then(function(data)  {
-    console.log('data', data);
-    if (data.notificationIds == undefined ) {
-      console.log('data.notificationIds was blank')
-      data.notificationIds = [];
-    }
-    for (var i = 0; i < notifications.length; i++) {
-      var note = notifications[i];
-      if (data.notificationIds.indexOf(note.id) < 0) {
-        console.log('havent shown note '+note.id+' before');
-        data.notificationIds.push(note.id);
-        showNotification(note.title, note.body, note.url, note.icon, note.id);
-      } else {
-        console.log('we showed note '+note.id+' previously so skip it');
+function notShownOnThisClientBefore(notifications) {
+  return new Promise((resolve, reject) => {
+    var result = [];
+    var db = objectDB.open('db-1');
+    db.get().then(function(data)  {
+      console.log('Database of previously shown notification IDs: ', data);
+      for (var i = 0; i < notifications.length; i++) {
+        var note = notifications[i];
+        if (data.notificationIds.indexOf(note.id) < 0) {
+          console.log('This client hasn\t shown notification '+note.id+' before');
+          result.push(note);
+        }
       }
-    }
-    db.put('notificationIds', data.notificationIds);
-    // Resolve one second late for no good reason, other than it may help avoid bugs that cause 'has updated in the background' notifications
-    setTimeout(success, 1000);
+      resolve(result);
+    });
+  });
+}
+
+function showNotifications(notifications) {
+  return new Promise((resolve, reject) => {
+    var db = objectDB.open('db-1');
+    db.get().then(function(data)  {
+      if (data.notificationIds == undefined ) {
+        console.log('SW has never shown a notification before. Creating state in DB.')
+        data.notificationIds = [];
+      }
+      for (var i = 0; i < notifications.length; i++) {
+        var note = notifications[i];
+        showNotification(note.title, note.body, note.url, note.icon, note.id);
+        // We only show notifications never shown before, so we will never add the same ID here twice
+        data.notificationIds.push(note.id);
+      }
+      // Note objectDB does not use real promises so we can't chain this
+      db.put('notificationIds', data.notificationIds).then(() => {
+        // Resolve one second late just in case it took a while to show the notifications earlier
+        // TODO: Move the resolve to happen after at least one showNotification promise has resolved
+        setTimeout(resolve, 1000);
+      });
+    });
   });
 }
 

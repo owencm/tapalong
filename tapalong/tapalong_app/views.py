@@ -237,6 +237,11 @@ def notifications_list(request):
 	active_notifications = notifications.get_active_notifications(user_id)
 	notifications_to_send = notifications.render_notifications(active_notifications)
 	json_output = json.dumps(notifications_to_send)
+	
+	# Mark all these notifications as having been fetched
+	for note in active_notifications:
+		notifications.mark_notification_fetched(note)
+
 	return HttpResponse(json_output, content_type='application/json')
 
 @csrf_exempt
