@@ -1,5 +1,7 @@
 from tapalong_app.models import User, Activity, Session, Notification, PushSubscription
 from django.conf import settings
+from django.utils.timezone import utc
+import datetime
 import json
 import requests
 
@@ -60,11 +62,18 @@ def get_active(user_id):
 	potential_notifications = Notification.objects.filter(dismissed = False, expired = False, user = User.objects.get(id=user_id))
 	active_notifications = []
 	for note in potential_notifications:
-		# if note.start_time < date.today():
-		# 	note.expired = true
-		# 	note.save()
-		# else:
-			active_notifications.append(note)
+		options = json.loads(note.options)
+		try:
+			activity = Activity.objects.get(id=options['activity_id'])
+			now = datetime.datetime.utcnow().replace(tzinfo=utc)
+			if activity.start_time < now:
+				note.expired = True
+				note.save()
+			else:
+				active_notifications.append(note)
+		except Activity.DoesNotExist:
+			note.expired = True
+			note.save()
 	notifications_to_send = map(lambda note: render_notification(note), active_notifications)
 	return notifications_to_send
 
