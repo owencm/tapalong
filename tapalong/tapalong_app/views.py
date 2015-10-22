@@ -13,6 +13,9 @@ import dateutil.parser
 import sessions
 import notifications
 
+# TODO: This code all makes me sad. Rewrite or something, please.
+# TODO: Move all ACLing to middleware
+
 def index(request):
 	return redirect('/static/index.html')
 
@@ -27,7 +30,6 @@ def login_user(request):
 		request_contents = json.loads(request.body)
 		fb_token = request_contents.get('fb_token')
 		facebook = Pyfb(settings.FACEBOOK_APP_ID)
-		#Sets the authentication token
 		facebook.set_access_token(fb_token)
 		# Todo: Handle this failing, for example if the user waits a long time
 		# before pressing login you get 'Error validating access token: ...'
@@ -58,9 +60,8 @@ def refreshFriends(facebook, user):
 	# Set up the list of the users' facebook friends' ids
 	friends = facebook.get_friends()
 	friend_ids = map(lambda friend: friend.id, friends)
-	friend_ids_str = ','.join(friend_ids)
-	print friend_ids_str
-	user.friends=friend_ids_str
+
+	user.friends =  ','.join(friend_ids)
 	user.save()
 
 # Serializes a single activity into JSON, passing along the following:
@@ -72,8 +73,6 @@ def serialize_activity(activity, user_id):
 	is_attending = activity.attendees.filter(id=user_id).exists()
 
 	attendees_names = map(lambda user: user.name, activity.attendees.all())
-	#serialized_attendees_names = json.dumps(attendees_names)
-	debug_start_time = activity.start_time
 
 	return {
 		"activity":
@@ -96,8 +95,7 @@ def serialize_activity(activity, user_id):
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
 # On POST: Accepts and stores a new activity
-# TODO @allygale: Will need to convert start time from str
-# to datetime, check to make sure user exists?
+# TODO: check to make sure user exists?
 @csrf_exempt
 def activities_list(request):
 	# TODO: factor out auth check to somewhere higher that covers all APIs
@@ -115,11 +113,7 @@ def activities_list(request):
 
 	if request.method == 'GET':
 		# Get all activities
-		# Currently showing things from the past while debugging
 		user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
-		# Get all activities
-		# user_activities_list = Activity.objects.order_by('-pub_date')
-		# TODO: Get all activities that are created by friends of the user
 
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
@@ -127,8 +121,6 @@ def activities_list(request):
 		json_output = json.dumps(serialized_activities)
 		return HttpResponse(json_output, content_type='application/json')
 	elif request.method == 'POST':
-		# Get current time for activity creation timestamp
-		# now = datetime.datetime.utcnow().replace(tzinfo=utc)
 		# Get request data and parse it from JSON
 		activity_info = json.loads(request.body)
 		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
@@ -237,7 +229,7 @@ def notifications_list(request):
 	active_notifications = notifications.get_active_notifications(user_id)
 	notifications_to_send = notifications.render_notifications(active_notifications)
 	json_output = json.dumps(notifications_to_send)
-	
+
 	# Mark all these notifications as having been fetched
 	for note in active_notifications:
 		notifications.mark_notification_fetched(note)
