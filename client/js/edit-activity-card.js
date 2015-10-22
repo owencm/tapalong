@@ -21,11 +21,10 @@ module.exports = React.createClass({
   componentDidMount: function () {
     // Focus the title input if we're creating
     if (!this.props.activity) {
-      this.refs.titleInput.getDOMNode().focus();
+      this.refs.titleInput.focus();
     }
-    // Disabled as it scrolled poorly on iOS
-    // this.refs.titleInput.getDOMNode().scrollIntoView();
-    // TODO: If we scrolled into view the elem may be hidden behind the header
+    // Scroll to the top of the page to ensure the editing screen is visible
+    scroll(window, 0);
   },
   handleTitleChange: function (e) {
     this.setState({title: e.target.value});
@@ -154,7 +153,7 @@ module.exports = React.createClass({
     return (
       <Card>
         <div style={{padding: '24px'}}>
-          <b>{this.props.userName}</b> is<br />
+          <b>{this.props.userName}</b> is planning on<br />
           <input
             ref='titleInput'
             type='text'

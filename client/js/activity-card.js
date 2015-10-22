@@ -90,13 +90,10 @@ var ActivityCard = React.createClass({
           {/* This forces the title to not wrap around the bottom of the icon */}
           <div style={{overflow: 'hidden'}}>
             { /* Title section */ }
-            {
-              this.props.activity.is_creator ? (
-                <span><b>You</b> are </span>
-              ) : (
-                <span><b>{this.props.activity.creator_name}</b> is </span>
-              )
-            }
+            <span>
+            { this.props.activity.is_creator ? <b>You</b> : <b>{this.props.activity.creator_name}</b> }
+              <span> will be </span>
+            </span>
             <b>{this.props.activity.title}</b> {this.getDateString()}
             {
               /* Description and attendees */
