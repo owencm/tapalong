@@ -59,8 +59,11 @@ def login_user(request):
 def refreshFriends(facebook, user):
 	# Set up the list of the users' facebook friends' ids
 	friends = facebook.get_friends()
+	for friend in friends:
+		print friend.name
 	friend_ids = map(lambda friend: friend.id, friends)
-
+	print(friends)
+	asdf
 	user.friends =  ','.join(friend_ids)
 	user.save()
 
@@ -106,10 +109,9 @@ def activities_list(request):
 		print('A suspicious operation ocurred', token, user_id)
 		return HttpResponseForbidden()
 
-	# TODO, only return activities where creator_id is a friend and attendees.length < max_attendees or current user is in attendees
-	#friends = facebook.get_friends()
-	#for friend in friends:
-		#print friend.name
+	user = User.objects.get(id=user_id)
+	users_friends_with_user = User.objects.filter(id__in=user.friends)
+	print(user.friends)
 
 	if request.method == 'GET':
 		# Get all activities

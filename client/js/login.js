@@ -13,7 +13,7 @@ var Login = React.createClass({
       <FacebookLogin
         appId='175370155978273'
         class='facebook-login'
-        scope='public_profile'
+        scope='public_profile, user_friends'
         autoLoad
         loginHandler={ this.handleLogin } >
         <LoginInner />
