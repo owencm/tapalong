@@ -43,6 +43,8 @@ var user = (function () {
     // TODO: Implement better login tracking
     loggedIn = true;
     userName = newUserName;
+    var db = objectDB.open('db-1');
+    db.put('userName', userName);
     listenerModule.change();
   }
   var getUserName = function () {

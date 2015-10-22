@@ -24,17 +24,6 @@ var Login = React.createClass({
   handleLogin: function (result) {
     console.log(result);
     models.startLogin(result.accessToken, this.props.onLoginComplete, function(){});
-    // var userId = 1;
-    // var userName = 'Owen Campbell-Moore';
-    // var sessionToken = 'letmein';
-    // models.user.setUserName(userName);
-    // models.user.setUserId(userId);
-    // models.user.setSessionToken(sessionToken);
-    // models.activities.tryRefreshActivities(function () {
-    //   this.props.onLoginComplete();
-    // }.bind(this), function () {
-    //   console.log('Failed to download activities')
-    // });
   }
 });
 

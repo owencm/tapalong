@@ -9,19 +9,48 @@ var Header = require('./header.js');
 var FabButton = require('./fab.js');
 
 // Require core logic
+var objectDB = require('./objectdb.js');
 var models = require('./models.js');
 var swLibrary = require('./swsetup.js')
 var m = require('./m.js');
 
-var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, notificationsOptIn: 5};
+var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
+
+var db = objectDB.open('db-1');
+var dbAfterGet = db.get();
 
 var App = React.createClass({
 
   getInitialState: function () {
-    return { screen: SCREEN.loggedOut }
+    return {
+      screen: SCREEN.uninitialized,
+    }
+  },
+
+  componentDidMount: function () {
+    // Note objectDB does not use actual promises so we can't properly chain this
+    dbAfterGet.then((data) => {
+      var sessionToken = data.sessionToken;
+      var userName = data.userName;
+      var userId = data.userId;
+      var loggedIn = !(sessionToken == null || userId == null || userName == null);
+      if (loggedIn) {
+        models.user.setUserName(userName);
+        models.user.setUserId(userId);
+        models.user.setSessionToken(sessionToken);
+        models.activities.tryRefreshActivities(this.handleViewList, () => {
+          console.log('Failed to download activities');
+        });
+      } else {
+        this.setState({screen: SCREEN.loggedOut});
+      }
+    });
   },
 
   render: function() {
+    if (this.state.screen == SCREEN.uninitialized) {
+      return null;
+    }
     var activities = models.activities.getActivities();
     // TODO: Refactor this mess!
     if (this.state.screen == SCREEN.loggedOut) {
