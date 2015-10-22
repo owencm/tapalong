@@ -4,7 +4,6 @@ from django.http import HttpResponse, HttpResponseForbidden, QueryDict
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.template import RequestContext, loader
-from pyfb import Pyfb
 from django.conf import settings
 from datetime import date, timedelta
 import json
@@ -12,6 +11,7 @@ import datetime
 import dateutil.parser
 import sessions
 import notifications
+import facebook
 
 # TODO: This code all makes me sad. Rewrite or something, please.
 # TODO: Move all ACLing to middleware
@@ -29,17 +29,13 @@ def login_user(request):
 	if request.method == 'POST':
 		request_contents = json.loads(request.body)
 		fb_token = request_contents.get('fb_token')
-		facebook = Pyfb(settings.FACEBOOK_APP_ID)
-		facebook.set_access_token(fb_token)
+		graph = facebook.GraphAPI(access_token=fb_token)
 		# Todo: Handle this failing, for example if the user waits a long time
 		# before pressing login you get 'Error validating access token: ...'
-		# Gets info about myself
-		fb_user = facebook.get_myself()
+		fb_user = graph.get_object(id='me')
 		try:
-			user = User.objects.get(fb_id=fb_user.id)
-			print('logging in as user ',user.id)
-			refreshFriends(facebook, user)
-			# Start dat session
+			user = User.objects.get(fb_id=fb_user['id'])
+			refreshFriends(graph, user)
 			session_token = sessions.start_session(user.id)
 			# Stringify the session token since if JS reads it as an int it doesn't have enough precision
 			json_output = json.dumps({'success': 'true', "user_id": user.id, "user_name": user.name, "session_token": str(session_token), "first_login": "false"})
@@ -56,15 +52,13 @@ def login_user(request):
 	else:
 		raise Exception('Requests to /login/ must be post, not get.')
 
-def refreshFriends(facebook, user):
-	# Set up the list of the users' facebook friends' ids
-	friends = facebook.get_friends()
-	for friend in friends:
-		print friend.name
-	friend_ids = map(lambda friend: friend.id, friends)
-	print(friends)
-	asdf
-	user.friends =  ','.join(friend_ids)
+def refreshFriends(graph, user):
+	# This returns a list of all friends who have also granted updog permission
+	# friends = graph.get_connections(id='me', connection_name='friends')['data']
+	# friend_ids = map(lambda friend: friend['id'], friends)
+	friend_ids=[1,2]
+	# Join only works on strings so cast to strings here
+	user.friends = ','.join(str(id) for id in friend_ids)
 	user.save()
 
 # Serializes a single activity into JSON, passing along the following:
@@ -95,10 +89,31 @@ def serialize_activity(activity, user_id):
 			 }
 		 }
 
+# TODO: Move this function to somewhere more sensible
+def users_fb_friends_with_user(user):
+	fb_ids_of_users_friends_with_user = user.friends.split(',')
+	# If user.friends == '' this will be split to [''] so filter that out
+	if fb_ids_of_users_friends_with_user == ['']:
+		fb_ids_of_users_friends_with_user = []
+	return User.objects.filter(fb_id__in=fb_ids_of_users_friends_with_user)
+
+def user_can_see_activity(user, activity):
+	return activity in get_activities_visible_to_user(user)
+
+def get_activities_visible_to_user(user):
+	# Get all of the user objects that are FB friends with user
+	users_friends_with_user = users_fb_friends_with_user(user)
+
+	# Get all activities scheduled for the future and created by friends
+	my_activities = Activity.objects.filter(creator=user)
+	friends_activities = Activity.objects.filter(creator__in=users_friends_with_user).exclude(start_time__lt=date.today()).order_by('-pub_date')
+	# Anyone can see the first two users plans! TODO: Remove eventually so users in prod can't see private stuff
+	test_acc_activities = Activity.objects.filter(creator_id__in=[1,2])
+	return my_activities | friends_activities | test_acc_activities
+
 # On GET: Returns all events for the given user. Events are
 # returned in order of creation; youngest to oldest.
 # On POST: Accepts and stores a new activity
-# TODO: check to make sure user exists?
 @csrf_exempt
 def activities_list(request):
 	# TODO: factor out auth check to somewhere higher that covers all APIs
@@ -110,22 +125,23 @@ def activities_list(request):
 		return HttpResponseForbidden()
 
 	user = User.objects.get(id=user_id)
-	users_friends_with_user = User.objects.filter(id__in=user.friends)
-	print(user.friends)
 
 	if request.method == 'GET':
-		# Get all activities
-		user_activities_list = Activity.objects.exclude(start_time__lt=date.today()).order_by('-pub_date')
+		user_activities_list = get_activities_visible_to_user(user)
 
 		# Serialized and output to json.
 		serialized_activities = [serialize_activity(a, user_id) for a in user_activities_list]
-		# serialized_activities = []
 		json_output = json.dumps(serialized_activities)
 		return HttpResponse(json_output, content_type='application/json')
 	elif request.method == 'POST':
 		# Get request data and parse it from JSON
 		activity_info = json.loads(request.body)
-		activity = Activity(creator=User.objects.get(id=user_id), title=activity_info.get("title"), start_time=dateutil.parser.parse(activity_info.get("start_time")), description=activity_info.get("description"), location=activity_info.get("location"), max_attendees=activity_info.get("max_attendees"))
+		activity = Activity(creator=user,
+							title=activity_info.get("title"),
+							start_time=dateutil.parser.parse(activity_info.get("start_time")),
+							description=activity_info.get("description"),
+							location=activity_info.get("location"),
+							max_attendees=activity_info.get("max_attendees"))
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
@@ -142,7 +158,11 @@ def attending(request, activity_id):
 	if request.method == 'POST':
 		user = User.objects.get(id=user_id)
 		activity = Activity.objects.get(id=activity_id)
-		# TODO: Ensure the user is allowed to see this activity
+
+		if not user_can_see_activity(user, activity):
+			print 'User tried to attend an activity they cant see'
+			return HttpResponseForbidden()
+
 		# TODO: Ensure the activity is in the future
 		# TODO: Ensure the user doesn't own this event
 		# Toggle attendance based on whether they are already attending
@@ -157,7 +177,7 @@ def attending(request, activity_id):
 			else:
 				print('No room for user at activity')
 				return HttpResponse('No room available')
-				# TODO: Return an error
+				# TODO: Return an error to be rendered on the client
 		activity.save()
 		serialized_activity = serialize_activity(activity, user_id)
 		json_output = json.dumps(serialized_activity)
@@ -176,7 +196,9 @@ def cancel(request, activity_id):
 	if request.method == 'POST':
 		user = User.objects.get(id=user_id)
 		activity = Activity.objects.get(id=activity_id)
-		# TODO: Ensure the user owns this event
+		if not (activity.creator == user):
+			return HttpResponseForbidden('You do not own this plan')
+
 		# TODO: Just mark it as cancelled, don't actually delete it
 		# TODO: Try/catch this in case it fails
 		activity.delete()
