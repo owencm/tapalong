@@ -27,6 +27,8 @@ var App = React.createClass({
     }
   },
 
+  // TODO: Work out where a login flow like this should actually go
+  // TODO: Handle the case where the session token expires
   componentDidMount: function () {
     // Note objectDB does not use actual promises so we can't properly chain this
     dbAfterGet.then((data) => {
