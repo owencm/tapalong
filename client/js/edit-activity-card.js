@@ -15,7 +15,8 @@ module.exports = React.createClass({
       title: this.props.activity ? this.props.activity.title : '',
       description: this.props.activity ? this.props.activity.description : '',
       start_time: this.props.activity ? this.props.activity.start_time : Date.today().add(1).days().set({hour: 16}),
-      saving: false
+      saveRequestPending: false,
+      deleteRequestPending: false,
     };
   },
   componentDidMount: function () {
@@ -60,19 +61,22 @@ module.exports = React.createClass({
     this.setState({start_time: newStartTime});
   },
   handleSaveClicked: function (e) {
+    this.setState({saveRequestPending: true});
+
     var thisButton = e.target;
-    this.setState({saving: true});
 
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
     models.activities.tryUpdateActivity(this.props.activity, activityChanges, () => {
       this.props.onSaveComplete();
+      this.setState({saveRequestPending: false});
     }, () => {
       alert('An error occurred! Sorry. Please refresh.');
       throw('Editing the activity failed. Help the user understand why.');
     });
   },
   handleCreateClicked: function () {
+    this.setState({saveRequestPending: true});
     var newActivity = {
       title: this.state.title,
       start_time: this.state.start_time,
@@ -81,25 +85,25 @@ module.exports = React.createClass({
       description: this.state.description
     };
     models.activities.tryCreateActivity(newActivity, () => {
+      this.setState({saveRequestPending: false});
       this.props.onCreateComplete();
     }, () => {
-      // thisButton.classList.toggle('disabled', false);
+      this.setState({saveRequestPending: false});
       alert('Sorry, something went wrong. Please check you entered the information correctly.');
-      throw("Adding to server failed. Help the user understand why");
     });
   },
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
-       models.activities.tryCancelActivity(this.props.activity, () => {
-         console.log(this);
-         this.props.onDeleteComplete();
-       }, () => {
-         alert('An error occurred! Sorry :(. Please refresh.');
-         throw("Cancelling on server failed. Help the user understand why");
-       });
-     } else {
-       // Do nothing
-     }
+      this.setState({deleteRequestPending: true});
+      models.activities.tryCancelActivity(this.props.activity, () => {
+        this.setState({deleteRequestPending: false});
+        this.props.onDeleteComplete();
+      }, () => {
+        alert('Sorry, something went wrong. Please restart Up Dog and try again.');
+      });
+    } else {
+      // Do nothing
+    }
   },
   render: function () {
     var editing = !!this.props.activity;
@@ -123,19 +127,24 @@ module.exports = React.createClass({
     };
     // Set up the options on the card
     var options = [];
-    var defaultOption;
     if (editing) {
-      defaultOption = {label: 'Save', onClick: this.handleSaveClicked};
-      if (this.state.saving) {
-        defaultOption.label = 'Saving...';
-        defaultOption.disabled = true;
+      if (this.state.saveRequestPending) {
+        options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClicked});
+      } else {
+        options.push({label: 'Save', onClick: this.handleSaveClicked});
       }
-      var deleteOption = {label: 'Delete', onClick: this.handleDeleteClicked, position: 'left', type: 'bad'};
-      options.push(deleteOption);
+      if (this.state.deleteRequestPending) {
+        options.push({label: 'Deleting...', disabled: true, position: 'left', type: 'bad', onClick: this.handleDeleteClicked});
+      } else {
+        options.push({label: 'Delete', position: 'left', type: 'bad', onClick: this.handleDeleteClicked});
+      }
     } else {
-      defaultOption = {label: 'Create', onClick: this.handleCreateClicked};
+      if (this.state.saveRequestPending) {
+        options.push({label: 'Creating...', disabled: true, onClick: this.handleCreateClicked});
+      } else {
+        options.push({label: 'Create', onClick: this.handleCreateClicked});
+      }
     }
-    options.push(defaultOption);
     // Provide dates and times for the input elements
     // Documentation for date formatting: https://code.google.com/p/datejs/wiki/FormatSpecifiers
     var getHyphenSeparatedTime = function(date) {
