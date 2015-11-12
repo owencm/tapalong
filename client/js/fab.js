@@ -2,8 +2,8 @@
 var React = require('react');
 var m = require('./m.js');
 
-module.exports = React.createClass({
-  render: function () {
-    return <div id='addButton' onClick={this.props.onClick}></div>
-  }
-});
+var Fab = (props) => {
+  return <div id='addButton' onClick={props.onClick}></div>
+};
+
+module.exports = Fab;
