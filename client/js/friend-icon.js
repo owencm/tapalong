@@ -3,7 +3,7 @@ var React = require('react');
 var m = require('./m.js');
 var ImgFadeInOnLoad = require('./img-fade-in-on-load.js');
 
-FriendIcon = (props) => {
+var FriendIcon = (props) => {
   var friendIconStyle = {
     border: '1px solid #ccc',
     borderRadius: '19px',
@@ -19,3 +19,5 @@ FriendIcon = (props) => {
     </div>
   )
 };
+
+module.exports = FriendIcon;

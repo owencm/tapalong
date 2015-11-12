@@ -10,6 +10,7 @@ import EditActivity from './edit-activity-card.js';
 import OptIn from './opt-in.js';
 import Header from './header.js';
 import FabButton from './fab.js';
+import { createStore } from 'redux';
 
 // Require core logic
 import objectDB from './objectdb.js';
@@ -17,207 +18,237 @@ import models from './models.js';
 import swLibrary from './swsetup.js'
 import m from './m.js';
 
+var GOTO_SCREEN = 'GOTO_SCREEN';
+var GOTO_EDIT_SCREEN = 'GOTO_EDIT_SCREEN';
+var GOTO_NEXT_SCREEN = 'GOTO_NEXT_SCREEN';
+var QUEUE_NEXT_SCREEN = 'QUEUE_NEXT_SCREEN';
 var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
+
+var defaultState = {
+  screen: SCREEN.uninitialized
+}
+
+function reducer(state = defaultState, action) {
+  switch (action.type) {
+    case GOTO_SCREEN:
+      return m({}, state, { screen: action.screen });
+    case GOTO_EDIT_SCREEN:
+      return m({}, state, { screen: SCREEN.edit, activityForEditing: action.activityForEditing });
+    case GOTO_NEXT_SCREEN:
+      return m({}, state, { screen: state.nextScreen });
+    case QUEUE_NEXT_SCREEN:
+      return m({}, state, { nextScreen: action.nextScreen, optInReason: action.optInReason });
+    default:
+      return state;
+  }
+}
+
+let store = createStore(reducer);
+
+store.subscribe(() => {
+    // console.log(store.getState());
+    redrawCurrentView();
+  }
+);
 
 var db = objectDB.open('db-1');
 var dbAfterGet = db.get();
 
-var App = React.createClass({
-
-  getInitialState: function () {
-    return {
-      screen: SCREEN.uninitialized,
-    }
-  },
-
-  // TODO: Work out where a login flow like this should actually go
-  // TODO: Handle the case where the session token expires
-  componentDidMount: function () {
-    // Note objectDB does not use actual promises so we can't properly chain this
-    dbAfterGet.then((data) => {
-      var sessionToken = data.sessionToken;
-      var userName = data.userName;
-      var userId = data.userId;
-      var loggedIn = !(sessionToken == null || userId == null || userName == null);
-      if (loggedIn) {
-        models.user.setUserName(userName);
-        models.user.setUserId(userId);
-        models.user.setSessionToken(sessionToken);
-        models.activities.tryRefreshActivities(this.handleViewList, () => {
-          console.log('Failed to download activities');
-        });
-      } else {
-        this.setState({screen: SCREEN.loggedOut});
-      }
+// TODO: Handle the session token expiring
+// Note objectDB does not use actual promises so we can't properly chain this
+dbAfterGet.then((data) => {
+  var sessionToken = data.sessionToken;
+  var userName = data.userName;
+  var userId = data.userId;
+  var loggedIn = !(sessionToken == null || userId == null || userName == null);
+  if (loggedIn) {
+    models.user.setUserName(userName);
+    models.user.setUserId(userId);
+    models.user.setSessionToken(sessionToken);
+    models.activities.tryRefreshActivities(() => {
+      store.dispatch({type: GOTO_SCREEN, screen: SCREEN.list});
+    }, () => {
+      console.log('Failed to download activities');
     });
-  },
-
-  render: function() {
-    if (this.state.screen == SCREEN.uninitialized) {
-      return null;
-    }
-    var activities = models.activities.getActivities();
-    // TODO: Refactor this mess!
-    if (this.state.screen == SCREEN.loggedOut) {
-      return <Login onLoginComplete={this.handleViewList} />;
-    } else {
-      var mainContents;
-      if (this.state.screen == SCREEN.list) {
-        mainContents = (
-          <ActivityCardList
-            activities ={activities}
-            onAttendClick={this.handleAttend}
-            onUnattendClick={this.handleUnattend}
-            onEditClick={this.handleStartEditing}
-          />
-        );
-      } else if (this.state.screen == SCREEN.notificationsOptIn) {
-        mainContents = (
-          <OptIn
-            reason={this.state.optInReason}
-            nextState={this.state.nextScreen}
-            onOptInComplete={this.handleOptInComplete}
-          />
-        );
-      } else if ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1) {
-        mainContents = (
-          <EditActivity
-            activity={this.state.activityForEditing}
-            userName={models.user.getUserName()}
-            onSaveComplete={this.handleActivitySaveComplete}
-            onCreateComplete={this.handleActivityCreateComplete}
-            onDeleteComplete={this.handleViewList}
-          />
-        );
-      }
-      var headerIfNeeded = null;
-      if (this.shouldShowHeader()) {
-        headerIfNeeded = (
-          <Header
-            title={this.getScreenTitle()}
-            shouldShowBackButton={this.shouldShowBackButton()}
-            onBackButtonClick={this.handleViewList}
-          />
-        );
-      }
-      var createButtonIfNeeded = null;
-      if (this.shouldShowCreateButton()) {
-        createButtonIfNeeded = <FabButton onClick={this.handleStartCreating} />;
-      }
-      return (
-        <div>
-          <div id='container'>
-            {mainContents}
-            <div style={{height: '100px'}}></div>
-          </div>
-          { /* Note these must be below the container to capture the clicks */ }
-          { headerIfNeeded }
-          { createButtonIfNeeded }
-        </div>
-      )
-    }
-  },
-
-  shouldShowHeader: function () {
-    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(this.state.screen) > -1);
-  },
-
-  shouldShowBackButton: function () {
-    return ([SCREEN.create, SCREEN.edit].indexOf(this.state.screen) > -1);
-  },
-
-  shouldShowCreateButton: function () {
-    return (this.state.screen == SCREEN.list);
-  },
-
-  handleScreenChange: function (newScreen, options, userTriggered) {
-    if (options && options.nextScreen) {
-      this.setState({nextScreen: options.nextScreen, optInReason: options.reason});
-    }
-    this.setState({screen: newScreen});
-  },
-
-  handleStartEditing: function (activity) {
-    this.setState({screen: SCREEN.edit, activityForEditing: activity});
-  },
-
-  handleStartCreating: function () {
-    // Create mode and edit are the same, so make sure we aren't still referring
-    // to another activity for editing
-    this.setState({screen: SCREEN.create, activityForEditing: undefined});
-  },
-
-  // Syntactic sugar since we call this all the time
-  handleViewList: function () {
-    this.handleScreenChange(SCREEN.list);
-  },
-
-  getScreenTitle: function() {
-    if (this.state.screen == SCREEN.list) {
-      return 'Upcoming Plans';
-    } else if (this.state.screen == SCREEN.edit) {
-      return 'Edit';
-    } else if (this.state.screen == SCREEN.create) {
-      return 'Create'
-    } else if (this.state.screen == SCREEN.notificationsOptIn) {
-      return 'Stay up to date'
-    } else {
-      return 'Uh oh: title shouldn\'t be showing';
-    }
-  },
-
-  handleOptInComplete: function () {
-    this.setState({screen: this.state.nextScreen});
-  },
-
-  handleActivitySaveComplete: function () {
-    // Don't ask the user to grant permission unless the browser supports it
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(() => {
-        this.handleViewList();
-      }, () => {
-        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
-      });
-    } else {
-      this.handleViewList();
-    }
-  },
-
-  handleActivityCreateComplete: function () {
-    // From a flow standpoint we do the same when creating as saving
-    this.handleActivitySaveComplete();
-  },
-
-  handleAttend: function (activity) {
-    // Note we change screen without waiting for network to complete
-    // Don't ask the user to grant permission unless the browser supports it
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(() => {
-        this.handleViewList();
-      }, () => {
-        this.handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
-      });
-    } else {
-      this.handleViewList();
-    }
-    // Note no callback since the list will automatically redraw when this changes
-    var optimistic = activity.dirty == undefined;
-    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
-  },
-
-  handleUnattend: function (activity) {
-    // Note no callback since the list will automatically redraw when this changes
-    var optimistic = activity.dirty == undefined;
-    models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
+  } else {
+    store.dispatch({ type: GOTO_SCREEN, screen: SCREEN.loggedOut });
   }
-
 });
+
+var App = (props) => {
+
+  let screen = store.getState().screen;
+  let optInReason = store.getState().optInReason;
+  let nextScreen = store.getState().nextScreen;
+  let activityForEditing = store.getState().activityForEditing;
+  if (screen == SCREEN.uninitialized) {
+    // TODO: Work out how to return nothing from a stateless component
+    return <div/>;
+  }
+  var activities = models.activities.getActivities();
+  // TODO: Refactor this mess!
+  if (screen == SCREEN.loggedOut) {
+    return <Login onLoginComplete={handleViewList} />;
+  } else {
+    var mainContents;
+    if (screen == SCREEN.list) {
+      mainContents = (
+        <ActivityCardList
+          activities ={activities}
+          onAttendClick={handleAttend}
+          onUnattendClick={handleUnattend}
+          onEditClick={handleStartEditing}
+        />
+      );
+    } else if (screen == SCREEN.notificationsOptIn) {
+      mainContents = (
+        <OptIn
+          reason={optInReason}
+          nextState={nextScreen}
+          onOptInComplete={handleOptInComplete}
+        />
+      );
+    } else if ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1) {
+      mainContents = (
+        <EditActivity
+          activity={activityForEditing}
+          userName={models.user.getUserName()}
+          onSaveComplete={handleActivitySaveComplete}
+          onCreateComplete={handleActivityCreateComplete}
+          onDeleteComplete={handleViewList}
+        />
+      );
+    }
+    var headerIfNeeded = null;
+    if (shouldShowHeader()) {
+      headerIfNeeded = (
+        <Header
+          title={getScreenTitle()}
+          shouldShowBackButton={shouldShowBackButton()}
+          onBackButtonClick={handleViewList}
+        />
+      );
+    }
+    var createButtonIfNeeded = null;
+    if (shouldShowCreateButton()) {
+      createButtonIfNeeded = <FabButton onClick={handleStartCreating} />;
+    }
+    return (
+      <div>
+        <div id='container'>
+          {mainContents}
+          <div style={{height: '100px'}}></div>
+        </div>
+        { /* Note these must be below the container to capture the clicks */ }
+        { headerIfNeeded }
+        { createButtonIfNeeded }
+      </div>
+    )
+  }
+}
+
+let shouldShowHeader = () => {
+  let screen = store.getState().screen;
+  return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(screen) > -1);
+};
+
+let shouldShowBackButton = () => {
+  let screen = store.getState().screen;
+  return ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1);
+};
+
+let shouldShowCreateButton = () => {
+  let screen = store.getState().screen;
+  return (screen == SCREEN.list);
+};
+
+let handleScreenChange = (newScreen, options, userTriggered) => {
+  if (options && options.nextScreen) {
+    store.dispatch({ type: QUEUE_NEXT_SCREEN, nextScreen: options.nextScreen, optInReason: options.reason })
+  }
+  store.dispatch({ type: GOTO_SCREEN, screen: newScreen });
+};
+
+let handleStartEditing = (activity) => {
+  store.dispatch({ type: GOTO_EDIT_SCREEN, activityForEditing: activity });
+};
+
+let handleStartCreating = () =>{
+  // Create mode and edit are the same, so make sure we aren't still referring
+  // to another activity for editing
+  store.dispatch({ type: GOTO_EDIT_SCREEN, activityForEditing: undefined });
+};
+
+// Syntactic sugar since we call this all the time
+let handleViewList = () => {
+  handleScreenChange(SCREEN.list);
+};
+
+let getScreenTitle = () => {
+  let screen = store.getState().screen;
+  if (screen == SCREEN.list) {
+    return 'Upcoming Plans';
+  } else if (screen == SCREEN.edit) {
+    return 'Edit';
+  } else if (screen == SCREEN.create) {
+    return 'Create'
+  } else if (screen == SCREEN.notificationsOptIn) {
+    return 'Stay up to date'
+  } else {
+    return 'Uh oh: title shouldn\'t be showing';
+  }
+};
+
+let handleOptInComplete = () => {
+  store.dispatch({ type: GOTO_NEXT_SCREEN });
+};
+
+let handleActivitySaveComplete = () => {
+  // Don't ask the user to grant permission unless the browser supports it
+  if (swLibrary.browserSupportsSWAndNotifications()) {
+    swLibrary.hasPushNotificationPermission(() => {
+      handleViewList();
+    }, () => {
+      handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+    });
+  } else {
+    handleViewList();
+  }
+};
+
+let handleActivityCreateComplete = () => {
+  // From a flow standpoint we do the same when creating as saving
+  handleActivitySaveComplete();
+};
+
+let handleAttend = (activity) => {
+  // Note we change screen without waiting for network to complete
+  // Don't ask the user to grant permission unless the browser supports it
+  if (swLibrary.browserSupportsSWAndNotifications()) {
+    swLibrary.hasPushNotificationPermission(() => {
+      handleViewList();
+    }, () => {
+      handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
+    });
+  } else {
+    handleViewList();
+  }
+  // Note no callback since the list will automatically redraw when this changes
+  var optimistic = activity.dirty == undefined;
+  models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+    console.log('Uhoh, an optimistic error was a mistake!!');
+    alert('An unexpected error occurred. Please refresh.');
+  });
+};
+
+let handleUnattend = (activity) => {
+  // Note no callback since the list will automatically redraw when this changes
+  var optimistic = activity.dirty == undefined;
+  models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+    console.log('Uhoh, an optimistic error was a mistake!!');
+    alert('An unexpected error occurred. Please refresh.');
+  });
+};
 
 // TODO: Re-add history support
 // window.addEventListener('popstate', function(e) {
