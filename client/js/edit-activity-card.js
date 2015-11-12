@@ -123,7 +123,9 @@ module.exports = React.createClass({
       backgroundColor: 'rgba(0,0,0,0)',
       outline: 'none',
       // This prevents iOS from rounding corners on input elements
-      borderRadius: 0
+      borderRadius: 0,
+      fontFamily: 'inherit',
+      fontSize: 'inherit'
     };
     // Set up the options on the card
     var options = [];
