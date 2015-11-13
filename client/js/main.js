@@ -15,8 +15,8 @@ import FabButton from './fab.js';
 import { createStore, combineReducers } from 'redux';
 import { gotoScreen, gotoEditScreen,
   gotoNextScreen, queueNextScreen,
-  setUser } from './actions.js';
-import { screens, user } from './reducers.js';
+  setUser, addActivity } from './actions.js';
+import { screens, user, activities } from './reducers.js';
 
 // Require core logic
 import objectDB from './objectdb.js';
@@ -26,13 +26,16 @@ import m from './m.js';
 
 import { SCREEN } from './screens.js';
 
-let store = createStore(combineReducers({screens, user}));
+let store = createStore(combineReducers({screens, user, activities}));
 
 store.subscribe(() => {
     console.log(store.getState());
     redrawCurrentView();
   }
 );
+
+// Give models hacky access while refactoring
+models.setStore(store);
 
 let db = objectDB.open('db-1');
 
@@ -46,10 +49,7 @@ db.get().then((data) => {
   let loggedIn = !(sessionToken == null || userId == null || userName == null);
   if (loggedIn) {
     store.dispatch(setUser(userId, userName, sessionToken));
-    models.user.setUserName(userName);
-    models.user.setUserId(userId);
-    models.user.setSessionToken(sessionToken);
-    models.activities.tryRefreshActivities(handleViewList, () => {});
+    models.tryRefreshActivities(userId, sessionToken, handleViewList, () => {});
   } else {
     store.dispatch(gotoScreen(SCREEN.loggedOut));
   }
@@ -58,12 +58,10 @@ db.get().then((data) => {
 let App = (props) => {
 
   // Get state from store
-  let screen = store.getState().screens.screen;
-  let optInReason = store.getState().screens.optInReason;
-  let nextScreen = store.getState().screens.nextScreen;
-  let activityForEditing = store.getState().screens.activityForEditing;
+  let { screen, optInReason, nextScreen, activityForEditing } = store.getState().screens;
+  let {userId, userName, sessionToken} = store.getState().user;
   // Move me into props and redux etc etc
-  let activities = models.activities.getActivities();
+  let activities = store.getState().activities.activities;
 
   if (screen == SCREEN.uninitialized) {
     // TODO: Work out how to return nothing from a stateless component
@@ -96,7 +94,7 @@ let App = (props) => {
       mainContents = (
         <EditActivity
           activity={activityForEditing}
-          userName={models.user.getUserName()}
+          userName={userName}
           onSaveComplete={handleActivitySaveComplete}
           onCreateComplete={handleActivityCreateComplete}
           onDeleteComplete={handleViewList}
@@ -192,6 +190,8 @@ let handleActivityCreateComplete = () => {
 };
 
 let handleAttend = (activity) => {
+  // TODO: Don't draw from the state in this way!
+  let {userId, sessionToken} = store.getState().user;
   // Note we change screen without waiting for network to complete
   // Don't ask the user to grant permission unless the browser supports it
   if (swLibrary.browserSupportsSWAndNotifications()) {
@@ -205,16 +205,17 @@ let handleAttend = (activity) => {
   }
   // Note no callback since the list will automatically redraw when this changes
   let optimistic = activity.dirty == undefined;
-  models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+  models.trySetAttending(userId, sessionToken, activity, !activity.is_attending, optimistic, () => {}, () => {
     console.log('Uhoh, an optimistic error was a mistake!!');
     alert('An unexpected error occurred. Please refresh.');
   });
 };
 
 let handleUnattend = (activity) => {
+  let {userId, sessionToken} = store.getState().user;
   // Note no callback since the list will automatically redraw when this changes
   let optimistic = activity.dirty == undefined;
-  models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
+  models.trySetAttending(userId, sessionToken, activity, !activity.is_attending, optimistic, () => {}, () => {
     console.log('Uhoh, an optimistic error was a mistake!!');
     alert('An unexpected error occurred. Please refresh.');
   });
@@ -247,5 +248,4 @@ let redrawCurrentView = function () {
   );
 };
 
-models.activities.addListener(redrawCurrentView);
 redrawCurrentView();

@@ -47,3 +47,23 @@ export function setUser(userId, userName, sessionToken) {
     sessionToken
   }
 }
+
+/* Activities actions */
+
+export const ADD_ACTIVITY = 'ADD_ACTIVITY';
+
+export function addActivity(activity) {
+  return {
+    type: ADD_ACTIVITY,
+    activity
+  }
+}
+
+export const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
+
+export function removeActivity(id) {
+  return {
+    type: REMOVE_ACTIVITY,
+    id
+  }
+}

@@ -1,9 +1,9 @@
 // TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 require('datejs');
 
-var requestLogin = function (user, fb_token, success, failure) {
+var requestLogin = function (fb_token, success, failure) {
   console.log('Logging in to the app');
-  sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), user, function() {
+  sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), undefined, function() {
     if(this.status >= 200 && this.status < 400) {
       console.log(this.responseText);
       var response = JSON.parse(this.responseText);
@@ -19,6 +19,7 @@ var requestLogin = function (user, fb_token, success, failure) {
     }
   });
 };
+
 var parseActivitiesFromJSON = function (responseText) {
   // Strip activity label for each item
   var activities = JSON.parse(responseText).map(function (activity) {
@@ -29,6 +30,7 @@ var parseActivitiesFromJSON = function (responseText) {
   });
   return activities;
 };
+
 var requestActivitiesFromServer = function (user, success, failure) {
   sendRequest('/../v1/activities/visible_to_user/', 'get', '', user, function() {
     if (this.status >= 200 && this.status < 400) {
@@ -40,6 +42,7 @@ var requestActivitiesFromServer = function (user, success, failure) {
     }
   });
 };
+
 var requestCreateActivity = function (user, activity, success, failure) {
   sendRequest('/../v1/activities/visible_to_user/', 'post', JSON.stringify(activity), user, function() {
     if(this.status >= 200 && this.status < 400) {
@@ -52,6 +55,7 @@ var requestCreateActivity = function (user, activity, success, failure) {
     }
   });
 };
+
 var requestSetAttending = function (user, activity, attending, optimistic, success, failure) {
   if (optimistic) {
     console.log('Set attending optimistically!');
@@ -83,7 +87,9 @@ var requestSetAttending = function (user, activity, attending, optimistic, succe
     }
   });
 };
+
 var requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
+  alert(activity)
   sendRequest('/../v1/activities/'+activity.activity_id+'/', 'post', JSON.stringify(activityChanges), user, function () {
     if(this.status >= 200 && this.status < 400) {
       var updatedActivity = JSON.parse(this.responseText).activity;
@@ -95,6 +101,7 @@ var requestUpdateActivity = function(user, activity, activityChanges, success, f
     }
   });
 };
+
 var requestCancelActivity = function (user, activity, success, failure) {
   sendRequest('/../v1/activities/'+activity.activity_id+'/cancel/', 'post', '', user, function () {
     if(this.status >= 200 && this.status < 400) {
@@ -104,18 +111,20 @@ var requestCancelActivity = function (user, activity, success, failure) {
     }
   })
 };
+
 var requestCreatePushNotificationsSubscription = function (user, subscription) {
   console.log(subscription, JSON.stringify(subscription));
   sendRequest('/../v1/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
+
 var sendRequest = function (url, method, body, user, onload) {
   var req = new XMLHttpRequest();
   req.onload = onload;
   req.open(method, url, true);
   // The user isn't logged in when they are logging in
-  if (user.isLoggedIn()) {
-    req.setRequestHeader('Session-Token', user.getSessionToken());
-    req.setRequestHeader('User-Id', user.getUserId());
+  if (user) {
+    req.setRequestHeader('Session-Token', user.sessionToken);
+    req.setRequestHeader('User-Id', user.userId);
   } else {
     console.log('Sending an unauthenticated request since we haven\'t logged in yet');
   }
@@ -125,16 +134,17 @@ var sendRequest = function (url, method, body, user, onload) {
     req.send(body);
   }, 0);
 }
+
 var sendToServiceWorker = function (data) {
   navigator.serviceWorker.controller.postMessage(data);
 }
 
 module.exports = {
-  requestActivitiesFromServer: requestActivitiesFromServer,
-  requestCreateActivity: requestCreateActivity,
-  requestSetAttending: requestSetAttending,
-  requestUpdateActivity: requestUpdateActivity,
-  requestCancelActivity: requestCancelActivity,
-  requestCreatePushNotificationsSubscription: requestCreatePushNotificationsSubscription,
-  requestLogin: requestLogin
+  requestActivitiesFromServer,
+  requestCreateActivity,
+  requestSetAttending,
+  requestUpdateActivity,
+  requestCancelActivity,
+  requestCreatePushNotificationsSubscription,
+  requestLogin
 };

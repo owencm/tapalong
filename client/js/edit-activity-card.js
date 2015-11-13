@@ -1,3 +1,5 @@
+// TODO: Move calls to models into main.js via actions
+
 // Require react, convenience libraries and UI components
 var React = require('react');
 var m = require('./m.js');
@@ -67,7 +69,7 @@ module.exports = React.createClass({
 
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
-    models.activities.tryUpdateActivity(this.props.activity, activityChanges, () => {
+    models.tryUpdateActivity(this.props.activity, activityChanges, () => {
       this.props.onSaveComplete();
       this.setState({saveRequestPending: false});
     }, () => {
@@ -84,7 +86,7 @@ module.exports = React.createClass({
       max_attendees: -1,
       description: this.state.description
     };
-    models.activities.tryCreateActivity(newActivity, () => {
+    models.tryCreateActivity(newActivity, () => {
       this.setState({saveRequestPending: false});
       this.props.onCreateComplete();
     }, () => {
@@ -95,7 +97,7 @@ module.exports = React.createClass({
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({deleteRequestPending: true});
-      models.activities.tryCancelActivity(this.props.activity, () => {
+      models.tryCancelActivity(this.props.activity, () => {
         this.setState({deleteRequestPending: false});
         this.props.onDeleteComplete();
       }, () => {
