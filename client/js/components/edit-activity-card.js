@@ -2,16 +2,24 @@
 
 // Require react, convenience libraries and UI components
 var React = require('react');
-var m = require('./m.js');
+var m = require('../m.js');
 var Card = require('./card.js');
 var CardOptions = require('./card-options.js');
 var TextAreaAutoResize = require('react-textarea-autosize');
 
 // Require core logic
-var models = require('./models.js');
-var swLibrary = require('./swsetup.js')
+// TODO: Refactor out these requirements
+var models = require('../models.js');
+var swLibrary = require('../swsetup.js')
 
-module.exports = React.createClass({
+// TODO: set form fields to blur after enter pressed
+  // titleInputElem.addEventListener('keydown', function(key) {
+  //   if (key.keyCode == 13) {
+  //     this.blur();
+  //   }
+  // });
+
+let EditActivity = React.createClass({
   getInitialState: function () {
     return {
       title: this.props.activity ? this.props.activity.title : '',
@@ -69,7 +77,8 @@ module.exports = React.createClass({
 
     var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
 
-    models.tryUpdateActivity(this.props.activity, activityChanges, () => {
+    models.tryUpdateActivity(this.props.user.userId,
+      this.props.user.sessionToken, this.props.activity, activityChanges, () => {
       this.props.onSaveComplete();
       this.setState({saveRequestPending: false});
     }, () => {
@@ -86,7 +95,8 @@ module.exports = React.createClass({
       max_attendees: -1,
       description: this.state.description
     };
-    models.tryCreateActivity(newActivity, () => {
+    models.tryCreateActivity(this.props.user.userId,
+      this.props.user.sessionToken, newActivity, () => {
       this.setState({saveRequestPending: false});
       this.props.onCreateComplete();
     }, () => {
@@ -97,7 +107,8 @@ module.exports = React.createClass({
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({deleteRequestPending: true});
-      models.tryCancelActivity(this.props.activity, () => {
+      models.tryCancelActivity(this.props.user.userId,
+        this.props.user.sessionToken, this.props.activity, () => {
         this.setState({deleteRequestPending: false});
         this.props.onDeleteComplete();
       }, () => {
@@ -213,3 +224,5 @@ module.exports = React.createClass({
     )
   }
 });
+
+module.exports = EditActivity;

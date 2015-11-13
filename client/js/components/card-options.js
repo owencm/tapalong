@@ -1,14 +1,14 @@
 // Require react, convenience libraries and UI components
 let React = require('react');
-let m = require('./m.js');
+let m = require('../m.js');
 
 // Remember to disable the option after it lets you know it's been clicked
 // We don't do that here as disabled is a prop and we can't move it to state
 // without disallowing it to be used to create cards with disabled options.
 // Also the string should be changed to the gerrand and have '...' added.
 
-var CardOptions = (props) => {
-  var optionStyle = {
+let CardOptions = (props) => {
+  let optionStyle = {
     textTransform: 'uppercase',
     fontWeight: '600',
     fontSize: '14px',
@@ -18,16 +18,16 @@ var CardOptions = (props) => {
     /* A default position */
     float: 'right'
   };
-  var enabledOptionStyle = {
+  let enabledOptionStyle = {
     color: '#00BCD4'
   };
-  var badEnabledOptionStyle = {
+  let badEnabledOptionStyle = {
     color: '#e33'
   };
-  var disabledOptionStyle = {
+  let disabledOptionStyle = {
     color: '#CCC'
   };
-  var optionCards = props.options.map((option) => {
+  let optionCards = props.options.map((option) => {
     return (
       <div
         style = { m(optionStyle, option.position == 'left' ? {float: 'left'} : {}) }

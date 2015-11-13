@@ -17,11 +17,16 @@ module.exports = function(grunt) {
           cwd: 'client/js/',
           src: ['*.js'],
           dest: 'tmp/'
-        },{
+        }, {
           expand: true,
           cwd: 'client/js/sw/',
           src: ['*.js'],
           dest: 'tmp/'
+        }, {
+          expand: true,
+          cwd: 'client/js/components/',
+          src: ['*.js'],
+          dest: 'tmp/components'
         }]
       }
     },

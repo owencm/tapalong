@@ -1,8 +1,8 @@
 // Require react, convenience libraries and UI components
 var React = require('react');
-var m = require('./m.js');
+var m = require('../m.js');
 
-module.exports = React.createClass({
+let ImgFadeInOnLoad = React.createClass({
   getInitialState: function () {
     return { loading: false, loaded: false };
   },
@@ -57,3 +57,5 @@ module.exports = React.createClass({
     )
   }
 });
+
+module.exports = ImgFadeInOnLoad;

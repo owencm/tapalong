@@ -1,6 +1,6 @@
 // Require react, convenience libraries and UI components
 let React = require('react');
-let m = require('./m.js');
+let m = require('../m.js');
 
 let Card = (props) => {
   var cardStyle = {
@@ -23,7 +23,7 @@ let Card = (props) => {
       style={cardStyle}
       onClick={props.onClick ? props.onClick : function () {}}
     >
-      {props.children}
+      { props.children }
     </div>
   );
 }

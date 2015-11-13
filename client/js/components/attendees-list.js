@@ -1,6 +1,6 @@
 // Require react, convenience libraries and UI components
 let React = require('react');
-let m = require('./m.js');
+let m = require('../m.js');
 
 let AttendeesList = (props) => {
   if (props.attendees < 1) {

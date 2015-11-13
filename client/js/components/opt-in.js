@@ -1,12 +1,12 @@
 // Require react, convenience libraries and UI components
 var React = require('react');
-var m = require('./m.js');
+var m = require('../m.js');
 var Card = require('./card.js');
 var CardOptions = require('./card-options.js');
 var DimScreen = require('./dim-screen.js');
 
 // Require core logic
-var swLibrary = require('./swsetup.js')
+var swLibrary = require('../swsetup.js')
 
 var OptIn = React.createClass({
   getInitialState: function () {

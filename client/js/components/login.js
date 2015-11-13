@@ -1,10 +1,11 @@
 // Require react, convenience libraries and UI components
 var React = require('react');
-var m = require('./m.js');
+var m = require('../m.js');
 var FacebookLogin = require('./facebook-login.js');
 
 // Require core logic
-var models = require('./models.js');
+// TODO: Refactor out
+var models = require('../models.js');
 
 var Login = (props) => {
 
