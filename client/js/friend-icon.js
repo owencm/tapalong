@@ -1,6 +1,6 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('./m.js');
+let React = require('react');
+let m = require('./m.js');
 var ImgFadeInOnLoad = require('./img-fade-in-on-load.js');
 
 var FriendIcon = (props) => {

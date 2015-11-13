@@ -1,6 +1,6 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('./m.js');
+let React = require('react');
+let m = require('./m.js');
 
 // Remember to disable the option after it lets you know it's been clicked
 // We don't do that here as disabled is a prop and we can't move it to state

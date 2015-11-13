@@ -1,4 +1,6 @@
-var React = require('react');
+// Require react, convenience libraries and UI components
+let React = require('react');
+let m = require('./m.js');
 
 var FacebookLogin = React.createClass({
 

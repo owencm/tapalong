@@ -1,10 +1,10 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('./m.js');
+let React = require('react');
+let m = require('./m.js');
 
 // A pure function, ala "Stateless function components" in https://facebook.github.io/react/blog/2015/09/10/react-v0.14-rc1.html
 let Header = (props) => {
-  var headerStyle = {
+  let headerStyle = {
     backgroundColor: '#00BCD4',
     boxShadow: '0 1px 6px rgba(0,0,0,.2)',
     position: 'fixed',
@@ -15,7 +15,7 @@ let Header = (props) => {
 
   // Note we set paddingLeft explicitely as if we don't, React creates a strange bug
   // where it keeps the paddingLeft: 0 set later even if !shouldShowBackButton
-  var titleStyle = {
+  let titleStyle = {
     fontSize: '18px',
     color: 'white',
     fontWeight: 'bold',
@@ -28,7 +28,7 @@ let Header = (props) => {
     titleStyle = Object.assign({}, titleStyle, {paddingLeft: '0'});
   }
 
-  var backButtonStyle = {
+  let backButtonStyle = {
   	width: '20px',
   	padding: '18px',
     float: 'left'

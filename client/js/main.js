@@ -1,4 +1,4 @@
-var FastClick = require('fastclick');
+let FastClick = require('fastclick');
 FastClick(document.body);
 
 // Require react and UI components
@@ -10,7 +10,13 @@ import EditActivity from './edit-activity-card.js';
 import OptIn from './opt-in.js';
 import Header from './header.js';
 import FabButton from './fab.js';
-import { createStore } from 'redux';
+
+// Require model
+import { createStore, combineReducers } from 'redux';
+import { gotoScreen, gotoEditScreen,
+  gotoNextScreen, queueNextScreen,
+  setUser } from './actions.js';
+import { screens, user } from './reducers.js';
 
 // Require core logic
 import objectDB from './objectdb.js';
@@ -18,86 +24,64 @@ import models from './models.js';
 import swLibrary from './swsetup.js'
 import m from './m.js';
 
-var GOTO_SCREEN = 'GOTO_SCREEN';
-var GOTO_EDIT_SCREEN = 'GOTO_EDIT_SCREEN';
-var GOTO_NEXT_SCREEN = 'GOTO_NEXT_SCREEN';
-var QUEUE_NEXT_SCREEN = 'QUEUE_NEXT_SCREEN';
-var SCREEN = {create: 0, list: 1, edit: 2, loggedOut: 3, uninitialized: 4, notificationsOptIn: 5};
+import { SCREEN } from './screens.js';
 
-var defaultState = {
-  screen: SCREEN.uninitialized
-}
-
-function reducer(state = defaultState, action) {
-  switch (action.type) {
-    case GOTO_SCREEN:
-      return m({}, state, { screen: action.screen });
-    case GOTO_EDIT_SCREEN:
-      return m({}, state, { screen: SCREEN.edit, activityForEditing: action.activityForEditing });
-    case GOTO_NEXT_SCREEN:
-      return m({}, state, { screen: state.nextScreen });
-    case QUEUE_NEXT_SCREEN:
-      return m({}, state, { nextScreen: action.nextScreen, optInReason: action.optInReason });
-    default:
-      return state;
-  }
-}
-
-let store = createStore(reducer);
+let store = createStore(combineReducers({screens, user}));
 
 store.subscribe(() => {
-    // console.log(store.getState());
+    console.log(store.getState());
     redrawCurrentView();
   }
 );
 
-var db = objectDB.open('db-1');
-var dbAfterGet = db.get();
+let db = objectDB.open('db-1');
 
+// TODO: Ideally remove this by moving to a redux persistence library
 // TODO: Handle the session token expiring
 // Note objectDB does not use actual promises so we can't properly chain this
-dbAfterGet.then((data) => {
-  var sessionToken = data.sessionToken;
-  var userName = data.userName;
-  var userId = data.userId;
-  var loggedIn = !(sessionToken == null || userId == null || userName == null);
+db.get().then((data) => {
+  let sessionToken = data.sessionToken;
+  let userName = data.userName;
+  let userId = data.userId;
+  let loggedIn = !(sessionToken == null || userId == null || userName == null);
   if (loggedIn) {
+    store.dispatch(setUser(userId, userName, sessionToken));
     models.user.setUserName(userName);
     models.user.setUserId(userId);
     models.user.setSessionToken(sessionToken);
-    models.activities.tryRefreshActivities(() => {
-      store.dispatch({type: GOTO_SCREEN, screen: SCREEN.list});
-    }, () => {
-      console.log('Failed to download activities');
-    });
+    models.activities.tryRefreshActivities(handleViewList, () => {});
   } else {
-    store.dispatch({ type: GOTO_SCREEN, screen: SCREEN.loggedOut });
+    store.dispatch(gotoScreen(SCREEN.loggedOut));
   }
 });
 
-var App = (props) => {
+let App = (props) => {
 
-  let screen = store.getState().screen;
-  let optInReason = store.getState().optInReason;
-  let nextScreen = store.getState().nextScreen;
-  let activityForEditing = store.getState().activityForEditing;
+  // Get state from store
+  let screen = store.getState().screens.screen;
+  let optInReason = store.getState().screens.optInReason;
+  let nextScreen = store.getState().screens.nextScreen;
+  let activityForEditing = store.getState().screens.activityForEditing;
+  // Move me into props and redux etc etc
+  let activities = models.activities.getActivities();
+
   if (screen == SCREEN.uninitialized) {
     // TODO: Work out how to return nothing from a stateless component
     return <div/>;
   }
-  var activities = models.activities.getActivities();
+
   // TODO: Refactor this mess!
   if (screen == SCREEN.loggedOut) {
     return <Login onLoginComplete={handleViewList} />;
   } else {
-    var mainContents;
+    let mainContents;
     if (screen == SCREEN.list) {
       mainContents = (
         <ActivityCardList
           activities ={activities}
           onAttendClick={handleAttend}
           onUnattendClick={handleUnattend}
-          onEditClick={handleStartEditing}
+          onEditClick={(activity) => store.dispatch(gotoEditScreen(activity))}
         />
       );
     } else if (screen == SCREEN.notificationsOptIn) {
@@ -105,7 +89,7 @@ var App = (props) => {
         <OptIn
           reason={optInReason}
           nextState={nextScreen}
-          onOptInComplete={handleOptInComplete}
+          onOptInComplete={() => store.dispatch(gotoNextScreen())}
         />
       );
     } else if ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1) {
@@ -119,19 +103,19 @@ var App = (props) => {
         />
       );
     }
-    var headerIfNeeded = null;
-    if (shouldShowHeader()) {
+    let headerIfNeeded = null;
+    if (shouldShowHeader(screen)) {
       headerIfNeeded = (
         <Header
-          title={getScreenTitle()}
-          shouldShowBackButton={shouldShowBackButton()}
+          title={getScreenTitle(screen)}
+          shouldShowBackButton={shouldShowBackButton(screen)}
           onBackButtonClick={handleViewList}
         />
       );
     }
-    var createButtonIfNeeded = null;
-    if (shouldShowCreateButton()) {
-      createButtonIfNeeded = <FabButton onClick={handleStartCreating} />;
+    let createButtonIfNeeded = null;
+    if (shouldShowCreateButton(screen)) {
+      createButtonIfNeeded = <FabButton onClick={() => store.dispatch(gotoEditScreen(undefined)) } />;
     }
     return (
       <div>
@@ -147,45 +131,21 @@ var App = (props) => {
   }
 }
 
-let shouldShowHeader = () => {
-  let screen = store.getState().screen;
+/* Stateless helpers */
+
+let shouldShowHeader = (screen) => {
   return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(screen) > -1);
 };
 
-let shouldShowBackButton = () => {
-  let screen = store.getState().screen;
+let shouldShowBackButton = (screen) => {
   return ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1);
 };
 
-let shouldShowCreateButton = () => {
-  let screen = store.getState().screen;
+let shouldShowCreateButton = (screen) => {
   return (screen == SCREEN.list);
 };
 
-let handleScreenChange = (newScreen, options, userTriggered) => {
-  if (options && options.nextScreen) {
-    store.dispatch({ type: QUEUE_NEXT_SCREEN, nextScreen: options.nextScreen, optInReason: options.reason })
-  }
-  store.dispatch({ type: GOTO_SCREEN, screen: newScreen });
-};
-
-let handleStartEditing = (activity) => {
-  store.dispatch({ type: GOTO_EDIT_SCREEN, activityForEditing: activity });
-};
-
-let handleStartCreating = () =>{
-  // Create mode and edit are the same, so make sure we aren't still referring
-  // to another activity for editing
-  store.dispatch({ type: GOTO_EDIT_SCREEN, activityForEditing: undefined });
-};
-
-// Syntactic sugar since we call this all the time
-let handleViewList = () => {
-  handleScreenChange(SCREEN.list);
-};
-
-let getScreenTitle = () => {
-  let screen = store.getState().screen;
+let getScreenTitle = (screen) => {
   if (screen == SCREEN.list) {
     return 'Upcoming Plans';
   } else if (screen == SCREEN.edit) {
@@ -199,8 +159,18 @@ let getScreenTitle = () => {
   }
 };
 
-let handleOptInComplete = () => {
-  store.dispatch({ type: GOTO_NEXT_SCREEN });
+/* Stateful action wrapper */
+
+let handleScreenChange = (newScreen, options, userTriggered) => {
+  if (options && options.nextScreen) {
+    store.dispatch(queueNextScreen(options.nextScreen, options.reason));
+  }
+  store.dispatch(gotoScreen(newScreen));
+};
+
+// Syntactic sugar since we call this all the time
+let handleViewList = () => {
+  handleScreenChange(SCREEN.list);
 };
 
 let handleActivitySaveComplete = () => {
@@ -234,7 +204,7 @@ let handleAttend = (activity) => {
     handleViewList();
   }
   // Note no callback since the list will automatically redraw when this changes
-  var optimistic = activity.dirty == undefined;
+  let optimistic = activity.dirty == undefined;
   models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
     console.log('Uhoh, an optimistic error was a mistake!!');
     alert('An unexpected error occurred. Please refresh.');
@@ -243,7 +213,7 @@ let handleAttend = (activity) => {
 
 let handleUnattend = (activity) => {
   // Note no callback since the list will automatically redraw when this changes
-  var optimistic = activity.dirty == undefined;
+  let optimistic = activity.dirty == undefined;
   models.activities.trySetAttending(activity, !activity.is_attending, optimistic, () => {}, () => {
     console.log('Uhoh, an optimistic error was a mistake!!');
     alert('An unexpected error occurred. Please refresh.');
@@ -270,7 +240,7 @@ let handleUnattend = (activity) => {
   //   }
   // });
 
-var redrawCurrentView = function () {
+let redrawCurrentView = function () {
   ReactDOM.render(
     <App />,
     document.getElementById('appShell')

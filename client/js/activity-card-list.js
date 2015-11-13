@@ -1,9 +1,9 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('./m.js');
-var ActivityCard = require('./activity-card.js');
+let React = require('react');
+let m = require('./m.js');
+let ActivityCard = require('./activity-card.js');
 
-var ActivityCardList = React.createClass({
+let ActivityCardList = React.createClass({
 
   getInitialState: function () {
     return {
@@ -12,7 +12,7 @@ var ActivityCardList = React.createClass({
   },
 
   render: function () {
-    var activitiesList = this.props.activities.map((activity) => {
+    let activitiesList = this.props.activities.map((activity) => {
       return (
         <ActivityCard
           activity = { activity }

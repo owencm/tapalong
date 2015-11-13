@@ -1,8 +1,8 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('./m.js');
+let React = require('react');
+let m = require('./m.js');
 
-module.exports = (props) => {
+let Card = (props) => {
   var cardStyle = {
     /* This puts the border inside the edge */
     boxSizing: 'border-box',
@@ -27,3 +27,5 @@ module.exports = (props) => {
     </div>
   );
 }
+
+module.exports = Card;
