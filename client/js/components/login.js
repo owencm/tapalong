@@ -1,9 +1,9 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('../m.js');
-var FacebookLogin = require('./facebook-login.js');
+let React = require('react');
+let m = require('../m.js');
+let FacebookLogin = require('./facebook-login.js');
 
-var Login = (props) => {
+let Login = (props) => {
 
   let handleLogin = (fbResponse) => {
     props.onLoginToFacebook(fbResponse.accessToken);
@@ -21,7 +21,7 @@ var Login = (props) => {
   )
 };
 
-var LoginInner = (props) => {
+let LoginInner = (props) => {
   // TODO: use props.readyToLogin to modify the rendering
   return (
     <div id='login'>

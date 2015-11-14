@@ -1,26 +1,30 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('../m.js');
+let React = require('react');
+let m = require('../m.js');
 
 let ImgFadeInOnLoad = React.createClass({
+
   getInitialState: function () {
     return { loading: false, loaded: false };
   },
+
   componentDidMount: function () {
     this.loadImage(this.props.src);
   },
+
   loadImage: function (src) {
     if (!this.state.loadingStarted) {
       this.setState({loadingStarted: true});
-      var img = new Image();
+      let img = new Image();
       img.onload = () => {
         this.setState({loaded: true})
       };
       img.src = src;
     }
   },
+
   render: function () {
-    var overlayStyle = {
+    let overlayStyle = {
       width: this.props.width,
       height: this.props.height,
       backgroundColor: this.props.backgroundColor,
@@ -33,7 +37,7 @@ let ImgFadeInOnLoad = React.createClass({
     if (this.state.loaded) {
       overlayStyle.opacity = 0;
     }
-    var imgStyle = {
+    let imgStyle = {
       position: 'absolute',
       top: '0',
       left: '0',
@@ -56,6 +60,7 @@ let ImgFadeInOnLoad = React.createClass({
       </div>
     )
   }
+  
 });
 
 module.exports = ImgFadeInOnLoad;

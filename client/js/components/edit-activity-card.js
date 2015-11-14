@@ -1,16 +1,12 @@
-// TODO: Move calls to models into main.js via actions
-
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('../m.js');
-var Card = require('./card.js');
-var CardOptions = require('./card-options.js');
-var TextAreaAutoResize = require('react-textarea-autosize');
+let React = require('react');
+let m = require('../m.js');
+let Card = require('./card.js');
+let CardOptions = require('./card-options.js');
+let TextAreaAutoResize = require('react-textarea-autosize');
 
 // Require core logic
-// TODO: Refactor out these requirements
-var models = require('../models.js');
-var swLibrary = require('../swsetup.js')
+let swLibrary = require('../swsetup.js')
 
 // TODO: set form fields to blur after enter pressed
   // titleInputElem.addEventListener('keydown', function(key) {
@@ -50,10 +46,10 @@ let EditActivity = React.createClass({
 
   handleDateChange: function (e) {
     // Note date will parse the date as if it was UTC, and then convert it into local TZ
-    var newDate = new Date(e.target.value);
+    let newDate = new Date(e.target.value);
     // To solve the parsing as UTC issue we add the timezone offset
     newDate.addMinutes(newDate.getTimezoneOffset())
-    var newStartTime = this.state.start_time.clone();
+    let newStartTime = this.state.start_time.clone();
     // Set the date component of the state without modifying time
     newStartTime.set({
       day: newDate.getDate(),
@@ -66,11 +62,11 @@ let EditActivity = React.createClass({
   },
 
   handleTimeChange: function (e) {
-    var tmp = e.target.value.split(':');
-    var hour = parseInt(tmp[0]);
-    var minute = parseInt(tmp[1]);
-    var oldStartTime = this.state.start_time.clone();
-    var newStartTime = oldStartTime.set({
+    let tmp = e.target.value.split(':');
+    let hour = parseInt(tmp[0]);
+    let minute = parseInt(tmp[1]);
+    let oldStartTime = this.state.start_time.clone();
+    let newStartTime = oldStartTime.set({
       hour: hour,
       minute: minute
     });
@@ -105,11 +101,11 @@ let EditActivity = React.createClass({
   },
 
   render: function () {
-    var editing = !!this.props.activity;
+    let editing = !!this.props.activity;
     /*
       Set up styles
     */
-    var inputStyle = {
+    let inputStyle = {
       display: 'block',
       boxSizing: 'border-box',
       width: '100%',
@@ -127,7 +123,7 @@ let EditActivity = React.createClass({
       fontSize: 'inherit'
     };
     // Set up the options on the card
-    var options = [];
+    let options = [];
     if (editing) {
       if (this.state.saveRequestPending) {
         options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClicked});
@@ -148,16 +144,16 @@ let EditActivity = React.createClass({
     }
     // Provide dates and times for the input elements
     // Documentation for date formatting: https://code.google.com/p/datejs/wiki/FormatSpecifiers
-    var getHyphenSeparatedTime = function(date) {
+    let getHyphenSeparatedTime = function(date) {
       return date.toString('HH:mm');
     }
-    var getHyphenSeparatedDate = function(date) {
+    let getHyphenSeparatedDate = function(date) {
       return date.toString('yyyy-MM-dd');
     }
-    var getHyphenSeparatedToday = function () {
+    let getHyphenSeparatedToday = function () {
       return Date.today().toString('yyyy-MM-dd');
     }
-    var getHyphenSeparatedTomorrow = function () {
+    let getHyphenSeparatedTomorrow = function () {
       return Date.today().add(1).days().toString('yyyy-MM-dd');
     }
     return (

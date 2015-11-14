@@ -1,24 +1,28 @@
 // Require react, convenience libraries and UI components
-var React = require('react');
-var m = require('../m.js');
-var Card = require('./card.js');
-var CardOptions = require('./card-options.js');
-var DimScreen = require('./dim-screen.js');
+let React = require('react');
+let m = require('../m.js');
+let Card = require('./card.js');
+let CardOptions = require('./card-options.js');
+let DimScreen = require('./dim-screen.js');
 
 // Require core logic
-var swLibrary = require('../swsetup.js')
+let swLibrary = require('../swsetup.js')
 
-var OptIn = React.createClass({
+let OptIn = React.createClass({
+
   getInitialState: function () {
     return {showingPermissionRequest: false};
   },
+
   componentDidMount: function () {
     // Let the parent know when the transition is over
     setTimeout(this.props.onScreenDim, this.props.duration);
   },
+
   handleOKClick: function (e) {
     this.setState({showingPermissionRequest: true});
   },
+
   handleScreenDim: function () {
     swLibrary.requestPushNotificationPermissionAndSubscribe(() => {
       this.setState({showingPermissionRequest: false});
@@ -28,6 +32,7 @@ var OptIn = React.createClass({
       // TODO: Handle failure or permission rejection
     });
   },
+
   render: function () {
     return (
       <Card>
@@ -44,6 +49,7 @@ var OptIn = React.createClass({
       </Card>
     )
   }
+  
 });
 
 module.exports = OptIn;

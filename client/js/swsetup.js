@@ -1,5 +1,4 @@
 // TODO: make sure this all works in browsers without SW support. Checks are half baked today.
-var models = require('./models.js');
 var network = require('./network.js');
 
 var browserSupportsSWAndNotifications = function () {

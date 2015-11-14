@@ -13,7 +13,6 @@ import { gotoScreen, gotoEditScreen,
   setUser, addActivity } from '../actions.js';
 
 // Require core logic
-import models from '../models.js';
 import swLibrary from '../swsetup.js'
 import m from '../m.js';
 

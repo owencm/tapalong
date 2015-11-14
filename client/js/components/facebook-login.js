@@ -2,11 +2,11 @@
 let React = require('react');
 let m = require('../m.js');
 
-var FacebookLogin = React.createClass({
+let FacebookLogin = React.createClass({
 
   render: function() {
     // Clone the children so we can set props on them indicating the state of the login process
-    var children = React.Children.map(this.props.children, (child) => {
+    let children = React.Children.map(this.props.children, (child) => {
       return React.cloneElement(child, {readyToLogin: this.state.readyToLogin});
     });
     return (
@@ -61,7 +61,7 @@ var FacebookLogin = React.createClass({
 
     } else {
 
-      var valueScope = this.props.scope || 'public_profile, email, user_birthday';
+      let valueScope = this.props.scope || 'public_profile, email, user_birthday';
       // TODO: Don't allow this to recurse
       FB.login(this.checkLoginState, { scope: valueScope });
 

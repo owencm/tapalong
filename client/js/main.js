@@ -15,7 +15,6 @@ import { screens, user, activities } from './reducers.js';
 
 // Require core logic
 import objectDB from './objectdb.js';
-import models from './models.js';
 import m from './m.js';
 
 import { SCREEN } from './screens.js';
@@ -28,15 +27,10 @@ const store = createStoreWithMiddleware(combineReducers({screens, user, activiti
 
 store.subscribe(() => console.log(store.getState()));
 
-// Give models hacky access while refactoring
-models.setStore(store);
-
-let db = objectDB.open('db-1');
-
 // TODO: Ideally remove this by moving to a redux persistence library
 // TODO: Handle the session token expiring
 // Note objectDB does not use actual promises so we can't properly chain this
-db.get().then((data) => {
+objectDB.open('db-1').get().then((data) => {
   let sessionToken = data.sessionToken;
   let userName = data.userName;
   let userId = data.userId;

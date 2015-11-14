@@ -3,6 +3,7 @@ let React = require('react');
 let m = require('../m.js');
 
 let Card = (props) => {
+
   var cardStyle = {
     /* This puts the border inside the edge */
     boxSizing: 'border-box',
@@ -26,6 +27,7 @@ let Card = (props) => {
       { props.children }
     </div>
   );
+  
 }
 
 module.exports = Card;

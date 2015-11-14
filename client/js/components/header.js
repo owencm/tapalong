@@ -4,6 +4,7 @@ let m = require('../m.js');
 
 // A pure function, ala "Stateless function components" in https://facebook.github.io/react/blog/2015/09/10/react-v0.14-rc1.html
 let Header = (props) => {
+
   let headerStyle = {
     backgroundColor: '#00BCD4',
     boxShadow: '0 1px 6px rgba(0,0,0,.2)',
@@ -50,6 +51,7 @@ let Header = (props) => {
       </h1>
     </header>
   );
+  
 };
 
 module.exports = Header;

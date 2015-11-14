@@ -8,6 +8,7 @@ let m = require('../m.js');
 // Also the string should be changed to the gerrand and have '...' added.
 
 let CardOptions = (props) => {
+
   let optionStyle = {
     textTransform: 'uppercase',
     fontWeight: '600',
@@ -51,6 +52,7 @@ let CardOptions = (props) => {
       <div style={{clear: 'both'}}></div>
     </div>
   )
+  
 }
 
 module.exports = CardOptions;
