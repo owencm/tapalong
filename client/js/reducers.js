@@ -71,10 +71,11 @@ export function activities(state = {
 }, action) {
   switch (action.type) {
     case ADD_ACTIVITY:
-      // let validity = validateNewActivity(action.activity);
-      // if (!validity.isValid) {
-      //   throw Error('Invalid activity attempted to be added: '+validity.reason);
-      // }
+      let validity = validateNewActivity(action.activity);
+      if (!validity.isValid) {
+        console.log('Invalid activity attempted to be added: '+validity.reason);
+        return state;
+      }
       return Object.assign({}, state,
         {
           activities: [...state.activities,
@@ -83,6 +84,14 @@ export function activities(state = {
           maxActivityId: state.maxActivityId + 1
         }
       );
+    case REMOVE_ACTIVITY:
+    return Object.assign({}, state,
+      {
+        activities: [...state.activities].filter((activity) => {
+          return activity.id !== action.id;
+        })
+      }
+    );
     default:
       return state;
     }

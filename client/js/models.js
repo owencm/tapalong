@@ -9,63 +9,8 @@ let setStore = (newStore) => {
   store = newStore;
 }
 
-let startLogin = function (fbToken, success, failure) {
-  // Pass in the user so the networking code explicitely knows the user is logged out
-  network.requestLogin(fbToken, function (userId, userName, sessionToken) {
-    store.dispatch(setUser(userId, userName, sessionToken));
-    activities.tryRefreshActivities(success, function () {
-      console.log('Failed to download activities')
-    });
-  }, failure);
-};
-
 let hasNotificationPermission = function (success, failure) {
   return hasPushPermission(success, failure);
-};
-
-// TODO: Check that all the activities are still valid with an interval
-
-let setActivities = function (newActivities) {
-  // TODO: remove all previous activities
-  newActivities.map((activity) => {
-    store.dispatch(addActivity(activity));
-  });
-};
-
-let tryCreateActivity = function (userId, sessionToken, newActivity, success, failure) {
-  console.log(newActivity);
-  let validity = validateNewActivity(newActivity);
-  if (validity.isValid) {
-    network.requestCreateActivity({userId, sessionToken}, newActivity, function (activityFromServer) {
-      store.dispatch(addActivity(activityFromServer));
-      success();
-    }, failure);
-  } else {
-    console.log('activity wasn\'t valid because '+validity.reason, newActivity);
-    failure();
-  }
-};
-
-let tryUpdateActivity = function (userId, sessionToken, activity, activityChanges, success, failure) {
-console.log(activity);
-  network.requestUpdateActivity({userId, sessionToken}, activity, activityChanges, function (activityFromServer) {
-    updateActivity(activity.id, activityFromServer);
-    success();
-  }, failure);
-};
-
-let trySetAttending = function (userId, sessionToken, activity, attending, optimistic, success, failure) {
-  network.requestSetAttending({userId, sessionToken}, activity, attending, optimistic, function (updatedActivity) {
-    updateActivity(activity.id, updatedActivity);
-    success();
-  }, failure);
-};
-
-let setAttending = function (id, attending) {
-  throw('Should not be changing is_attending on client side');
-  let activity = getActivity(id);
-  activity.is_attending = !activity.is_attending;
-  listenerModule.change();
 };
 
 let tryCancelActivity = function (userId, sessionToken, activity, success, failure) {
@@ -104,21 +49,9 @@ let validateNewActivity = function (activity) {
   return {isValid: true};
 };
 
-let tryRefreshActivities = function (userId, sessionToken, success, failure) {
-  network.requestActivitiesFromServer({userId, sessionToken}, function (activities) {
-    setActivities(activities);
-    success();
-  }, failure);
-};
-
 
 module.exports = {
-  startLogin,
   hasNotificationPermission,
   setStore,
-  tryRefreshActivities,
-  tryCreateActivity,
-  tryUpdateActivity,
-  trySetAttending,
   tryCancelActivity,
 }

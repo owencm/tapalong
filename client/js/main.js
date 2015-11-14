@@ -5,10 +5,12 @@ import { Provider } from 'react-redux'
 import App from './app.js';
 
 // Require model
-import { createStore, combineReducers } from 'redux';
+import { createStore, combineReducers, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 import { gotoScreen, gotoEditScreen,
   gotoNextScreen, queueNextScreen,
-  setUser, addActivity } from './actions.js';
+  setUser, addActivity,
+  requestRefreshActivities, login } from './actions.js';
 import { screens, user, activities } from './reducers.js';
 
 // Require core logic
@@ -18,7 +20,11 @@ import m from './m.js';
 
 import { SCREEN } from './screens.js';
 
-let store = createStore(combineReducers({screens, user, activities}));
+const createStoreWithMiddleware = applyMiddleware(
+  thunk
+)(createStore);
+
+const store = createStoreWithMiddleware(combineReducers({screens, user, activities}));
 
 store.subscribe(() => console.log(store.getState()));
 
@@ -37,9 +43,11 @@ db.get().then((data) => {
   let loggedIn = !(sessionToken == null || userId == null || userName == null);
   if (loggedIn) {
     store.dispatch(setUser(userId, userName, sessionToken));
-    models.tryRefreshActivities(userId, sessionToken, () => {
-      store.dispatch(gotoScreen(SCREEN.list));
-    }, () => {});
+    store.dispatch(requestRefreshActivities(userId, sessionToken)).then(() => {
+      return store.dispatch(gotoScreen(SCREEN.list));
+    }).catch((e) => {
+      console.log(e);
+    });
   } else {
     store.dispatch(gotoScreen(SCREEN.loggedOut));
   }

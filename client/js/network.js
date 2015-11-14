@@ -56,31 +56,12 @@ var requestCreateActivity = function (user, activity, success, failure) {
   });
 };
 
-var requestSetAttending = function (user, activity, attending, optimistic, success, failure) {
-  if (optimistic) {
-    console.log('Set attending optimistically!');
-    // TODO: do a more efficient copy!
-    var activityCopy = JSON.parse(JSON.stringify(activity));
-    // Parse the start_time since we serialized it in the copy :(
-    activityCopy.start_time = new Date(activityCopy.start_time);
-    activityCopy.is_attending = attending;
-    var userName = user.getUserName();
-    if (attending) {
-      activityCopy.attendees.push(userName);
-    } else {
-      activityCopy.attendees = activityCopy.attendees.filter(function(attendeeName) {
-        return attendeeName !== userName;
-      });
-    }
-    activityCopy.dirty = true;
-    success(activityCopy);
-  }
+var requestSetAttending = function (user, activity, attending, success, failure) {
   sendRequest('/../v1/activities/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
     if(this.status >= 200 && this.status < 400) {
       var updatedActivity = JSON.parse(this.responseText).activity;
       updatedActivity.start_time = new Date(updatedActivity.start_time);
       updatedActivity.id = activity.id;
-      // Note updatedAcitivy won't have dirty set
       success(updatedActivity);
     } else {
       failure();
@@ -89,7 +70,6 @@ var requestSetAttending = function (user, activity, attending, optimistic, succe
 };
 
 var requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
-  alert(activity)
   sendRequest('/../v1/activities/'+activity.activity_id+'/', 'post', JSON.stringify(activityChanges), user, function () {
     if(this.status >= 200 && this.status < 400) {
       var updatedActivity = JSON.parse(this.responseText).activity;

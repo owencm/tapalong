@@ -3,15 +3,10 @@ var React = require('react');
 var m = require('../m.js');
 var FacebookLogin = require('./facebook-login.js');
 
-// Require core logic
-// TODO: Refactor out
-var models = require('../models.js');
-
 var Login = (props) => {
 
-  let handleLogin = (result) => {
-    console.log(result);
-    models.startLogin(result.accessToken, props.onLoginComplete, function(){});
+  let handleLogin = (fbResponse) => {
+    props.onLoginToFacebook(fbResponse.accessToken);
   }
 
   return (

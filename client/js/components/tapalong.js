@@ -51,37 +51,42 @@ let Tapalong = (props) => {
     }
   };
 
-  /* Stateful action wrapper */
-
-  let handleScreenChange = (newScreen, options, userTriggered) => {
-    if (options && options.nextScreen) {
-      props.queueNextScreen(options.nextScreen, options.reason);
-    }
-    props.gotoScreen(newScreen);
-  };
-
-  // Syntactic sugar since we call this all the time
-  let handleViewList = () => {
-    handleScreenChange(SCREEN.list);
-  };
-
-  let handleActivitySaveComplete = () => {
+  let gotoListViaOptIn = (reason) => {
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
       swLibrary.hasPushNotificationPermission(() => {
-        handleViewList();
+        props.gotoScreen(SCREEN.list);
       }, () => {
-        handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'when a friend says they want to come along'}, false);
+        props.queueNextScreen(SCREEN.list, reason);
+        props.gotoScreen(SCREEN.notificationsOptIn);
       });
     } else {
-      handleViewList();
+      props.gotoScreen(SCREEN.list);
     }
+  }
+
+  /* Stateful action wrapper */
+
+  let handleActivitySaveClicked = (activity, activityChanges) => {
+    props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
+            activity, activityChanges).then(() => {
+      gotoListViaOptIn('if the plan changes');
+    });
   };
 
-  let handleActivityCreateComplete = () => {
-    // From a flow standpoint we do the same when creating as saving
-    handleActivitySaveComplete();
+  let handleActivityCreateClicked = (activity) => {
+    props.requestCreateActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      gotoListViaOptIn('if the plan changes');
+    });
   };
+
+  let handleActivityDeleteClicked = (activity) => {
+    props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      props.gotoScreen(SCREEN.list);
+    });
+  }
 
   let handleAttend = (activity) => {
     let {userId, sessionToken} = props.user;
@@ -89,30 +94,32 @@ let Tapalong = (props) => {
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
       swLibrary.hasPushNotificationPermission(() => {
-        handleViewList();
+        props.gotoScreen(SCREEN.list);
       }, () => {
-        handleScreenChange(SCREEN.notificationsOptIn, {nextScreen: SCREEN.list, userTriggered: true, reason: 'if the plan changes'}, false);
+        props.queueNextScreen(SCREEN.list, 'if the plan changes');
+        props.gotoScreen(SCREEN.notificationsOptIn);
       });
     } else {
-      handleViewList();
+      props.gotoScreen(SCREEN.list);
     }
-    // Note no callback since the list will automatically redraw when this changes
-    let optimistic = activity.dirty == undefined;
-    models.trySetAttending(userId, sessionToken, activity, !activity.is_attending, optimistic, () => {}, () => {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
+    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending);
   };
 
   let handleUnattend = (activity) => {
     let {userId, sessionToken} = props.user;
     // Note no callback since the list will automatically redraw when this changes
-    let optimistic = activity.dirty == undefined;
-    models.trySetAttending(userId, sessionToken, activity, !activity.is_attending, optimistic, () => {}, () => {
-      console.log('Uhoh, an optimistic error was a mistake!!');
-      alert('An unexpected error occurred. Please refresh.');
-    });
+    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending)
   };
+
+  let handleLoginToFacebook = (fbToken) => {
+    props.login(fbToken).then(({userId, sessionToken}) => {
+      return props.requestRefreshActivities(userId, sessionToken);
+    }).then(() => {
+      return props.gotoScreen(SCREEN.list);
+    }).catch((e) => {
+      console.log(e);
+    });
+  }
 
   let { screen, optInReason, nextScreen, activityForEditing } = props.screens;
   let {userId, userName, sessionToken} = props.user;
@@ -125,7 +132,7 @@ let Tapalong = (props) => {
 
   // TODO: Refactor this mess!
   if (screen == SCREEN.loggedOut) {
-    return <Login onLoginComplete={handleViewList} />;
+    return <Login onLoginToFacebook={ (fbToken) => handleLoginToFacebook(fbToken) } />;
   } else {
     let mainContents;
     if (screen == SCREEN.list) {
@@ -150,9 +157,9 @@ let Tapalong = (props) => {
         <EditActivity
           activity={activityForEditing}
           userName={userName}
-          onSaveComplete={handleActivitySaveComplete}
-          onCreateComplete={handleActivityCreateComplete}
-          onDeleteComplete={handleViewList}
+          onSaveClicked={handleActivitySaveClicked}
+          onCreateClicked={handleActivityCreateClicked}
+          onDeleteClicked={handleActivityDeleteClicked}
         />
       );
     }
@@ -162,7 +169,7 @@ let Tapalong = (props) => {
         <Header
           title={getScreenTitle(screen)}
           shouldShowBackButton={shouldShowBackButton(screen)}
-          onBackButtonClick={handleViewList}
+          onBackButtonClick={() => { props.gotoScreen(SCREEN.list) } }
         />
       );
     }

@@ -20,6 +20,7 @@ var swLibrary = require('../swsetup.js')
   // });
 
 let EditActivity = React.createClass({
+
   getInitialState: function () {
     return {
       title: this.props.activity ? this.props.activity.title : '',
@@ -29,6 +30,7 @@ let EditActivity = React.createClass({
       deleteRequestPending: false,
     };
   },
+
   componentDidMount: function () {
     // Focus the title input if we're creating
     if (!this.props.activity) {
@@ -37,12 +39,15 @@ let EditActivity = React.createClass({
     // Scroll to the top of the page to ensure the editing screen is visible
     scroll(window, 0);
   },
+
   handleTitleChange: function (e) {
     this.setState({title: e.target.value});
   },
+
   handleDescriptionChange: function (e) {
     this.setState({description: e.target.value});
   },
+
   handleDateChange: function (e) {
     // Note date will parse the date as if it was UTC, and then convert it into local TZ
     var newDate = new Date(e.target.value);
@@ -59,6 +64,7 @@ let EditActivity = React.createClass({
     console.log(newStartTime);
     this.setState({start_time: newStartTime});
   },
+
   handleTimeChange: function (e) {
     var tmp = e.target.value.split(':');
     var hour = parseInt(tmp[0]);
@@ -70,54 +76,34 @@ let EditActivity = React.createClass({
     });
     this.setState({start_time: newStartTime});
   },
-  handleSaveClicked: function (e) {
+
+  handleSaveClicked: function () {
+    let activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
     this.setState({saveRequestPending: true});
-
-    var thisButton = e.target;
-
-    var activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
-
-    models.tryUpdateActivity(this.props.user.userId,
-      this.props.user.sessionToken, this.props.activity, activityChanges, () => {
-      this.props.onSaveComplete();
-      this.setState({saveRequestPending: false});
-    }, () => {
-      alert('An error occurred! Sorry. Please refresh.');
-      throw('Editing the activity failed. Help the user understand why.');
-    });
+    this.props.onSaveClicked(this.props.activity, activityChanges);
   },
+
   handleCreateClicked: function () {
-    this.setState({saveRequestPending: true});
-    var newActivity = {
+    let newActivity = {
       title: this.state.title,
       start_time: this.state.start_time,
       location: '',
       max_attendees: -1,
       description: this.state.description
     };
-    models.tryCreateActivity(this.props.user.userId,
-      this.props.user.sessionToken, newActivity, () => {
-      this.setState({saveRequestPending: false});
-      this.props.onCreateComplete();
-    }, () => {
-      this.setState({saveRequestPending: false});
-      alert('Sorry, something went wrong. Please check you entered the information correctly.');
-    });
+    this.setState({saveRequestPending: true});
+    this.props.onCreateClicked(newActivity);
   },
+
   handleDeleteClicked: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({deleteRequestPending: true});
-      models.tryCancelActivity(this.props.user.userId,
-        this.props.user.sessionToken, this.props.activity, () => {
-        this.setState({deleteRequestPending: false});
-        this.props.onDeleteComplete();
-      }, () => {
-        alert('Sorry, something went wrong. Please restart Up Dog and try again.');
-      });
+      this.props.onDeleteClicked(this.props.activity);
     } else {
       // Do nothing
     }
   },
+
   render: function () {
     var editing = !!this.props.activity;
     /*

@@ -33,6 +33,7 @@
     "react-dom": "^0.14.0",
     "react-redux": "^4.0.0",
     "react-textarea-autosize": "^2.5.4",
-    "redux": "^3.0.4"
+    "redux": "^3.0.4",
+    "redux-thunk": "^1.0.0"
   }
 }
