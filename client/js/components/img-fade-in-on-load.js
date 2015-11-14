@@ -1,6 +1,5 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
 let ImgFadeInOnLoad = React.createClass({
 
@@ -60,7 +59,7 @@ let ImgFadeInOnLoad = React.createClass({
       </div>
     )
   }
-  
+
 });
 
 module.exports = ImgFadeInOnLoad;

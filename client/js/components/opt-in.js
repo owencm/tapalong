@@ -1,12 +1,11 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
-let Card = require('./card.js');
-let CardOptions = require('./card-options.js');
-let DimScreen = require('./dim-screen.js');
+import React from 'react';
+import m from '../m.js';
+import Card from './card.js';
+import CardOptions from './card-options.js';
+import DimScreen from './dim-screen.js';
 
 // Require core logic
-let swLibrary = require('../swsetup.js')
+import swLibrary from '../swsetup.js';
 
 let OptIn = React.createClass({
 
@@ -49,7 +48,7 @@ let OptIn = React.createClass({
       </Card>
     )
   }
-  
+
 });
 
 module.exports = OptIn;

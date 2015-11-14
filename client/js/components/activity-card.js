@@ -1,41 +1,10 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
-let Card = require('./card.js');
-let CardOptions = require('./card-options.js');
-let AttendeesList = require('./attendees-list.js');
-let FriendIcon = require('./friend-icon.js');
-let Collapse = require('react-collapse');
-
-let OPTIONS = {
-  edit: 0,
-  attend: 1,
-  undoAttend: 2
-};
-
-// E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
-// TODO: Render 0AM as Midnight
-let getDateString = (dateTime) => {
-  let today = Date.today();
-  let tomorrow = (Date.today()).add(1).days();
-  // This is a copy of the date (time stripped) used for date comparison
-  let dateCopy = dateTime.clone().clearTime();
-  let str = '';
-  if (today.equals(dateCopy)) {
-    str += 'today ';
-  } else if (tomorrow.equals(dateCopy)) {
-    str += 'tomorrow ';
-  } else {
-    str += 'on ' + dateTime.toString('dddd dS') + ' ';
-  }
-  str += 'at ' + dateTime.toString('h');
-  let minutes = dateTime.toString('mm');
-  if (minutes !== '00') {
-    str += ':' + minutes;
-  }
-  str += dateTime.toString('tt').toLowerCase();
-  return str;
-};
+import React from 'react';
+import m from '../m.js';
+import Card from './card.js';
+import CardOptions from './card-options.js';
+import AttendeesList from './attendees-list.js';
+import FriendIcon from './friend-icon.js';
+import Collapse from 'react-collapse';
 
 let ActivityCard = (props) => {
 
@@ -118,6 +87,36 @@ let ActivityCard = (props) => {
     </Card>
   );
 
+};
+
+let OPTIONS = {
+  edit: 0,
+  attend: 1,
+  undoAttend: 2
+};
+
+// E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
+// TODO: Render 0AM as Midnight
+let getDateString = (dateTime) => {
+  let today = Date.today();
+  let tomorrow = (Date.today()).add(1).days();
+  // This is a copy of the date (time stripped) used for date comparison
+  let dateCopy = dateTime.clone().clearTime();
+  let str = '';
+  if (today.equals(dateCopy)) {
+    str += 'today ';
+  } else if (tomorrow.equals(dateCopy)) {
+    str += 'tomorrow ';
+  } else {
+    str += 'on ' + dateTime.toString('dddd dS') + ' ';
+  }
+  str += 'at ' + dateTime.toString('h');
+  let minutes = dateTime.toString('mm');
+  if (minutes !== '00') {
+    str += ':' + minutes;
+  }
+  str += dateTime.toString('tt').toLowerCase();
+  return str;
 };
 
 module.exports = ActivityCard;

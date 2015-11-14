@@ -1,19 +1,15 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
-let Card = require('./card.js');
-let CardOptions = require('./card-options.js');
-let TextAreaAutoResize = require('react-textarea-autosize');
-
-// Require core logic
-let swLibrary = require('../swsetup.js')
+import React from 'react';
+import m from '../m.js';
+import Card from './card.js';
+import CardOptions from './card-options.js';
+import TextAreaAutoResize from 'react-textarea-autosize';
 
 // TODO: set form fields to blur after enter pressed
-  // titleInputElem.addEventListener('keydown', function(key) {
-  //   if (key.keyCode == 13) {
-  //     this.blur();
-  //   }
-  // });
+// titleInputElem.addEventListener('keydown', function(key) {
+//   if (key.keyCode == 13) {
+//     this.blur();
+//   }
+// });
 
 let EditActivity = React.createClass({
 

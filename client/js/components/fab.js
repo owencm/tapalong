@@ -1,11 +1,10 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
-var Fab = (props) => {
+let Fab = (props) => {
 
   return <div id='addButton' onClick={props.onClick}></div>
-  
+
 };
 
 module.exports = Fab;

@@ -1,6 +1,5 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
 // A pure function, ala "Stateless function components" in https://facebook.github.io/react/blog/2015/09/10/react-v0.14-rc1.html
 let Header = (props) => {
@@ -51,7 +50,7 @@ let Header = (props) => {
       </h1>
     </header>
   );
-  
+
 };
 
 module.exports = Header;

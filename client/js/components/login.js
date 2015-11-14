@@ -1,7 +1,6 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
-let FacebookLogin = require('./facebook-login.js');
+import React from 'react';
+import m from '../m.js';
+import FacebookLogin from './facebook-login.js';
 
 let Login = (props) => {
 

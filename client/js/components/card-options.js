@@ -1,6 +1,5 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
 // Remember to disable the option after it lets you know it's been clicked
 // We don't do that here as disabled is a prop and we can't move it to state
@@ -19,15 +18,19 @@ let CardOptions = (props) => {
     /* A default position */
     float: 'right'
   };
+
   let enabledOptionStyle = {
     color: '#00BCD4'
   };
+
   let badEnabledOptionStyle = {
     color: '#e33'
   };
+
   let disabledOptionStyle = {
     color: '#CCC'
   };
+
   let optionCards = props.options.map((option) => {
     return (
       <div
@@ -46,13 +49,14 @@ let CardOptions = (props) => {
       </div>
     )
   });
+
   return (
     <div>
       { optionCards }
       <div style={{clear: 'both'}}></div>
     </div>
   )
-  
+
 }
 
 module.exports = CardOptions;

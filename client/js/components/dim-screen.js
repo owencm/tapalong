@@ -1,10 +1,13 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
-class DimScreen extends React.Component {
+let DimScreen = React.createClass({
 
-  render() {
+  getDuration: function () {
+    return (this.props.duration == undefined) ? 0 : this.props.duration;
+  },
+
+  render: function () {
     return (
       <div
         ref='permissionOverlay'
@@ -15,26 +18,22 @@ class DimScreen extends React.Component {
           left: '0',
           right: '0',
           zIndex: '10000',
-          transition: 'opacity' + this.props.duration + 'ms',
+          transition: 'opacity' + this.getDuration() + 'ms',
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           opacity: '0'
         }}
       />
     )
-  }
+  },
 
-  componentDidMount() {
+  componentDidMount: function () {
     // Let the parent know when the transition is over
-    setTimeout(this.props.onScreenDim, this.props.duration);
+    setTimeout(this.props.onScreenDim, this.getDuration());
     // Force a layout so the transition will apply
     this.refs.permissionOverlay.offsetTop;
     this.refs.permissionOverlay.style.opacity = 1;
   }
 
-}
-
-DimScreen.defaultProps = {
-  duration: 300
-}
+});
 
 module.exports = DimScreen;

@@ -1,8 +1,8 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
 let AttendeesList = (props) => {
+
   if (props.attendees < 1) {
     return <div />;
   } else {
@@ -17,6 +17,7 @@ let AttendeesList = (props) => {
       </div>
     )
   }
+
 }
 
 module.exports = AttendeesList;

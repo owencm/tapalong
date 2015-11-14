@@ -1,10 +1,9 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
+import React from 'react';
+import m from '../m.js';
 
 let Card = (props) => {
 
-  var cardStyle = {
+  let cardStyle = {
     /* This puts the border inside the edge */
     boxSizing: 'border-box',
     maxWidth: '600px',
@@ -14,11 +13,13 @@ let Card = (props) => {
     lineHeight: '1.5em',
     backgroundColor: '#fafafa',
     /* For fading into 'attending' */
-    /*-webkitTransition: 'background-color 0.5s',*/
+    WebkitTransition: 'background-color 0.5s',
   };
+
   if (props.backgroundColor !== undefined) {
     cardStyle = m(cardStyle, {backgroundColor: props.backgroundColor});
   }
+
   return (
     <div
       style={cardStyle}
@@ -27,7 +28,7 @@ let Card = (props) => {
       { props.children }
     </div>
   );
-  
+
 }
 
 module.exports = Card;

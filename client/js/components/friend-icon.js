@@ -1,7 +1,6 @@
-// Require react, convenience libraries and UI components
-let React = require('react');
-let m = require('../m.js');
-let ImgFadeInOnLoad = require('./img-fade-in-on-load.js');
+import React from 'react';
+import m from '../m.js';
+import ImgFadeInOnLoad from './img-fade-in-on-load.js';
 
 let FriendIcon = (props) => {
 
@@ -19,7 +18,7 @@ let FriendIcon = (props) => {
       <ImgFadeInOnLoad src={props.thumbnail} backgroundColor='ddd' width='38' height='38' circular/>
     </div>
   )
-  
+
 };
 
 module.exports = FriendIcon;
