@@ -38,7 +38,7 @@ self.addEventListener('push', function(e) {
 });
 
 function getNotifications() {
-  return persistence.isLoggedIn().then((userId, userName, sessionToken) => {
+  return persistence.isLoggedIn().then(({userId, userName, sessionToken}) => {
     // TODO: Unify networking library with main app
     return fetch('/../v1/notifications/', {
       headers: {
@@ -101,11 +101,10 @@ function showNotifications(notifications) {
         // We only show notifications never shown before, so we will never add the same ID here twice
         newShownNotificationIds.push(note.id);
       }
-      persistence.markNotificationsAsShown(newShownNotificationIds).then(() => {
-        // Resolve five second late just in case it took a while to show the notifications earlier
-        // TODO: Move the resolve to happen after at least one showNotification promise has resolved
-        setTimeout(resolve, 5000);
-      });
+      persistence.markNotificationsAsShown(newShownNotificationIds);
+      // Resolve five second late just in case it took a while to show the notifications earlier
+      // TODO: Move the resolve to happen after at least one showNotification promise has resolved
+      setTimeout(resolve, 5000);
     });
   })
 }

@@ -17,6 +17,8 @@ import { gotoScreen, gotoEditScreen, gotoCreateScreen,
 
 // Require core logic
 import swLibrary from '../swsetup.js'
+// Initialize the SW installation and push subscriptions
+swLibrary.init();
 
 import FastClick from 'fastclick';
 FastClick(document.body);
