@@ -11,11 +11,21 @@ let FriendIcon = (props) => {
     height: '38px',
     marginRight: '24px',
     float: 'left',
-    overflow: 'hidden'
+    overflow: 'hidden',
+    backgroundColor: '#ddd'
   };
   return (
     <div style={friendIconStyle}>
-      <ImgFadeInOnLoad src={props.thumbnail} backgroundColor='ddd' width='38' height='38' circular/>
+      { !props.thumbnail ? null :
+        <ImgFadeInOnLoad
+          src={props.thumbnail}
+          backgroundColor='ddd'
+          width='38'
+          height='38'
+          circular
+          />
+       }
+
     </div>
   )
 

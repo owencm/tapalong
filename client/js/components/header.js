@@ -1,7 +1,6 @@
 import React from 'react';
 import m from '../m.js';
 
-// A pure function, ala "Stateless function components" in https://facebook.github.io/react/blog/2015/09/10/react-v0.14-rc1.html
 let Header = (props) => {
 
   let headerStyle = {

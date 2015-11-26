@@ -2,7 +2,7 @@ import m from './m.js';
 import { SCREEN } from './screens.js';
 
 import {
-  GOTO_SCREEN, GOTO_EDIT_SCREEN,
+  GOTO_SCREEN, GOTO_EDIT_SCREEN, GOTO_CREATE_SCREEN,
   GOTO_NEXT_SCREEN, QUEUE_NEXT_SCREEN,
   SET_USER, ADD_ACTIVITY, REMOVE_ACTIVITY
 } from './actions.js'
@@ -43,6 +43,8 @@ export function screens(state = {
       return m({}, state, { screen: action.screen });
     case GOTO_EDIT_SCREEN:
       return m({}, state, { screen: SCREEN.edit, activityForEditing: action.activityForEditing });
+    case GOTO_CREATE_SCREEN:
+      return m({}, state, { screen: SCREEN.create });
     case GOTO_NEXT_SCREEN:
       return m({}, state, { screen: state.nextScreen });
     case QUEUE_NEXT_SCREEN:

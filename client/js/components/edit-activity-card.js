@@ -69,13 +69,13 @@ let EditActivity = React.createClass({
     this.setState({start_time: newStartTime});
   },
 
-  handleSaveClicked: function () {
+  handleSaveClick: function () {
     let activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
     this.setState({saveRequestPending: true});
-    this.props.onSaveClicked(this.props.activity, activityChanges);
+    this.props.onSaveClick(this.props.activity, activityChanges);
   },
 
-  handleCreateClicked: function () {
+  handleCreateClick: function () {
     let newActivity = {
       title: this.state.title,
       start_time: this.state.start_time,
@@ -84,13 +84,13 @@ let EditActivity = React.createClass({
       description: this.state.description
     };
     this.setState({saveRequestPending: true});
-    this.props.onCreateClicked(newActivity);
+    this.props.onCreateClick(newActivity);
   },
 
-  handleDeleteClicked: function () {
+  handleDeleteClick: function () {
     if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({deleteRequestPending: true});
-      this.props.onDeleteClicked(this.props.activity);
+      this.props.onDeleteClick(this.props.activity);
     } else {
       // Do nothing
     }
@@ -122,20 +122,20 @@ let EditActivity = React.createClass({
     let options = [];
     if (editing) {
       if (this.state.saveRequestPending) {
-        options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClicked});
+        options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClick});
       } else {
-        options.push({label: 'Save', onClick: this.handleSaveClicked});
+        options.push({label: 'Save', onClick: this.handleSaveClick});
       }
       if (this.state.deleteRequestPending) {
-        options.push({label: 'Deleting...', disabled: true, position: 'left', type: 'bad', onClick: this.handleDeleteClicked});
+        options.push({label: 'Deleting...', disabled: true, position: 'left', type: 'bad', onClick: this.handleDeleteClick});
       } else {
-        options.push({label: 'Delete', position: 'left', type: 'bad', onClick: this.handleDeleteClicked});
+        options.push({label: 'Delete', position: 'left', type: 'bad', onClick: this.handleDeleteClick});
       }
     } else {
       if (this.state.saveRequestPending) {
-        options.push({label: 'Creating...', disabled: true, onClick: this.handleCreateClicked});
+        options.push({label: 'Creating...', disabled: true, onClick: this.handleCreateClick});
       } else {
-        options.push({label: 'Create', onClick: this.handleCreateClicked});
+        options.push({label: 'Create', onClick: this.handleCreateClick});
       }
     }
     // Provide dates and times for the input elements
@@ -162,7 +162,7 @@ let EditActivity = React.createClass({
             style={m(inputStyle, {fontSize: '1.2em'})}
             className='input-placeholder-lighter focusUnderline'
             value={this.state.title}
-            placeholder='Watching Frozen'
+            placeholder='Watching Spectre'
             autoCapitalize='words'
             required
             onChange={this.handleTitleChange}>

@@ -1,4 +1,3 @@
-// Require react and UI components
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux'
@@ -35,7 +34,7 @@ objectDB.open('db-1').get().then((data) => {
   let userName = data.userName;
   let userId = data.userId;
   let loggedIn = !(sessionToken == null || userId == null || userName == null);
-  if (loggedIn) {
+  if (false) {
     store.dispatch(setUser(userId, userName, sessionToken));
     store.dispatch(requestRefreshActivities(userId, sessionToken)).then(() => {
       return store.dispatch(gotoScreen(SCREEN.list));

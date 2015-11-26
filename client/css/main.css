@@ -54,21 +54,6 @@ b {
 	font-weight: 400;
 }
 
-div#addbutton {
-	width: 60px;
-	height: 60px;
-	border-radius: 30px;
-	position: fixed;
-	bottom: 20px;
-	right: 20px;
-	background-image: url('images/plus-grey.png');
-	background-position: center;
-	background-repeat: no-repeat;
-	background-size: 16px;
-	background-color: #FFFF00;
-	box-shadow: 0px 2px 5px rgba(0,0,0,0.3);
-}
-
 #loginButton {
 	bottom: 0;
 	position: fixed;

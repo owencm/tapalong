@@ -1,27 +1,30 @@
 import React from 'react';
 import { render } from 'react-dom';
+import m from '../m.js';
 import Login from './login.js';
 import ActivityCardList from './activity-card-list.js';
+import ActivityCardListPlaceholder from './activity-card-list-placeholder.js';
 import EditActivity from './edit-activity-card.js';
 import OptIn from './opt-in.js';
 import Header from './header.js';
 import FabButton from './fab.js';
+import If from './if.js';
+import Hint from './hint.js';
 
-// Require model
-import { gotoScreen, gotoEditScreen,
+import { gotoScreen, gotoEditScreen, gotoCreateScreen,
   gotoNextScreen, queueNextScreen,
   setUser, addActivity } from '../actions.js';
 
 // Require core logic
 import swLibrary from '../swsetup.js'
-import m from '../m.js';
+
+import FastClick from 'fastclick';
+FastClick(document.body);
 
 import { SCREEN } from '../screens.js';
 
-let FastClick = require('fastclick');
-FastClick(document.body);
-
 let Tapalong = (props) => {
+
   /* Stateless helpers */
 
   let shouldShowHeader = (screen) => {
@@ -50,6 +53,8 @@ let Tapalong = (props) => {
     }
   };
 
+  /* Stateful action wrapper */
+
   let gotoListViaOptIn = (reason) => {
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
@@ -64,49 +69,35 @@ let Tapalong = (props) => {
     }
   }
 
-  /* Stateful action wrapper */
-
-  let handleActivitySaveClicked = (activity, activityChanges) => {
+  let handleSaveClick = (activity, activityChanges) => {
     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
       gotoListViaOptIn('if the plan changes');
     });
   };
 
-  let handleActivityCreateClicked = (activity) => {
+  let handleCreateClick = (activity) => {
     props.requestCreateActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       gotoListViaOptIn('if the plan changes');
     });
   };
 
-  let handleActivityDeleteClicked = (activity) => {
+  let handleDeleteClick = (activity) => {
     props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       props.gotoScreen(SCREEN.list);
     });
   }
 
-  let handleAttend = (activity) => {
+  let handleAttendClick = (activity) => {
     let {userId, sessionToken} = props.user;
-    // Note we change screen without waiting for network to complete
-    // Don't ask the user to grant permission unless the browser supports it
-    if (swLibrary.browserSupportsSWAndNotifications()) {
-      swLibrary.hasPushNotificationPermission(() => {
-        props.gotoScreen(SCREEN.list);
-      }, () => {
-        props.queueNextScreen(SCREEN.list, 'if the plan changes');
-        props.gotoScreen(SCREEN.notificationsOptIn);
-      });
-    } else {
-      props.gotoScreen(SCREEN.list);
-    }
+    gotoListViaOptIn('if the plan changes');
     props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending);
   };
 
-  let handleUnattend = (activity) => {
+  let handleUnattendClick = (activity) => {
     let {userId, sessionToken} = props.user;
-    // Note no callback since the list will automatically redraw when this changes
     props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending)
   };
 
@@ -129,20 +120,28 @@ let Tapalong = (props) => {
     return <div/>;
   }
 
-  // TODO: Refactor this mess!
+  // TODO: Move to a router solution
   if (screen == SCREEN.loggedOut) {
     return <Login onLoginToFacebook={ (fbToken) => handleLoginToFacebook(fbToken) } />;
   } else {
     let mainContents;
     if (screen == SCREEN.list) {
-      mainContents = (
-        <ActivityCardList
-          activities ={activities}
-          onAttendClick={handleAttend}
-          onUnattendClick={handleUnattend}
-          onEditClick={(activity) => props.gotoEditScreen(activity)}
-        />
-      );
+      if (activities.length === 0) {
+        mainContents = (
+          <ActivityCardListPlaceholder
+            onCreateClick={() => props.gotoCreateScreen()}
+          />
+        )
+      } else {
+        mainContents = (
+          <ActivityCardList
+            activities ={activities}
+            onAttendClick={handleAttendClick}
+            onUnattendClick={handleUnattendClick}
+            onEditClick={(activity) => props.gotoEditScreen(activity)}
+          />
+        );
+      }
     } else if (screen == SCREEN.notificationsOptIn) {
       mainContents = (
         <OptIn
@@ -151,15 +150,19 @@ let Tapalong = (props) => {
           onOptInComplete={() => props.gotoNextScreen()}
         />
       );
-    } else if ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1) {
+    } else if (screen == SCREEN.create || screen == SCREEN.edit) {
       mainContents = (
-        <EditActivity
-          activity={activityForEditing}
-          userName={userName}
-          onSaveClicked={handleActivitySaveClicked}
-          onCreateClicked={handleActivityCreateClicked}
-          onDeleteClicked={handleActivityDeleteClicked}
-        />
+        <div>
+          { screen == SCREEN.create ? <Hint text="What are you planning on doing
+              that you'd be happy to have friends join for?" /> : null }
+          <EditActivity
+            activity={activityForEditing}
+            userName={userName}
+            onSaveClick={handleSaveClick}
+            onCreateClick={handleCreateClick}
+            onDeleteClick={handleDeleteClick}
+          />
+        </div>
       );
     }
     let headerIfNeeded = null;
@@ -174,12 +177,12 @@ let Tapalong = (props) => {
     }
     let createButtonIfNeeded = null;
     if (shouldShowCreateButton(screen)) {
-      createButtonIfNeeded = <FabButton onClick={() => props.gotoEditScreen(undefined) } />;
+      createButtonIfNeeded = <FabButton onClick={ () => props.gotoCreateScreen() } />;
     }
     return (
       <div>
         <div id='container'>
-          {mainContents}
+          { mainContents }
           <div style={{height: '100px'}}></div>
         </div>
         { /* Note these must be below the container to capture the clicks */ }

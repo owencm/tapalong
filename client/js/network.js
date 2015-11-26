@@ -1,37 +1,31 @@
-// TODO: refactor so when adding we don't have to cast string to date here, but it is done in the model
 require('datejs');
 
-let requestLogin = function (fb_token, success, failure) {
-  console.log('Logging in to the app');
-  sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fb_token}), undefined, function() {
-    if(this.status >= 200 && this.status < 400) {
-      console.log(this.responseText);
-      let response = JSON.parse(this.responseText);
-      if (response.success === 'true') {
-        success(response.user_id, response.user_name, response.session_token);
+let requestLogin = function (fbToken) {
+  return new Promise((resolve, reject) => {
+    sendRequest('/../v1/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined, function() {
+      if(this.status >= 200 && this.status < 400) {
+        let response = JSON.parse(this.responseText);
+        resolve({userId: response.user_id, userName: response.user_name, sessionToken: response.session_token});
       } else {
-        failure();
-        throw('unexpected app login failure');
+        reject();
+        throw ('login request failed');
       }
-    } else {
-      // Request failed
-      throw ('login request failed');
-    }
-  });
-};
-
-let parseActivitiesFromJSON = function (responseText) {
-  // Strip activity label for each item
-  let activities = JSON.parse(responseText).map(function (activity) {
-    // Note the list looks like [{activity: {...}}, ...]
-    // Parse the datetimes into actual objects.
-    activity.activity.start_time = new Date(activity.activity.start_time);
-    return activity.activity;
-  });
-  return activities;
+    });
+  })
 };
 
 let requestActivitiesFromServer = function (user, success, failure) {
+  let parseActivitiesFromJSON = function (responseText) {
+    // Strip activity label for each item
+    let activities = JSON.parse(responseText).map(function (activity) {
+      // Note the list looks like [{activity: {...}}, ...]
+      // Parse the datetimes into actual objects.
+      activity.activity.start_time = new Date(activity.activity.start_time);
+      return activity.activity;
+    });
+    return activities;
+  };
+
   sendRequest('/../v1/activities/visible_to_user/', 'get', '', user, function() {
     if (this.status >= 200 && this.status < 400) {
       // TODO: Check this actually succeeded
@@ -105,14 +99,9 @@ let sendRequest = function (url, method, body, user, onload) {
   if (user) {
     req.setRequestHeader('Session-Token', user.sessionToken);
     req.setRequestHeader('User-Id', user.userId);
-  } else {
-    console.log('Sending an unauthenticated request since we haven\'t logged in yet');
   }
   req.setRequestHeader('Content-Type', 'application/json');
-  // Why is there a settimeout here?
-  setTimeout(function() {
-    req.send(body);
-  }, 0);
+  req.send(body);
 }
 
 let sendToServiceWorker = function (data) {
