@@ -2,6 +2,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux'
 import App from './app.js';
+import m from './m.js';
 
 // Require model
 import { createStore, combineReducers, applyMiddleware } from 'redux';
@@ -12,10 +13,7 @@ import { gotoScreen, gotoEditScreen,
   requestRefreshActivities, login } from './actions.js';
 import { screens, user, activities } from './reducers.js';
 
-// Require core logic
-import objectDB from './objectdb.js';
-import m from './m.js';
-
+import persistence from './persistence.js';
 import { SCREEN } from './screens.js';
 
 const createStoreWithMiddleware = applyMiddleware(
@@ -26,24 +24,14 @@ const store = createStoreWithMiddleware(combineReducers({screens, user, activiti
 
 store.subscribe(() => console.log(store.getState()));
 
-// TODO: Ideally remove this by moving to a redux persistence library
 // TODO: Handle the session token expiring
-// Note objectDB does not use actual promises so we can't properly chain this
-objectDB.open('db-1').get().then((data) => {
-  let sessionToken = data.sessionToken;
-  let userName = data.userName;
-  let userId = data.userId;
-  let loggedIn = !(sessionToken == null || userId == null || userName == null);
-  if (false) {
-    store.dispatch(setUser(userId, userName, sessionToken));
-    store.dispatch(requestRefreshActivities(userId, sessionToken)).then(() => {
-      return store.dispatch(gotoScreen(SCREEN.list));
-    }).catch((e) => {
-      console.log(e);
-    });
-  } else {
-    store.dispatch(gotoScreen(SCREEN.loggedOut));
-  }
+persistence.isLoggedIn().then(({userId, userName, sessionToken}) => {
+  store.dispatch(setUser(userId, userName, sessionToken));
+  return store.dispatch(requestRefreshActivities(userId, sessionToken));
+}).then(() => {
+  return store.dispatch(gotoScreen(SCREEN.list));
+}).catch((e) => {
+  store.dispatch(gotoScreen(SCREEN.loggedOut));
 });
 
 render(

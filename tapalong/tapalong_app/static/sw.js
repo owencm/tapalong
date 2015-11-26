@@ -473,7 +473,78 @@ module.exports = objectDB;
 
 },{}],2:[function(require,module,exports){
 'use strict';
-var objectDB = require('./objectdb.js');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _objectdbJs = require('./objectdb.js');
+
+var _objectdbJs2 = _interopRequireDefault(_objectdbJs);
+
+// TODO: maybe worry about race conditions when writing persistent data, for example
+// if we receive multiple pushes simultaneously?
+
+var db = undefined;
+// Cache this to save on opening cost
+var getDB = function getDB() {
+  if (db === undefined) {
+    db = _objectdbJs2['default'].open('db-1');
+  }
+  return db;
+};
+
+var setUser = function setUser(user) {
+  console.log('setting user to ', user);
+  // Note objectDB isn't using actual promises so wrap it in a real one
+  return new Promise(function (resolve, reject) {
+    getDB().put('user', user).then(resolve);
+  });
+};
+
+var isLoggedIn = function isLoggedIn() {
+  return new Promise(function (resolve, reject) {
+    // Note objectDB isn't using actual promises so we can't chain the thens
+    getDB().get('user').then(function (user) {
+      console.log('user', user);
+      if (user !== undefined && user.userId !== undefined && user.userName !== undefined && user.sessionToken !== undefined) {
+        resolve(user);
+      } else {
+        reject();
+      }
+    });
+  });
+};
+
+var markNotificationsAsShown = function markNotificationsAsShown(newShownNotificationIds) {
+  getDB().get('notificationIds').then(function (notificationIds) {
+    getDB().put('notificationIds', notificationIds.concat(newShownNotificationIds));
+  });
+};
+
+var getPreviouslyShownNotifications = function getPreviouslyShownNotifications() {
+  // Note objectDB does not use real promises, so wrap in a real one
+  return new Promise(function (resolve, reject) {
+    getDB().get('notificationIds').then(function (notificationIds) {
+      resolve(notificationIds);
+    });
+  });
+};
+
+getDB().get().then(function (data) {
+  if (data === undefined || data.notificationIds === undefined) {
+    getDB().put('notificationIds', []);
+  }
+});
+
+module.exports = {
+  setUser: setUser,
+  isLoggedIn: isLoggedIn,
+  markNotificationsAsShown: markNotificationsAsShown,
+  getPreviouslyShownNotifications: getPreviouslyShownNotifications
+};
+
+},{"./objectdb.js":1}],3:[function(require,module,exports){
+'use strict';
+var persistence = require('./persistence.js');
 
 var version = 1;
 var logging = true;
@@ -512,33 +583,22 @@ self.addEventListener('push', function (e) {
 });
 
 function getNotifications() {
-  return new Promise(function (resolve, reject) {
-    // Get the session tokens etc from IDB
-    var db = objectDB.open('db-1');
-    // Note objectDB does not use actual promises so we can't properly chain this
-    db.get().then(function (data) {
-      var sessionToken = data.sessionToken;
-      var userId = data.userId;
-      if (sessionToken == undefined || userId == undefined) {
-        throw new Error('User was not logged in. Cannot request notifications.');
+  return persistence.isLoggedIn().then(function (userId, userName, sessionToken) {
+    // TODO: Unify networking library with main app
+    return fetch('/../v1/notifications/', {
+      headers: {
+        'Session-Token': sessionToken,
+        'User-Id': userId
       }
-      // TODO: Unify networking library with main app
-      fetch('/../v1/notifications/', {
-        headers: {
-          'Session-Token': sessionToken,
-          'User-Id': userId
-        }
-      }).then(function (response) {
-        return response.text();
-      }).then(function (txt) {
-        var notifications = JSON.parse(txt);
-        log('Fetched notifications: ', notifications);
-        resolve(notifications);
-      })['catch'](function (ex) {
-        reject();
-        console.log(ex);
-      });
     });
+  }).then(function (response) {
+    return response.text();
+  }).then(function (json) {
+    var notifications = JSON.parse(json);
+    log('Fetched notifications: ', notifications);
+    return notifications;
+  })['catch'](function (ex) {
+    console.log(ex);
   });
 }
 
@@ -562,42 +622,34 @@ function handleNotificationClick(e) {
 }
 
 function notShownOnThisClientBefore(notifications) {
-  return new Promise(function (resolve, reject) {
+  return persistence.getPreviouslyShownNotifications().then(function (shownNotificationIds) {
     var result = [];
-    var db = objectDB.open('db-1');
-    db.get().then(function (data) {
-      console.log('Database of previously shown notification IDs: ', data);
-      for (var i = 0; i < notifications.length; i++) {
-        var note = notifications[i];
-        if (data.notificationIds.indexOf(note.id) < 0) {
-          console.log('This client hasn\t shown notification ' + note.id + ' before');
-          result.push(note);
-        }
+    console.log('Database of previously shown notification IDs: ', shownNotificationIds);
+    for (var i = 0; i < notifications.length; i++) {
+      var note = notifications[i];
+      if (shownNotificationIds.indexOf(note.id) < 0) {
+        console.log('This client hasn\t shown notification ' + note.id + ' before');
+        result.push(note);
       }
-      resolve(result);
-    });
+    }
+    return result;
   });
 }
 
 function showNotifications(notifications) {
   return new Promise(function (resolve, reject) {
-    var db = objectDB.open('db-1');
-    db.get().then(function (data) {
-      if (data.notificationIds == undefined) {
-        console.log('SW has never shown a notification before. Creating state in DB.');
-        data.notificationIds = [];
-      }
+    persistence.getPreviouslyShownNotifications().then(function (shownNotificationIds) {
+      var newShownNotificationIds = [];
       for (var i = 0; i < notifications.length; i++) {
         var note = notifications[i];
         showNotification(note.title, note.body, note.url, note.icon, note.id);
         // We only show notifications never shown before, so we will never add the same ID here twice
-        data.notificationIds.push(note.id);
+        newShownNotificationIds.push(note.id);
       }
-      // Note objectDB does not use real promises so we can't chain this
-      db.put('notificationIds', data.notificationIds).then(function () {
-        // Resolve one second late just in case it took a while to show the notifications earlier
+      persistence.markNotificationsAsShown(newShownNotificationIds).then(function () {
+        // Resolve five second late just in case it took a while to show the notifications earlier
         // TODO: Move the resolve to happen after at least one showNotification promise has resolved
-        setTimeout(resolve, 1000);
+        setTimeout(resolve, 5000);
       });
     });
   });
@@ -608,7 +660,7 @@ function showNotification(title, body, url, icon, tag) {
   var options = {
     body: body,
     tag: tag,
-    // lang: 'test lang',
+    // lang: 'en',
     icon: icon,
     data: { url: url },
     vibrate: 1000,
@@ -620,4 +672,4 @@ function showNotification(title, body, url, icon, tag) {
   }
 }
 
-},{"./objectdb.js":1}]},{},[2]);
+},{"./persistence.js":2}]},{},[3]);

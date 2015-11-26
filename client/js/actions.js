@@ -94,6 +94,8 @@ export function login(fbToken) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       network.requestLogin(fbToken).then(({userId, userName, sessionToken}) => {
+
+
         console.log(userId, userName, sessionToken);
         dispatch(setUser(userId, userName, sessionToken));
         resolve({userId, sessionToken});

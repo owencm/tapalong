@@ -1,5 +1,5 @@
 'use strict';
-var objectDB = require('./objectdb.js');
+var persistence = require('./persistence.js');
 
 var version = 1;
 var logging = true;
@@ -38,33 +38,22 @@ self.addEventListener('push', function(e) {
 });
 
 function getNotifications() {
-  return new Promise((resolve, reject) => {
-    // Get the session tokens etc from IDB
-    var db = objectDB.open('db-1');
-    // Note objectDB does not use actual promises so we can't properly chain this
-    db.get().then(function(data) {
-      var sessionToken = data.sessionToken;
-      var userId = data.userId;
-      if (sessionToken == undefined || userId == undefined) {
-        throw new Error('User was not logged in. Cannot request notifications.');
+  return persistence.isLoggedIn().then((userId, userName, sessionToken) => {
+    // TODO: Unify networking library with main app
+    return fetch('/../v1/notifications/', {
+      headers: {
+        'Session-Token': sessionToken,
+        'User-Id': userId
       }
-      // TODO: Unify networking library with main app
-      fetch('/../v1/notifications/', {
-        headers: {
-          'Session-Token': sessionToken,
-          'User-Id': userId
-        }
-      }).then(function(response) {
-      return response.text();
-      }).then(function(txt) {
-        var notifications = JSON.parse(txt);
-        log('Fetched notifications: ', notifications);
-        resolve(notifications);
-      }).catch(function(ex) {
-        reject();
-        console.log(ex);
-      });
     });
+  }).then((response) => {
+    return response.text();
+  }).then((json) => {
+    var notifications = JSON.parse(json);
+    log('Fetched notifications: ', notifications);
+    return notifications;
+  }).catch(function(ex) {
+    console.log(ex);
   });
 }
 
@@ -88,45 +77,37 @@ function handleNotificationClick(e) {
 }
 
 function notShownOnThisClientBefore(notifications) {
-  return new Promise((resolve, reject) => {
+  return persistence.getPreviouslyShownNotifications().then((shownNotificationIds) => {
     var result = [];
-    var db = objectDB.open('db-1');
-    db.get().then(function(data)  {
-      console.log('Database of previously shown notification IDs: ', data);
-      for (var i = 0; i < notifications.length; i++) {
-        var note = notifications[i];
-        if (data.notificationIds.indexOf(note.id) < 0) {
-          console.log('This client hasn\t shown notification '+note.id+' before');
-          result.push(note);
-        }
+    console.log('Database of previously shown notification IDs: ', shownNotificationIds);
+    for (var i = 0; i < notifications.length; i++) {
+      var note = notifications[i];
+      if (shownNotificationIds.indexOf(note.id) < 0) {
+        console.log('This client hasn\t shown notification '+note.id+' before');
+        result.push(note);
       }
-      resolve(result);
-    });
+    }
+    return result;
   });
 }
 
 function showNotifications(notifications) {
   return new Promise((resolve, reject) => {
-    var db = objectDB.open('db-1');
-    db.get().then(function(data)  {
-      if (data.notificationIds == undefined ) {
-        console.log('SW has never shown a notification before. Creating state in DB.')
-        data.notificationIds = [];
-      }
+    persistence.getPreviouslyShownNotifications().then((shownNotificationIds) => {
+      let newShownNotificationIds = [];
       for (var i = 0; i < notifications.length; i++) {
         var note = notifications[i];
         showNotification(note.title, note.body, note.url, note.icon, note.id);
         // We only show notifications never shown before, so we will never add the same ID here twice
-        data.notificationIds.push(note.id);
+        newShownNotificationIds.push(note.id);
       }
-      // Note objectDB does not use real promises so we can't chain this
-      db.put('notificationIds', data.notificationIds).then(() => {
-        // Resolve one second late just in case it took a while to show the notifications earlier
+      persistence.markNotificationsAsShown(newShownNotificationIds).then(() => {
+        // Resolve five second late just in case it took a while to show the notifications earlier
         // TODO: Move the resolve to happen after at least one showNotification promise has resolved
-        setTimeout(resolve, 1000);
+        setTimeout(resolve, 5000);
       });
     });
-  });
+  })
 }
 
 //Utility function to actually show the notification.
@@ -134,7 +115,7 @@ function showNotification(title, body, url, icon, tag) {
   var options = {
     body: body,
     tag: tag,
-    // lang: 'test lang',
+    // lang: 'en',
     icon: icon,
     data: {url: url},
     vibrate: 1000,

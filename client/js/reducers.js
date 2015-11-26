@@ -1,5 +1,6 @@
 import m from './m.js';
 import { SCREEN } from './screens.js';
+import persistence from './persistence.js';
 
 import {
   GOTO_SCREEN, GOTO_EDIT_SCREEN, GOTO_CREATE_SCREEN,
@@ -57,11 +58,13 @@ export function screens(state = {
 export function user(state = {}, action) {
   switch (action.type) {
     case SET_USER:
-      return m({}, state, {
+      let newUser = {
         userId: action.userId,
         userName: action.userName,
         sessionToken: action.sessionToken
-      });
+      };
+      persistence.setUser(newUser);
+      return m({}, state, newUser);
     default:
       return state;
   }
