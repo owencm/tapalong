@@ -1,8 +1,8 @@
 // TODO: Move network calls into Redux thunks
+// TODO: Rewrite to use promises. And tidy the crap up.
 // TODO: make sure this all works in browsers without SW support. Checks are half baked today.
 import network from './network.js';
-import persistence from './persistence.js'
-
+import persistence from './persistence.js';
 
 let browserSupportsSWAndNotifications = function () {
   return ('serviceWorker' in navigator && typeof Notification !== 'undefined');
@@ -33,9 +33,11 @@ let requestPushNotificationPermission = function (success, failure) {
   });
 };
 
-let requestPushNotificationPermissionAndSubscribe = function (success, failure) {
+let requestPushNotificationPermissionAndSubscribe = function (user, success, failure) {
   requestPushNotificationPermission(() => {
-    subscribeForPushNotifications(sendSubscriptionToServer);
+    subscribeForPushNotifications((subscription) => {
+      sendSubscriptionToServer(user, subscription);
+    });
     success();
   }, () => {
     // TODO: Handle failure
@@ -43,13 +45,13 @@ let requestPushNotificationPermissionAndSubscribe = function (success, failure) 
   });
 }
 
-let sendSubscriptionToServer = function (subscription) {
+let sendSubscriptionToServer = function (user, subscription) {
   // Reconstructing this object to avoid https://code.google.com/p/chromium/issues/detail?id=467366 (still neccessary as of Chrome 45)
   subscription = {endpoint: subscription.endpoint};
   // Parse the GCM subscriptionId out of end endpoint as that is what GCM needs
   // TODO: Just send up the endpoint and parse on the server
   subscription.subscriptionId = subscription.endpoint.slice(subscription.endpoint.indexOf('send/')+5, subscription.endpoint.length);
-  network.requestCreatePushNotificationsSubscription(models.user, subscription);
+  network.requestCreatePushNotificationsSubscription(user, subscription);
 };
 
 let subscribeForPushNotifications = function (callback) {

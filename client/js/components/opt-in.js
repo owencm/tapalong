@@ -6,6 +6,7 @@ import DimScreen from './dim-screen.js';
 import If from './if.js';
 
 // Require core logic
+// TODO: Refactor dependency on this to higher up in the hierarchy
 import swLibrary from '../swsetup.js';
 
 let OptIn = React.createClass({
@@ -25,7 +26,7 @@ let OptIn = React.createClass({
   },
 
   handleScreenDim: function () {
-    swLibrary.requestPushNotificationPermissionAndSubscribe(() => {
+    swLibrary.requestPushNotificationPermissionAndSubscribe(this.props.user, () => {
       this.setState({showingPermissionRequest: false});
       this.props.onOptInComplete();
     }, () => {

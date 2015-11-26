@@ -150,6 +150,7 @@ let Tapalong = (props) => {
           reason={optInReason}
           nextState={nextScreen}
           onOptInComplete={() => props.gotoNextScreen()}
+          user={props.user}
         />
       );
     } else if (screen == SCREEN.create || screen == SCREEN.edit) {

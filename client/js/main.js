@@ -40,3 +40,6 @@ render(
   </Provider>,
   document.getElementById('appShell')
 );
+
+// TODO: Is this the right way to share the store with non-React views?
+module.exports = { hello: 'world' };
