@@ -122,7 +122,7 @@ let Tapalong = (props) => {
 
   // TODO: Move to a router solution
   if (screen == SCREEN.loggedOut) {
-    return <Login onLoginToFacebook={ (fbToken) => handleLoginToFacebook(fbToken) } />;
+    return <Login onLoginToFacebook={handleLoginToFacebook} />;
   } else {
     let mainContents;
     if (screen == SCREEN.list) {
@@ -153,8 +153,10 @@ let Tapalong = (props) => {
     } else if (screen == SCREEN.create || screen == SCREEN.edit) {
       mainContents = (
         <div>
-          { screen == SCREEN.create ? <Hint text="What are you planning on doing
-              that you'd be happy to have friends join for?" /> : null }
+          <If condition={screen == SCREEN.create}>
+            <Hint text="What are you planning on doing
+              that you'd be happy to have friends join for?" />
+          </If>
           <EditActivity
             activity={activityForEditing}
             userName={userName}

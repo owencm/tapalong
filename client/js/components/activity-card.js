@@ -5,6 +5,7 @@ import CardOptions from './card-options.js';
 import AttendeesList from './attendees-list.js';
 import FriendIcon from './friend-icon.js';
 import Collapse from 'react-collapse';
+import If from './if.js';
 
 let ActivityCard = (props) => {
 
@@ -54,28 +55,25 @@ let ActivityCard = (props) => {
             <Collapse isOpened={props.selected}>
               <div style={{paddingTop: '16px'}}>
                 { /* TODO: Tidy up this crap! */ }
-                {
-                  props.activity.description !== '' ? (
-                    <div>
-                      <p><b>Description</b></p>
-                      { /* whiteSpace ensures we retain line breaks from the text.
-                        userSelect enables selection for copy pasting */ }
-                      <p style={{whiteSpace: 'pre-wrap', WebkitUserSelect: 'text'}}>
-                        {props.activity.description}
-                      </p>
-                    </div>
-                  ) : null
-                }
-                {
-                  (props.activity.description !== '' && props.activity.attendees.length > 0) ?
-                    <br /> : null
-                }
+                <If condition={props.activity.description !== ''}>
+                  <div>
+                    <p><b>Description</b></p>
+                    { /* whiteSpace ensures we retain line breaks from the text.
+                      userSelect enables selection for copy pasting */ }
+                    <p style={{whiteSpace: 'pre-wrap', WebkitUserSelect: 'text'}}>
+                      {props.activity.description}
+                    </p>
+                  </div>
+                </If>
+                <If condition={props.activity.description !== '' &&
+                                props.activity.attendees.length > 0}>
+                  <br />
+                </If>
                 <AttendeesList attendees={props.activity.attendees}/>
-                {
-                  (props.activity.description == '' && props.activity.attendees.length == 0) ? (
-                    <p>No more information available for this plan</p>
-                  ) : null
-                }
+                <If condition={props.activity.description == ''
+                                && props.activity.attendees.length == 0}>
+                  <p>No more information available for this plan</p>
+                </If>
               </div>
             </Collapse>
           }

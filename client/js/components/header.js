@@ -1,5 +1,6 @@
 import React from 'react';
 import m from '../m.js';
+import If from './if.js';
 
 let Header = (props) => {
 
@@ -35,15 +36,13 @@ let Header = (props) => {
 
   return (
     <header style={headerStyle}>
-      {
-        props.shouldShowBackButton ?
-          <img
-            src='images/back-icon.svg'
-            style={backButtonStyle}
-            onClick={props.onBackButtonClick}
-          /> :
-          null
-      }
+      <If condition={props.shouldShowBackButton}>
+        <img
+          src='images/back-icon.svg'
+          style={backButtonStyle}
+          onClick={props.onBackButtonClick}
+        />
+      </If>
       <h1 style={titleStyle}>
         {props.title}
       </h1>

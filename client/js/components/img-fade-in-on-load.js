@@ -1,5 +1,6 @@
 import React from 'react';
 import m from '../m.js';
+import If from './if.js';
 
 let ImgFadeInOnLoad = React.createClass({
 
@@ -52,9 +53,9 @@ let ImgFadeInOnLoad = React.createClass({
     }
     return (
       <div style={{position: 'relative'}}>
-        { this.state.loaded ? (
+        <If condition={this.state.loaded}>
           <img src = { this.props.src } style = { imgStyle } />
-        ) : null }
+        </If>
         <div style={overlayStyle} />
       </div>
     )

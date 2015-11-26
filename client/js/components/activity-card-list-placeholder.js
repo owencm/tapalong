@@ -24,7 +24,7 @@ let ActivityCardListPlaceholder = (props) => {
   return (
     <div style={styles.container}>
       <div style={styles.inner}>
-          <div>When your friends have plans you can join, you'll see them here.</div>
+          <div>When your friends list their plans, you'll see them here.</div>
           <RaisedButton
             label='Make a Plan'
             onClick={props.onCreateClick}

@@ -1,6 +1,7 @@
 import React from 'react';
 import m from '../m.js';
 import ImgFadeInOnLoad from './img-fade-in-on-load.js';
+import If from './if.js';
 
 let FriendIcon = (props) => {
 
@@ -16,7 +17,7 @@ let FriendIcon = (props) => {
   };
   return (
     <div style={friendIconStyle}>
-      { !props.thumbnail ? null :
+      <If condition={props.thumbnail}>
         <ImgFadeInOnLoad
           src={props.thumbnail}
           backgroundColor='ddd'
@@ -24,8 +25,7 @@ let FriendIcon = (props) => {
           height='38'
           circular
           />
-       }
-
+      </If>
     </div>
   )
 

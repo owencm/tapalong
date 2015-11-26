@@ -1,6 +1,7 @@
 import React from 'react';
 import m from '../m.js';
 import FacebookLogin from './facebook-login.js';
+import If from './if.js'
 
 let Login = (props) => {
 
@@ -33,12 +34,11 @@ let LoginInner = (props) => {
           padding: '40px'
         }}>Do more together with friends</h1>
       </div>
-      { props.readyToLogin ?
-        (
-          <div id='loginButton'>
-            <img src='images/login-button.png' id='loginButtonImg'></img>
-          </div>
-        ) : null }
+      <If condition={props.readyToLogin}>
+        <div id='loginButton'>
+          <img src='images/login-button.png' id='loginButtonImg'></img>
+        </div>
+      </If>
     </div>
   );
 }

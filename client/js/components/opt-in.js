@@ -3,12 +3,14 @@ import m from '../m.js';
 import Card from './card.js';
 import CardOptions from './card-options.js';
 import DimScreen from './dim-screen.js';
+import If from './if.js';
 
 // Require core logic
 import swLibrary from '../swsetup.js';
 
 let OptIn = React.createClass({
 
+  // TODO: refactor state out into Redux
   getInitialState: function () {
     return {showingPermissionRequest: false};
   },
@@ -41,10 +43,9 @@ let OptIn = React.createClass({
         <CardOptions
           options={[{label: 'OK', onClick: this.handleOKClick}]}
         />
-        {
-          this.state.showingPermissionRequest ?
-            <DimScreen onScreenDim={this.handleScreenDim} /> : null
-        }
+        <If condition={this.state.showingPermissionRequest}>
+          <DimScreen onScreenDim={this.handleScreenDim} />
+        </If>
       </Card>
     )
   }
