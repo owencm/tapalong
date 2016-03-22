@@ -16,68 +16,77 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Set express to parse JSON in request bodies
 app.use(bodyParser.json());
 
-// TODO: authenticate the user
-// token = request.META.get('HTTP_SESSION_TOKEN')
-// user_id = request.META.get('HTTP_USER_ID')
-
-
+// Authenticate calls and add req.user
+// TODO: find a tidier way of only authenticating specific endpoints
+app.use('/api/v1', (req, res, next) => {
+  if (req.path === '/login/') {
+    next();
+    return;
+  }
+  const id = req.headers['user-id'];
+  const token = req.headers['session-token'];
+  if (id === undefined || token === undefined) {
+    return res.status(403);
+  }
+  Users.getUserWithIdAndSessionToken(id, token).then((user) => {
+    if (user === null) {
+      return res.status(403);
+    }
+    req.user = user;
+    next();
+  });
+});
 
 // Setup routes
 
 // Index
-app.get('/v1/plans/visible_to_user/', (req, res) => {
-  // TODO: authenticate the user
-  Users.getUserWithId(1).then((user) => {
-    Plans.getPlansVisibleToUser(user).then((plans) => {
-      res.send(JSON.stringify(plans.map((plan) => plan.serializedPlan)));
-    });
+app.get('/api/v1/plans/visible_to_user/', (req, res) => {
+  Plans.getPlansVisibleToUser(req.user).then((plans) => {
+    return plans.map((plan) => plan.serializedPlan);
+  }).then((plans) => {
+    res.send(JSON.stringify(plans));
   })
 });
 
 // Create new plan
-app.post('/v1/plans/', (req, res) => {
+app.post('/api/v1/plans/', (req, res) => {
   // TODO: authenticate the user
   const newSerializedPlan = req.body;
-  const user = { id: 1 };
-  Users.getUserWithId(user.id).then((user) => {
-    return Plans.createPlanForUser(newSerializedPlan, user).then((plan) => {
-      res.send(JSON.stringify(plan.serializedPlan));
-    });
+  Plans.createPlanForUser(newSerializedPlan, req.user).then((plan) => {
+    res.send(JSON.stringify(plan.serializedPlan));
   });
 });
 
 // Update a plan
-app.post('/v1/plans/:planId/', (req, res) => {
-  const user = { id: 1 };
+app.post('/api/v1/plans/:planId/', (req, res) => {
   const newSerializedPlan = req.body;
   const planId = req.params.planId;
-  Users.getUserWithId(user.id).then((user) => {
-    Plans.getPlanByIdForUser(planId, user).then((plan) => {
-      console.log(plan);
-      if (!plan) {
-        throw new Error('User could not edit that plan');
-      }
-      Plans.updatePlanForUser(plan, newSerializedPlan, user).then((plan) => {
-        res.send(JSON.stringify(plan.serializedPlan));
-      });
-    });
+  Plans.getPlanByIdForUser(planId, req.user).then((plan) => {
+    if (!plan) {
+      throw new Error('User could not edit that plan');
+    }
+    return Plans.updatePlanForUser(plan, newSerializedPlan, req.user);
+  }).then((plan) => {
+    res.send(JSON.stringify(plan.serializedPlan));
   });
 });
 
 
 // TODO: swap this toggling for an attend and unattend
-app.post('/v1/plans/:planId/attend/', (req, res) => {
+app.post('/api/v1/plans/:planId/attend/', (req, res) => {
   const planId = req.params.planId;
-  // Get this plan, from the perspective of this user
-  // If the user was attending, set to not attending
-  // If this user wasn't attending
-  //   Try to set them as attending (there may not be space)
-  //   which should trigger a notification
-  res.send(plan);
+  Plans.getPlanByIdForUser(planId, req.user).then((plan) => {
+    if (!plan) {
+      throw new Error('User could not edit that plan');
+    }
+    return Plans.toggleAttendingPlanForUser(plan, req.user);
+  }).then((plan) => {
+    res.send(JSON.stringify(plan.serializedPlan));
+  });
 });
 
 // TODO: swap this toggling for an attend and unattend
-app.post('/v1/plans/:planId/cancel/', (req, res) => {
+app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   const planId = req.params.planId;
   // Get this plan, from the perspective of this user
   // Try to cancel the plan as this user
@@ -86,7 +95,7 @@ app.post('/v1/plans/:planId/cancel/', (req, res) => {
 
 // TODO: Implement Facebook login
 
-app.post('/v1/login', (req, res) => {
+app.post('/api/v1/login', (req, res) => {
   const fbToken = req.body.fb_token;
   Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
     return Sessions.createSessionWithUser(user).then((sessionToken) => {
@@ -98,7 +107,7 @@ app.post('/v1/login', (req, res) => {
         session_token: sessionToken,
         first_login: newlyCreated
       };
-    })
+    });
   }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
     setImmediate(() => { throw e });
   });

@@ -1,7 +1,9 @@
 import FB from 'fb';
 import Sequelize from 'sequelize';
 
-const sequelize = new Sequelize('tapalong_db_1', 'root', 'password');
+const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
+  logging: false
+});
 
 // TODO: set up sessions
 
@@ -80,6 +82,16 @@ const Users = (() => {
     });
   }
 
+  const getUserWithIdAndSessionToken = (id, token) => {
+    return SQUser.findOne({ where: { id } }).then((dbUser) => {
+      // TODO: verify session tokens
+      if (!dbUser) {
+        return null;
+      }
+      return getUserFromDBUser(dbUser);
+    });
+  }
+
   const getOrCreateUserWithFBToken = (FBToken) => {
     FB.setAccessToken(FBToken);
     return new Promise((resolve, reject) => {
@@ -109,7 +121,13 @@ const Users = (() => {
     });
   }
 
-  return { createUser, getOrCreateUserWithFBToken, getUserWithId, getUserFromDBUser }
+  return {
+    createUser,
+    getOrCreateUserWithFBToken,
+    getUserWithId,
+    getUserWithIdAndSessionToken,
+    getUserFromDBUser
+  }
 })();
 
 const Plans = (() => {
@@ -165,8 +183,18 @@ const Plans = (() => {
     });
   };
 
+  const toggleAttendingPlanForUser = (plan, user) => {
+    // TODO: ensure they're the able to see the plan
+    return plan.dbPlan.getAttendees().then((dbUsers) => {
+      const isAttending = (dbUsers.filter((dbUser) => dbUser.get('id') === user.dbUser.get('id')));
+      return (isAttending) ? plan.dbPlan.removeAttendee(user.dbUser) :
+                             plan.dbPlan.addAttendee(user.dbUser);
+      }).then((dbPlan) => {
+      return getPlanFromDBPlanForUser(dbPlan, user);
+    });
+  };
+
   const updatePlanForUser = (plan, newSerializedPlan, user) => {
-    // TODO: ensure they're the owner
     return plan.dbPlan.getCreator().then((dbUser) => {
       if (dbUser.get('id') !== user.dbUser.get('id')) {
         throw new Error('This user cant edit that plan');
@@ -182,7 +210,8 @@ const Plans = (() => {
     getPlansVisibleToUser,
     getPlanByIdForUser,
     createPlanForUser,
-    updatePlanForUser
+    updatePlanForUser,
+    toggleAttendingPlanForUser
   };
 })();
 

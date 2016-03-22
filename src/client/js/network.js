@@ -1,10 +1,12 @@
 require('datejs');
 
-let requestLogin = function (fbToken) {
+const apiEndpoint = '/api/v1';
+
+const requestLogin = function (fbToken) {
   return new Promise((resolve, reject) => {
-    sendRequest('/v1/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined, function() {
+    sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined, function() {
       if(this.status >= 200 && this.status < 400) {
-        let response = JSON.parse(this.responseText);
+        const response = JSON.parse(this.responseText);
         resolve({userId: response.user_id, userName: response.user_name, sessionToken: response.session_token});
       } else {
         reject();
@@ -14,10 +16,10 @@ let requestLogin = function (fbToken) {
   })
 };
 
-let requestActivitiesFromServer = function (user, success, failure) {
-  let parseActivitiesFromJSON = function (responseText) {
+const requestActivitiesFromServer = function (user, success, failure) {
+  const parseActivitiesFromJSON = function (responseText) {
     // Strip activity label for each item
-    let activities = JSON.parse(responseText).map(function (activity) {
+    const activities = JSON.parse(responseText).map(function (activity) {
       // Parse the datetimes into actual objects.
       activity.startTime = new Date(activity.startTime);
       return activity;
@@ -25,10 +27,10 @@ let requestActivitiesFromServer = function (user, success, failure) {
     return activities;
   };
 
-  sendRequest('/v1/plans/visible_to_user/', 'get', '', user, function() {
+  sendRequest(apiEndpoint+'/plans/visible_to_user/', 'get', '', user, function() {
     if (this.status >= 200 && this.status < 400) {
       // TODO: Check this actually succeeded
-      let activities = parseActivitiesFromJSON(this.responseText);
+      const activities = parseActivitiesFromJSON(this.responseText);
       success(activities);
     } else {
       failure();
@@ -36,10 +38,10 @@ let requestActivitiesFromServer = function (user, success, failure) {
   });
 };
 
-let requestCreateActivity = function (user, activity, success, failure) {
-  sendRequest('/v1/plans/', 'post', JSON.stringify(activity), user, function() {
+const requestCreateActivity = function (user, activity, success, failure) {
+  sendRequest(apiEndpoint+'/plans/', 'post', JSON.stringify(activity), user, function() {
     if(this.status >= 200 && this.status < 400) {
-      let activity = JSON.parse(this.responseText);
+      const activity = JSON.parse(this.responseText);
       activity.startTime = new Date(activity.startTime);
       success(activity);
     } else {
@@ -49,8 +51,8 @@ let requestCreateActivity = function (user, activity, success, failure) {
   });
 };
 
-let requestSetAttending = function (user, activity, attending, success, failure) {
-  sendRequest('/v1/plans/'+activity.id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
+const requestSetAttending = function (user, activity, attending, success, failure) {
+  sendRequest(apiEndpoint+'/plans/'+activity.id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
     if(this.status >= 200 && this.status < 400) {
       let updatedActivity = JSON.parse(this.responseText);
       updatedActivity.startTime = new Date(updatedActivity.startTime);
@@ -62,8 +64,8 @@ let requestSetAttending = function (user, activity, attending, success, failure)
   });
 };
 
-let requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
-  sendRequest('/v1/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user, function () {
+const requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
+  sendRequest(apiEndpoint+'/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user, function () {
     if(this.status >= 200 && this.status < 400) {
       let updatedActivity = JSON.parse(this.responseText);
       updatedActivity.startTime = new Date(updatedActivity.startTime);
@@ -75,8 +77,8 @@ let requestUpdateActivity = function(user, activity, activityChanges, success, f
   });
 };
 
-let requestCancelActivity = function (user, activity, success, failure) {
-  sendRequest('/v1/plans/'+activity.id+'/cancel/', 'post', '', user, function () {
+const requestCancelActivity = function (user, activity, success, failure) {
+  sendRequest(apiEndpoint+'/plans/'+activity.id+'/cancel/', 'post', '', user, function () {
     if(this.status >= 200 && this.status < 400) {
       success(activity);
     } else {
@@ -85,12 +87,12 @@ let requestCancelActivity = function (user, activity, success, failure) {
   })
 };
 
-let requestCreatePushNotificationsSubscription = function (user, subscription) {
+const requestCreatePushNotificationsSubscription = function (user, subscription) {
   console.log(subscription, JSON.stringify(subscription));
-  sendRequest('/v1/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
+  sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
 
-let sendRequest = function (url, method, body, user, onload) {
+const sendRequest = function (url, method, body, user, onload) {
   let req = new XMLHttpRequest();
   req.onload = onload;
   req.open(method, url, true);
@@ -103,7 +105,7 @@ let sendRequest = function (url, method, body, user, onload) {
   req.send(body);
 }
 
-let sendToServiceWorker = function (data) {
+const sendToServiceWorker = function (data) {
   navigator.serviceWorker.controller.postMessage(data);
 }
 
