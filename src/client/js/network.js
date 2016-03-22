@@ -50,11 +50,11 @@ let requestCreateActivity = function (user, activity, success, failure) {
 };
 
 let requestSetAttending = function (user, activity, attending, success, failure) {
-  sendRequest('/v1/plans/'+activity.activity_id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
+  sendRequest('/v1/plans/'+activity.id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
     if(this.status >= 200 && this.status < 400) {
       let updatedActivity = JSON.parse(this.responseText);
       updatedActivity.startTime = new Date(updatedActivity.startTime);
-      updatedActivity.id = activity.id;
+      updatedActivity.clientId = activity.clientId;
       success(updatedActivity);
     } else {
       failure();
@@ -63,11 +63,11 @@ let requestSetAttending = function (user, activity, attending, success, failure)
 };
 
 let requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
-  sendRequest('/v1/plans/'+activity.activity_id+'/', 'post', JSON.stringify(activityChanges), user, function () {
+  sendRequest('/v1/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user, function () {
     if(this.status >= 200 && this.status < 400) {
       let updatedActivity = JSON.parse(this.responseText);
       updatedActivity.startTime = new Date(updatedActivity.startTime);
-      updatedActivity.id = activity.id;
+      updatedActivity.clientId = activity.clientId;
       success(updatedActivity);
     } else {
       failure();
@@ -76,7 +76,7 @@ let requestUpdateActivity = function(user, activity, activityChanges, success, f
 };
 
 let requestCancelActivity = function (user, activity, success, failure) {
-  sendRequest('/v1/plans/'+activity.activity_id+'/cancel/', 'post', '', user, function () {
+  sendRequest('/v1/plans/'+activity.id+'/cancel/', 'post', '', user, function () {
     if(this.status >= 200 && this.status < 400) {
       success(activity);
     } else {

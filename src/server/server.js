@@ -37,21 +37,31 @@ app.get('/v1/plans/visible_to_user/', (req, res) => {
 // Create new plan
 app.post('/v1/plans/', (req, res) => {
   // TODO: authenticate the user
-  const plan = req.body;
+  const newSerializedPlan = req.body;
   const user = { id: 1 };
   Users.getUserWithId(user.id).then((user) => {
-    return Plans.createPlanForUser(plan, user).then((plan) => {
+    return Plans.createPlanForUser(newSerializedPlan, user).then((plan) => {
       res.send(JSON.stringify(plan.serializedPlan));
     });
-  })
+  });
 });
 
 // Update a plan
 app.post('/v1/plans/:planId/', (req, res) => {
-  // Get this plan from the perspective of this user
-  // Possibly parse the date
-  // Update the plan as this user
-  res.send(JSON.stringify({}));
+  const user = { id: 1 };
+  const newSerializedPlan = req.body;
+  const planId = req.params.planId;
+  Users.getUserWithId(user.id).then((user) => {
+    Plans.getPlanByIdForUser(planId, user).then((plan) => {
+      console.log(plan);
+      if (!plan) {
+        throw new Error('User could not edit that plan');
+      }
+      Plans.updatePlanForUser(plan, newSerializedPlan, user).then((plan) => {
+        res.send(JSON.stringify(plan.serializedPlan));
+      });
+    });
+  });
 });
 
 

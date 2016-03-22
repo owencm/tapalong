@@ -117,10 +117,10 @@ export function addActivity(activity) {
 
 export const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
 
-export function removeActivity(id) {
+export function removeActivity(clientId) {
   return {
     type: REMOVE_ACTIVITY,
-    id
+    clientId
   }
 }
 
@@ -131,7 +131,7 @@ export function requestSetAttending(userId, sessionToken, activity, attending) {
     return new Promise((resolve, reject) => {
       network.requestSetAttending({userId, sessionToken}, activity, attending, function (updatedActivity) {
         // TODO: support updating instead of removing as right now you can select an activity which will get removed and re-added
-        dispatch(removeActivity(activity.id));
+        dispatch(removeActivity(activity.clientId));
         dispatch(addActivity(updatedActivity));
         resolve();
       }, reject);
@@ -173,7 +173,7 @@ export function requestUpdateActivity(userId, sessionToken, activity, activityCh
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       network.requestUpdateActivity({userId, sessionToken}, activity, activityChanges, (updatedActivity) => {
-        dispatch(removeActivity(activity.id));
+        dispatch(removeActivity(activity.clientId));
         dispatch(addActivity(updatedActivity));
         resolve();
       }, reject);
@@ -185,7 +185,7 @@ export function requestDeleteActivity(userId, sessionToken, activity) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
       network.requestCancelActivity({userId, sessionToken}, activity, (updatedActivity) => {
-        dispatch(removeActivity(activity.id));
+        dispatch(removeActivity(activity.clientId));
         resolve();
       }, reject);
     })

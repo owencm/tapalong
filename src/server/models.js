@@ -115,10 +115,6 @@ const Users = (() => {
 const Plans = (() => {
   const getPlanFromDBPlanForUser = (dbPlan, user) => {
 
-    for (let key in dbPlan) {
-      console.log(key);
-    }
-
     const creator = dbPlan.getCreator();
 
     const serializedCreator = creator.then((dbUser) => {
@@ -131,10 +127,8 @@ const Plans = (() => {
     });
 
     const thumbnail = serializedCreator.then((serializedCreator) => serializedCreator.image);
-
     const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
-
-    const isCreator = creator.then((dbUser) => dbUser === user.dbUser);
+    const isCreator = creator.then((dbUser) => dbUser.get('id') === user.dbUser.get('id'));
 
     const attrPromises = { attendeeNames, thumbnail, creatorName, isCreator };
 
@@ -156,17 +150,39 @@ const Plans = (() => {
     });
   };
 
-  const createPlanForUser = (plan, { dbUser, serializedUser }) => {
+  const createPlanForUser = (plan, user) => {
     return SQPlan.create(plan).then((dbPlan) => {
-      return dbPlan.setCreator(dbUser).then(() => {
-        return getPlanFromDBPlan(dbPlan);
+      return dbPlan.setCreator(user.dbUser).then(() => {
+        return getPlanFromDBPlanForUser(dbPlan, user);
       });
+    });
+  };
+
+  const getPlanByIdForUser = (id, user) => {
+    // TODO: ensure this user is either the creator, or friends with the creator
+    return SQPlan.find({ where: { id: id } }).then((dbPlan) => {
+      return getPlanFromDBPlanForUser(dbPlan, user);
+    });
+  };
+
+  const updatePlanForUser = (plan, newSerializedPlan, user) => {
+    // TODO: ensure they're the owner
+    return plan.dbPlan.getCreator().then((dbUser) => {
+      if (dbUser.get('id') !== user.dbUser.get('id')) {
+        throw new Error('This user cant edit that plan');
+      }
+    }).then(() => {
+      return plan.dbPlan.update(newSerializedPlan);
+    }).then((dbPlan) => {
+      return getPlanFromDBPlanForUser(dbPlan, user);
     });
   };
 
   return {
     getPlansVisibleToUser,
-    createPlanForUser
+    getPlanByIdForUser,
+    createPlanForUser,
+    updatePlanForUser
   };
 })();
 

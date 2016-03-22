@@ -84,7 +84,7 @@ export function activities(state = {
       return Object.assign({}, state,
         {
           activities: [...state.activities,
-            Object.assign({}, action.activity, {id: state.maxActivityId})
+            Object.assign({}, action.activity, { clientId: state.maxActivityId })
           ].sort((a, b) => { return a.startTime < b.startTime ? -1 : 1 }),
           maxActivityId: state.maxActivityId + 1
         }
@@ -93,7 +93,7 @@ export function activities(state = {
     return Object.assign({}, state,
       {
         activities: [...state.activities].filter((activity) => {
-          return activity.id !== action.id;
+          return activity.clientId !== action.clientId;
         })
       }
     );
