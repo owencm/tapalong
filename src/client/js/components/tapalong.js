@@ -109,7 +109,7 @@ let Tapalong = (props) => {
     }).then(() => {
       return props.gotoScreen(SCREEN.list);
     }).catch((e) => {
-      console.log(e);
+      setTimeout(() => { throw e }, 0);
     });
   }
 
@@ -157,8 +157,8 @@ let Tapalong = (props) => {
       mainContents = (
         <div>
           <If condition={screen == SCREEN.create}>
-            <Hint text="What are you planning on doing
-              that you'd be happy to have friends join for?" />
+            <Hint text="What's one plan you have
+              that you'd like to have some Facebook friends join you for?" />
           </If>
           <EditActivity
             activity={activityForEditing}

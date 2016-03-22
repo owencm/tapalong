@@ -49,7 +49,7 @@ let ActivityCard = (props) => {
           { props.activity.is_creator ? <b>You</b> : <b>{props.activity.creator_name}</b> }
             <span> will be </span>
           </span>
-          <b>{props.activity.title}</b> {getDateString(props.activity.start_time)}
+          <b>{props.activity.title}</b> {getDateString(props.activity.startTime)}
           {
             /* Description and attendees */
             <Collapse isOpened={props.selected}>
@@ -66,12 +66,12 @@ let ActivityCard = (props) => {
                   </div>
                 </If>
                 <If condition={props.activity.description !== '' &&
-                                props.activity.attendees.length > 0}>
+                                props.activity.attendeeNames.length > 0}>
                   <br />
                 </If>
-                <AttendeesList attendees={props.activity.attendees}/>
+                <AttendeesList attendeeNames={props.activity.attendeeNames}/>
                 <If condition={props.activity.description == ''
-                                && props.activity.attendees.length == 0}>
+                                && props.activity.attendeeNames.length == 0}>
                   <p>No more information available for this plan</p>
                 </If>
               </div>

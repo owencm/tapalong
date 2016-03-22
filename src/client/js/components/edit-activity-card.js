@@ -17,7 +17,7 @@ let EditActivity = React.createClass({
     return {
       title: this.props.activity ? this.props.activity.title : '',
       description: this.props.activity ? this.props.activity.description : '',
-      start_time: this.props.activity ? this.props.activity.start_time : Date.today().add(1).days().set({hour: 16}),
+      startTime: this.props.activity ? this.props.activity.startTime : Date.today().add(1).days().set({hour: 16}),
       saveRequestPending: false,
       deleteRequestPending: false,
     };
@@ -45,7 +45,7 @@ let EditActivity = React.createClass({
     let newDate = new Date(e.target.value);
     // To solve the parsing as UTC issue we add the timezone offset
     newDate.addMinutes(newDate.getTimezoneOffset())
-    let newStartTime = this.state.start_time.clone();
+    let newStartTime = this.state.startTime.clone();
     // Set the date component of the state without modifying time
     newStartTime.set({
       day: newDate.getDate(),
@@ -54,23 +54,23 @@ let EditActivity = React.createClass({
       year: 1900 + newDate.getYear()
     });
     console.log(newStartTime);
-    this.setState({start_time: newStartTime});
+    this.setState({startTime: newStartTime});
   },
 
   handleTimeChange: function (e) {
     let tmp = e.target.value.split(':');
     let hour = parseInt(tmp[0]);
     let minute = parseInt(tmp[1]);
-    let oldStartTime = this.state.start_time.clone();
+    let oldStartTime = this.state.startTime.clone();
     let newStartTime = oldStartTime.set({
       hour: hour,
       minute: minute
     });
-    this.setState({start_time: newStartTime});
+    this.setState({startTime: newStartTime});
   },
 
   handleSaveClick: function () {
-    let activityChanges = {title: this.state.title, description: this.state.description, start_time: this.state.start_time};
+    let activityChanges = {title: this.state.title, description: this.state.description, startTime: this.state.startTime};
     this.setState({saveRequestPending: true});
     this.props.onSaveClick(this.props.activity, activityChanges);
   },
@@ -78,7 +78,7 @@ let EditActivity = React.createClass({
   handleCreateClick: function () {
     let newActivity = {
       title: this.state.title,
-      start_time: this.state.start_time,
+      startTime: this.state.startTime,
       location: '',
       max_attendees: -1,
       description: this.state.description
@@ -172,7 +172,7 @@ let EditActivity = React.createClass({
             style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
             className='input-placeholder-lighter focusUnderline'
             min={getHyphenSeparatedToday()}
-            value={ getHyphenSeparatedDate(this.state.start_time) }
+            value={ getHyphenSeparatedDate(this.state.startTime) }
             onChange={this.handleDateChange}
             required>
           </input>
@@ -181,7 +181,7 @@ let EditActivity = React.createClass({
             style={m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'})}
             className='input-placeholder-lighter focusUnderline'
             step="900"
-            value={ getHyphenSeparatedTime(this.state.start_time) }
+            value={ getHyphenSeparatedTime(this.state.startTime) }
             onChange={this.handleTimeChange}
             required>
           </input>

@@ -27,15 +27,22 @@ app.use(bodyParser.json());
 // Index
 app.get('/v1/plans/visible_to_user/', (req, res) => {
   // TODO: authenticate the user
-  // Get the plans visible to this user
-  res.send(JSON.stringify({}));
+  const user = {};
+  Plans.getPlansVisibleToUser(user).then((plans) => {
+    res.send(JSON.stringify(plans.map((plan) => plan.serializedPlan)));
+  });
 });
 
 // Create new plan
 app.post('/v1/plans/', (req, res) => {
   // TODO: authenticate the user
-  // Create a new plan, save and return it
-  res.send(JSON.stringify({}));
+  const plan = req.body;
+  const user = { id: 1 };
+  Users.getUserWithId(user.id).then((user) => {
+    return Plans.createPlanForUser(plan, user).then((plan) => {
+      res.send(JSON.stringify(plan.serializedPlan));
+    });
+  })
 });
 
 // Update a plan
@@ -66,42 +73,23 @@ app.post('/v1/plans/:planId/cancel/', (req, res) => {
   res.send(plan);
 });
 
-// return {
-//   "activity":
-//     {
-//       "activity_id": activity.id,
-//       "is_creator": is_creator,
-//       "creator_name": activity.creator.name,
-//       "creator_id": activity.creator.id,
-//       "title": activity.title,
-//       "start_time": activity.start_time.isoformat(),
-//       "description": activity.description,
-//       "location": activity.location,
-//       "max_attendees": activity.max_attendees,
-//       "attendees": attendees_names,
-//       "is_attending": is_attending,
-//       "thumbnail": "https://graph.facebook.com/"+str(activity.creator.fb_id)+"/picture"
-//      }
-//    }
-
 // TODO: Implement Facebook login
 
 app.post('/v1/login', (req, res) => {
-  // TODO: Move to fbToken everywhere
   const fbToken = req.body.fb_token;
   Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
     return Sessions.createSessionWithUser(user).then((sessionToken) => {
       // This is the response we're going to send back
       return {
         success: true,
-        user_id: user.id,
-        user_name: user.name,
+        user_id: user.serializedUser.id,
+        user_name: user.serializedUser.name,
         session_token: sessionToken,
         first_login: newlyCreated
       };
     })
   }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
-    console.log(e);
+    setImmediate(() => { throw e });
   });
 });
 
