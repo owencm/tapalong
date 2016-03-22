@@ -9,8 +9,8 @@ import If from './if.js';
 
 let ActivityCard = (props) => {
 
-  let getCardsOption = (is_creator, is_attending) => {
-    if (is_creator) {
+  let getCardsOption = (isCreator, is_attending) => {
+    if (isCreator) {
       return OPTIONS.edit;
     } else if (is_attending) {
       return OPTIONS.undoAttend;
@@ -19,7 +19,7 @@ let ActivityCard = (props) => {
     }
   };
 
-  let cardOption = getCardsOption(props.activity.is_creator, props.activity.is_attending);
+  let cardOption = getCardsOption(props.activity.isCreator, props.activity.is_attending);
   let optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
   let onOptionClick = (() => {
     switch(cardOption) {
@@ -46,7 +46,7 @@ let ActivityCard = (props) => {
         <div style={{overflow: 'hidden'}}>
           { /* Title section */ }
           <span>
-          { props.activity.is_creator ? <b>You</b> : <b>{props.activity.creator_name}</b> }
+          { props.activity.isCreator ? <b>You</b> : <b>{props.activity.creatorName}</b> }
             <span> will be </span>
           </span>
           <b>{props.activity.title}</b> {getDateString(props.activity.startTime)}

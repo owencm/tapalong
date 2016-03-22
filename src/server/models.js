@@ -34,6 +34,20 @@ SQPlan.belongsTo(SQUser, { as: 'Creator' });
 //   sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
 // });
 
+// TODO: move to a library of helpers
+
+const promiseAllObj = (obj) => {
+  let promiseArr = [];
+  for (let key in obj) {
+    promiseArr.push(obj[key].then((result) => {
+      return { [key]: result };
+    }));
+  };
+  return Promise.all(promiseArr).then((arrOfObjs) => {
+    return arrOfObjs.reduce((a, b) => Object.assign(a, b));
+  });
+}
+
 const Users = (() => {
   const createUser = (fbId, name, friends) => {
     return SQUser.create({ fbId, name, friends }).then(getUserFromDBUser);
@@ -43,8 +57,7 @@ const Users = (() => {
     // TODO: move to rest syntax
     // TODO: whitelist values passed through for safety
     let serializedUser = dbUser.get({ plain: true });
-    console.log(serializedUser);
-    serializedUser.thumbnail = `http://graph.facebook.com/${serializedUser.fbId}/picture`;
+    serializedUser.image = `http://graph.facebook.com/${serializedUser.fbId}/picture`;
     serializedUser.bigImage = serializedUser.image + '?type=large';
     return { dbUser, serializedUser };
   };
@@ -99,25 +112,31 @@ const Users = (() => {
   return { createUser, getOrCreateUserWithFBToken, getUserWithId, getUserFromDBUser }
 })();
 
-const promiseAllObj = (obj) => {
-  let promiseArr = [];
-  for (let key in obj) {
-    promiseArr.push(obj[key].then((result) => {
-      return { [key]: result };
-    }));
-  };
-  return Promise.all(promiseArr).then((arrOfObjs) => {
-    return arrOfObjs.reduce((a, b) => Object.assign(a, b));
-  });
-}
-
 const Plans = (() => {
-  const getPlanFromDBPlan = (dbPlan) => {
+  const getPlanFromDBPlanForUser = (dbPlan, user) => {
+
+    for (let key in dbPlan) {
+      console.log(key);
+    }
+
+    const creator = dbPlan.getCreator();
+
+    const serializedCreator = creator.then((dbUser) => {
+      return Users.getUserFromDBUser(dbUser);
+    }).then((user) => user.serializedUser);
+
     const attendeeNames = dbPlan.getAttendees().then((dbAttendees) => {
+      // TODO: filter so this doesn't include user
       return dbAttendees.map((dbUser) => dbUser.get('name'));
     });
 
-    const attrPromises = { attendeeNames };
+    const thumbnail = serializedCreator.then((serializedCreator) => serializedCreator.image);
+
+    const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
+
+    const isCreator = creator.then((dbUser) => dbUser === user.dbUser);
+
+    const attrPromises = { attendeeNames, thumbnail, creatorName, isCreator };
 
     return promiseAllObj(attrPromises).then((attrs) => {
       return {
@@ -133,7 +152,7 @@ const Plans = (() => {
   const getPlansVisibleToUser = (user) => {
     // TODO: limit to only plans by their friends
     return SQPlan.findAll().then((dbPlans) => {
-      return Promise.all(dbPlans.map(getPlanFromDBPlan));
+      return Promise.all(dbPlans.map((dbPlan) => getPlanFromDBPlanForUser(dbPlan, user)));
     });
   };
 

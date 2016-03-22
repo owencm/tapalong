@@ -27,10 +27,11 @@ app.use(bodyParser.json());
 // Index
 app.get('/v1/plans/visible_to_user/', (req, res) => {
   // TODO: authenticate the user
-  const user = {};
-  Plans.getPlansVisibleToUser(user).then((plans) => {
-    res.send(JSON.stringify(plans.map((plan) => plan.serializedPlan)));
-  });
+  Users.getUserWithId(1).then((user) => {
+    Plans.getPlansVisibleToUser(user).then((plans) => {
+      res.send(JSON.stringify(plans.map((plan) => plan.serializedPlan)));
+    });
+  })
 });
 
 // Create new plan
