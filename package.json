@@ -39,6 +39,7 @@
     "gulp-uglify": "^1.5.3",
     "idb-wrapper": "^1.5.0",
     "iso8601": "^1.1.1",
+    "jsonwebtoken": "^5.7.0",
     "mysql": "^2.10.2",
     "path": "^0.12.7",
     "react": "^0.14.7",

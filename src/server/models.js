@@ -1,4 +1,5 @@
 import FB from 'fb';
+import jwt from 'jsonwebtoken';
 import Sequelize from 'sequelize';
 
 const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
@@ -84,11 +85,13 @@ const Users = (() => {
 
   const getUserWithIdAndSessionToken = (id, token) => {
     return SQUser.findOne({ where: { id } }).then((dbUser) => {
-      // TODO: verify session tokens
       if (!dbUser) {
         return null;
       }
-      return getUserFromDBUser(dbUser);
+      const user = getUserFromDBUser(dbUser);
+      return Sessions.verifySessionForUser(token, user).then((tokenValidForUser) => {
+        return tokenValidForUser ? user : null;
+      });
     });
   }
 
@@ -216,12 +219,27 @@ const Plans = (() => {
 })();
 
 const Sessions = (() => {
+  // TODO: move this to somewhere secure
+  const sessionSecret = 'ymkYmbXLH8Vg2NRRERpLLIYKVHG3kwXiIw828CClvphIAHdLo3SFgiUpJOW0';
+
+  // TODO: add versioning in case we want to change payload style
   const createSessionWithUser = (user) => {
-    // TODO: Implement
-    return Promise.resolve(0);
+    const token = jwt.sign({ userId: user.serializedUser.id }, sessionSecret, { expiresIn: '90d' });
+    return Promise.resolve(token);
   };
 
-  return { createSessionWithUser };
+  const verifySessionForUser = (token, user) => {
+    return new Promise((resolve, reject) => {
+      jwt.verify(token, sessionSecret, (err, decoded) => {
+        if (err || decoded.userId !== user.serializedUser.id) {
+          resolve(false)
+        }
+        resolve(true);
+      });
+    });
+  };
+
+  return { createSessionWithUser, verifySessionForUser };
 })();
 
 // TODO: set up notifications

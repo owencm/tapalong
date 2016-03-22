@@ -18,6 +18,7 @@ app.use(bodyParser.json());
 
 // Authenticate calls and add req.user
 // TODO: find a tidier way of only authenticating specific endpoints
+// TODO: Find a tidier way of sending 403s
 app.use('/api/v1', (req, res, next) => {
   if (req.path === '/login/') {
     next();
@@ -26,11 +27,15 @@ app.use('/api/v1', (req, res, next) => {
   const id = req.headers['user-id'];
   const token = req.headers['session-token'];
   if (id === undefined || token === undefined) {
-    return res.status(403);
+    res.status(403);
+    res.end();
+    return
   }
   Users.getUserWithIdAndSessionToken(id, token).then((user) => {
     if (user === null) {
-      return res.status(403);
+      res.status(403);
+      res.end();
+      return
     }
     req.user = user;
     next();
@@ -50,7 +55,6 @@ app.get('/api/v1/plans/visible_to_user/', (req, res) => {
 
 // Create new plan
 app.post('/api/v1/plans/', (req, res) => {
-  // TODO: authenticate the user
   const newSerializedPlan = req.body;
   Plans.createPlanForUser(newSerializedPlan, req.user).then((plan) => {
     res.send(JSON.stringify(plan.serializedPlan));
@@ -98,13 +102,13 @@ app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
 app.post('/api/v1/login', (req, res) => {
   const fbToken = req.body.fb_token;
   Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
-    return Sessions.createSessionWithUser(user).then((sessionToken) => {
+    return Sessions.createSessionWithUser(user).then((token) => {
       // This is the response we're going to send back
       return {
         success: true,
         user_id: user.serializedUser.id,
         user_name: user.serializedUser.name,
-        session_token: sessionToken,
+        session_token: token,
         first_login: newlyCreated
       };
     });
