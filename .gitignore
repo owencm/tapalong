@@ -15,5 +15,7 @@
 # npm files
 node_modules/
 
-# Don't ignore the directory of built code as elastic beanstalk deploys from git commits
-# tapalong/tapalong_app/static/
+build/
+
+
+

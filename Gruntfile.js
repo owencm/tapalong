@@ -14,17 +14,17 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: 'client/js/',
+          cwd: 'src/client/js/',
           src: ['*.js'],
           dest: 'tmp/'
         }, {
           expand: true,
-          cwd: 'client/js/sw/',
+          cwd: 'src/client/js/sw/',
           src: ['*.js'],
           dest: 'tmp/'
         }, {
           expand: true,
-          cwd: 'client/js/components/',
+          cwd: 'src/client/js/components/',
           src: ['*.js'],
           dest: 'tmp/components'
         }]
@@ -56,15 +56,15 @@ module.exports = function(grunt) {
       main: {
         files: [
           // includes files within path and its sub-directories
-          {expand: true, cwd: 'client/', src: ['*.html', '*.json'], dest: 'tapalong/tapalong_app/static/'},
-          {expand: true, cwd: 'client/css/', src: ['*.css'], dest: 'tapalong/tapalong_app/static/'},
-          {expand: true, cwd: 'client/images/', src: ['**'], dest: 'tapalong/tapalong_app/static/images/'},
+          {expand: true, cwd: 'src/client/', src: ['*.html', '*.json'], dest: 'tapalong/tapalong_app/static/'},
+          {expand: true, cwd: 'src/client/css/', src: ['*.css'], dest: 'tapalong/tapalong_app/static/'},
+          {expand: true, cwd: 'src/client/images/', src: ['**'], dest: 'tapalong/tapalong_app/static/images/'},
         ],
       },
     },
     watch: {
       scripts: {
-        files: ['client/**'],
+        files: ['src/client/**'],
         tasks: ['default'],
         options: {
           spawn: false,

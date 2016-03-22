@@ -1,5 +1,5 @@
 'use strict';
-var persistence = require('./persistence.js');
+var persistence = require('../persistence.js');
 
 var version = 1;
 var logging = true;
