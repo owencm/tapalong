@@ -45,7 +45,7 @@ export function screens(state = {
     case GOTO_EDIT_SCREEN:
       return m({}, state, { screen: SCREEN.edit, activityForEditing: action.activityForEditing });
     case GOTO_CREATE_SCREEN:
-      return m({}, state, { screen: SCREEN.create });
+      return m({}, state, { screen: SCREEN.create, activityForEditing: undefined });
     case GOTO_NEXT_SCREEN:
       return m({}, state, { screen: state.nextScreen });
     case QUEUE_NEXT_SCREEN:

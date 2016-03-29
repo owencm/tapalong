@@ -1,17 +1,14 @@
-// import https from 'https';
+import https from 'https';
 import bodyParser from 'body-parser';
 import compression from 'compression';
 import express from 'express';
 import path from 'path';
-import { Users, Plans, Sessions } from './models.js';
+import { Users, Plans, Sessions, PushSubs } from './models.js';
 
 const app = express();
 
 // Setup gzip compression
 app.use(compression());
-
-// Setup static server
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Set express to parse JSON in request bodies
 app.use(bodyParser.json());
@@ -46,6 +43,7 @@ app.use('/api/v1', (req, res, next) => {
 
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
+  PushSubs.sendNotificationToUser({ title: 'hello', body: 'world' }, req.user);
   Plans.getPlansVisibleToUser(req.user).then((plans) => {
     return plans.map((plan) => plan.serializedPlan);
   }).then((plans) => {
@@ -101,6 +99,7 @@ app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
 
 app.post('/api/v1/login', (req, res) => {
   const fbToken = req.body.fb_token;
+  // TODO: Handle accessing user data on FB failing
   Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
     return Sessions.createSessionWithUser(user).then((token) => {
       // This is the response we're going to send back
@@ -117,18 +116,24 @@ app.post('/api/v1/login', (req, res) => {
   });
 });
 
-// Statically serve any remaining paths from the public folder
-app.use('', express.static('public'));
+app.post('/api/v1/push_subscriptions', (req, res) => {
+  const endpoint = req.body.endpoint;
+  const clientPublicKey = new Buffer(req.body.keys.clientPublicKey);
+  PushSubs.createPushSubForUser(endpoint, clientPublicKey, req.user).then(() => {
+    res.sendStatus(200);
+  });
+});
 
 // TODO: Implement a health check URL
+
+// Statically serve any remaining paths from the public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Setup ports and start listening
 
 if (app.get('env') === 'development') {
   app.set('port', 8080);
-};
-
-if (app.get('env') === 'production') {
+} else if (app.get('env') === 'production') {
   app.set('port', 80);
 };
 
@@ -136,15 +141,15 @@ app.listen(app.get('port'), () => {
   console.log('Listening on HTTP, port', app.get('port'));
 });
 
-// if (app.get('env') === 'production') {
-//   const apphttps = https.createServer(
-//     {
-//       key: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/privkey.pem'),
-//       cert: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/fullchain.pem')
-//     },
-//     app
-//   );
-//   apphttps.listen(443, () => {
-//     console.log('Listening on HTTPS, port', 443);
-//   });
-// }
+if (app.get('env') === 'production') {
+  const apphttps = https.createServer(
+    {
+      key: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/fullchain.pem')
+    },
+    app
+  );
+  apphttps.listen(443, () => {
+    console.log('Listening on HTTPS, port', 443);
+  });
+}

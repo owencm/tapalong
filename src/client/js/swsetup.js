@@ -46,12 +46,8 @@ let requestPushNotificationPermissionAndSubscribe = function (user, success, fai
 }
 
 let sendSubscriptionToServer = function (user, subscription) {
-  // Reconstructing this object to avoid https://code.google.com/p/chromium/issues/detail?id=467366 (still neccessary as of Chrome 45)
-  subscription = {endpoint: subscription.endpoint};
-  // Parse the GCM subscriptionId out of end endpoint as that is what GCM needs
-  // TODO: Just send up the endpoint and parse on the server
-  subscription.subscriptionId = subscription.endpoint.slice(subscription.endpoint.indexOf('send/')+5, subscription.endpoint.length);
-  network.requestCreatePushNotificationsSubscription(user, subscription);
+  const subscriptionWithKeys = JSON.parse(JSON.stringify(subscription));
+  network.requestCreatePushNotificationsSubscription(user, subscriptionWithKeys);
 };
 
 let subscribeForPushNotifications = function (callback) {

@@ -52,7 +52,7 @@ let ActivityCard = (props) => {
           <b>{props.activity.title}</b> {getDateString(props.activity.startTime)}
           {
             /* Description and attendees */
-            <Collapse isOpened={props.selected}>
+            <Collapse isOpened={props.selected} springConfig={{stiffness: 300}}>
               <div style={{paddingTop: '16px'}}>
                 { /* TODO: Tidy up this crap! */ }
                 <If condition={props.activity.description !== ''}>

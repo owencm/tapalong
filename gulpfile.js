@@ -48,8 +48,8 @@ gulp.task('build-client-js', function () {
         .transform(babelify, { presets: ['react','es2015'] })
         .bundle()
         .pipe(source('main.js'))
-        // .pipe(buffer())
-        // .pipe(uglify())
+        .pipe(buffer())
+        .pipe(uglify())
         .pipe(gulp.dest(clientBuiltDir));
 });
 

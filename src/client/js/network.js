@@ -88,7 +88,6 @@ const requestCancelActivity = function (user, activity, success, failure) {
 };
 
 const requestCreatePushNotificationsSubscription = function (user, subscription) {
-  console.log(subscription, JSON.stringify(subscription));
   sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
 

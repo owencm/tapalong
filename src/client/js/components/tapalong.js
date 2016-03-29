@@ -58,6 +58,7 @@ let Tapalong = (props) => {
   /* Stateful action wrapper */
 
   let gotoListViaOptIn = (reason) => {
+    window.swLibrary = swLibrary;
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
       swLibrary.hasPushNotificationPermission(() => {
@@ -74,14 +75,14 @@ let Tapalong = (props) => {
   let handleSaveClick = (activity, activityChanges) => {
     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
-      gotoListViaOptIn('if the plan changes');
+      gotoListViaOptIn('when a user says they\'re coming along');
     });
   };
 
   let handleCreateClick = (activity) => {
     props.requestCreateActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
-      gotoListViaOptIn('if the plan changes');
+      gotoListViaOptIn('when a user says they\'re coming along');
     });
   };
 

@@ -1,12 +1,12 @@
 import FB from 'fb';
 import jwt from 'jsonwebtoken';
 import Sequelize from 'sequelize';
+import webPush from 'web-push';
 
+// TODO: Move this to some configuration system and use different settings in prod
 const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
-  logging: false
+  logging: console.log
 });
-
-// TODO: set up sessions
 
 const SQPlan = sequelize.define('plan', {
   description: Sequelize.STRING,
@@ -27,6 +27,15 @@ SQPlan.belongsToMany(SQUser, { as: 'Attendees', through: SQUserPlan, foreignKey:
 SQUser.belongsToMany(SQPlan, { as: 'PlansToAttend', through: SQUserPlan, foreignKey: 'userId' });
 SQPlan.belongsTo(SQUser, { as: 'Creator' });
 
+const SQPushSub = sequelize.define('push_sub', {
+  endpoint: Sequelize.STRING,
+  userPublicKey: Sequelize.STRING,
+});
+
+SQUser.hasMany(SQPushSub, { as: 'PushSubs' });
+
+// SQPushSub.sync({ force: true });
+//
 // sequelize.query('SET FOREIGN_KEY_CHECKS = 0').then(() => {
 //   return SQPlan.sync({ force: true });
 // }).then(() => {
@@ -242,6 +251,36 @@ const Sessions = (() => {
   return { createSessionWithUser, verifySessionForUser };
 })();
 
+const PushSubs = (() => {
+  // TODO: move this to somewhere secure
+  webPush.setGCMAPIKey('AIzaSyAAxf-66b5V2lsH7Son8Bd0scLtKMcYztA');
+
+  const getPushSubFromDBPushSub = (dbPushSub) => {
+    return { dbPushSub, serializedPushSub: dbPushSub.get({ plain: true }) };
+  };
+
+  const createPushSubForUser = (endpoint, userPublicKey, user) => {
+    return SQPushSub.create({ endpoint, userPublicKey }).then((dbPushSub) => {
+      return user.dbUser.addPushSub(dbPushSub).then(() => {
+        return getPushSubFromDBPushSub(dbPushSub);
+      });
+    });
+  };
+
+  const sendNotificationToUser = ({ title, body }, user) => {
+    return user.dbUser.getPushSubs().then((dbPushSubs) => {
+      return Promise.all(dbPushSubs.map((dbPushSub) => {
+        const endpoint = dbPushSub.get('endpoint');
+        const userPublicKey = dbPushSub.get('userPublicKey');
+        return webPush.sendNotification(endpoint, 24 * 60 * 60, userPublicKey, { title, body }).then((result) => {
+          console.log(result);
+        });
+      }));
+    });
+  }
+  return { createPushSubForUser, sendNotificationToUser };
+})();
+
 // TODO: set up notifications
 
-module.exports = { Users, Sessions, Plans }
+module.exports = { Users, Sessions, Plans, PushSubs }
