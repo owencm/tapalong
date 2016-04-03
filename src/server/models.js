@@ -30,6 +30,7 @@ SQPlan.belongsTo(SQUser, { as: 'Creator' });
 const SQPushSub = sequelize.define('push_sub', {
   endpoint: Sequelize.STRING,
   userPublicKey: Sequelize.STRING,
+  userAuthKey: Sequelize.STRING
 });
 
 SQUser.hasMany(SQPushSub, { as: 'PushSubs' });
@@ -259,21 +260,28 @@ const PushSubs = (() => {
     return { dbPushSub, serializedPushSub: dbPushSub.get({ plain: true }) };
   };
 
-  const createPushSubForUser = (endpoint, userPublicKey, user) => {
-    return SQPushSub.create({ endpoint, userPublicKey }).then((dbPushSub) => {
+  const createPushSubForUser = (endpoint, userPublicKey, userAuthKey, user) => {
+    return SQPushSub.create({ endpoint, userPublicKey, userAuthKey }).then((dbPushSub) => {
       return user.dbUser.addPushSub(dbPushSub).then(() => {
         return getPushSubFromDBPushSub(dbPushSub);
       });
     });
   };
 
-  const sendNotificationToUser = ({ title, body }, user) => {
+  const sendNotificationToUser = ({ title, body, url, tag }, user) => {
     return user.dbUser.getPushSubs().then((dbPushSubs) => {
       return Promise.all(dbPushSubs.map((dbPushSub) => {
         const endpoint = dbPushSub.get('endpoint');
         const userPublicKey = dbPushSub.get('userPublicKey');
-        return webPush.sendNotification(endpoint, 24 * 60 * 60, userPublicKey, { title, body }).then((result) => {
-          console.log(result);
+        // The web-push library expects this to be called userAuth not userAuthKey
+        const userAuth = dbPushSub.get('userAuthKey');
+        return webPush.sendNotification(endpoint, {
+          TTL: 24 * 60 * 60,
+          userPublicKey,
+          userAuth,
+          payload: JSON.stringify({ title, body, url, tag })
+        }).then((result) => {
+          console.log(result, userPublicKey, userAuth);
         });
       }));
     });

@@ -46,7 +46,15 @@ let requestPushNotificationPermissionAndSubscribe = function (user, success, fai
 }
 
 let sendSubscriptionToServer = function (user, subscription) {
-  const subscriptionWithKeys = JSON.parse(JSON.stringify(subscription));
+  // TODO: handle browsers without key support
+  const subscriptionIntermediate = JSON.parse(JSON.stringify(subscription));
+  const subscriptionWithKeys = {
+    endpoint: subscriptionIntermediate.endpoint,
+    encodedKeys: {
+      p256dh: subscriptionIntermediate.keys.p256dh,
+      auth: subscriptionIntermediate.keys.auth
+    }
+  };
   network.requestCreatePushNotificationsSubscription(user, subscriptionWithKeys);
 };
 
@@ -55,7 +63,7 @@ let subscribeForPushNotifications = function (callback) {
     console.log('Registering for push');
     registration.pushManager.subscribe({userVisibleOnly: true})
       .then(function(pushSubscription) {
-        console.log('Subscription succeeded', pushSubscription);
+        console.log('Subscription succeeded', JSON.parse(JSON.stringify(pushSubscription)));
         callback(pushSubscription);
       }, function (e) {
         console.log('registering for push failed', e);

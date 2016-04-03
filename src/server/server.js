@@ -43,7 +43,6 @@ app.use('/api/v1', (req, res, next) => {
 
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
-  PushSubs.sendNotificationToUser({ title: 'hello', body: 'world' }, req.user);
   Plans.getPlansVisibleToUser(req.user).then((plans) => {
     return plans.map((plan) => plan.serializedPlan);
   }).then((plans) => {
@@ -118,9 +117,19 @@ app.post('/api/v1/login', (req, res) => {
 
 app.post('/api/v1/push_subscriptions', (req, res) => {
   const endpoint = req.body.endpoint;
-  const clientPublicKey = new Buffer(req.body.keys.clientPublicKey);
-  PushSubs.createPushSubForUser(endpoint, clientPublicKey, req.user).then(() => {
+  const keys = req.body.encodedKeys;
+  const userPublicKey = keys.p256dh;
+  const userAuthKey = keys.auth;
+  console.log('got keys',userPublicKey, userAuthKey);
+  PushSubs.createPushSubForUser(endpoint, userPublicKey, userAuthKey, req.user).then(() => {
     res.sendStatus(200);
+  }).then(() => {
+    PushSubs.sendNotificationToUser({
+      title: 'hello',
+      body: 'world',
+      url: '/',
+      tag: 'static'
+    }, req.user);
   });
 });
 

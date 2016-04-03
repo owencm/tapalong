@@ -38,8 +38,8 @@ gulp.task('build-sw', function () {
         .transform(babelify, { presets: ['es2015'] })
         .bundle()
         .pipe(source('my-service-worker.js'))
-        .pipe(buffer())
-        .pipe(uglify())
+        // .pipe(buffer())
+        // .pipe(uglify())
         .pipe(gulp.dest(clientBuiltDir));
 })
 
@@ -48,8 +48,8 @@ gulp.task('build-client-js', function () {
         .transform(babelify, { presets: ['react','es2015'] })
         .bundle()
         .pipe(source('main.js'))
-        .pipe(buffer())
-        .pipe(uglify())
+        // .pipe(buffer())
+        // .pipe(uglify())
         .pipe(gulp.dest(clientBuiltDir));
 });
 
