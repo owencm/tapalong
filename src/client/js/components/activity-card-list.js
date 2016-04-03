@@ -21,9 +21,9 @@ let ActivityCardList = React.createClass({
           onEditClick = { this.handleEditClick }
           selected = {
             !!this.state.selectedActivity &&
-            this.state.selectedActivity.id == activity.id
+            this.state.selectedActivity.clientId == activity.clientId
           }
-          key = { activity.id }
+          key = { activity.clientId }
         />
       );
     });
@@ -37,7 +37,7 @@ let ActivityCardList = React.createClass({
   handleActivityClick: function (activity) {
     // If something is selected, and it's the activity clicked...
     if (this.state.selectedActivity &&
-        this.state.selectedActivity.id == activity.id) {
+        this.state.selectedActivity.clientId == activity.clientId) {
       this.setState({selectedActivity: undefined});
     } else {
       this.setState({selectedActivity: activity});

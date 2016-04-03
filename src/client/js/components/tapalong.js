@@ -58,6 +58,7 @@ let Tapalong = (props) => {
   /* Stateful action wrapper */
 
   let gotoListViaOptIn = (reason) => {
+    window.swLibrary = swLibrary;
     // Don't ask the user to grant permission unless the browser supports it
     if (swLibrary.browserSupportsSWAndNotifications()) {
       swLibrary.hasPushNotificationPermission(() => {
@@ -74,14 +75,14 @@ let Tapalong = (props) => {
   let handleSaveClick = (activity, activityChanges) => {
     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
-      gotoListViaOptIn('if the plan changes');
+      gotoListViaOptIn('when a user says they\'re coming along');
     });
   };
 
   let handleCreateClick = (activity) => {
     props.requestCreateActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
-      gotoListViaOptIn('if the plan changes');
+      gotoListViaOptIn('when a user says they\'re coming along');
     });
   };
 
@@ -95,12 +96,12 @@ let Tapalong = (props) => {
   let handleAttendClick = (activity) => {
     let {userId, sessionToken} = props.user;
     gotoListViaOptIn('if the plan changes');
-    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending);
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
   };
 
   let handleUnattendClick = (activity) => {
     let {userId, sessionToken} = props.user;
-    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending)
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
   };
 
   let handleLoginToFacebook = (fbToken) => {
@@ -109,7 +110,7 @@ let Tapalong = (props) => {
     }).then(() => {
       return props.gotoScreen(SCREEN.list);
     }).catch((e) => {
-      console.log(e);
+      setTimeout(() => { throw e }, 0);
     });
   }
 
@@ -157,8 +158,8 @@ let Tapalong = (props) => {
       mainContents = (
         <div>
           <If condition={screen == SCREEN.create}>
-            <Hint text="What are you planning on doing
-              that you'd be happy to have friends join for?" />
+            <Hint text="What's one plan you have
+              that you'd like to have some Facebook friends join you for?" />
           </If>
           <EditActivity
             activity={activityForEditing}

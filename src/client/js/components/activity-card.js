@@ -9,17 +9,17 @@ import If from './if.js';
 
 let ActivityCard = (props) => {
 
-  let getCardsOption = (is_creator, is_attending) => {
-    if (is_creator) {
+  let getCardsOption = (isCreator, isAttending) => {
+    if (isCreator) {
       return OPTIONS.edit;
-    } else if (is_attending) {
+    } else if (isAttending) {
       return OPTIONS.undoAttend;
     } else {
       return OPTIONS.attend;
     }
   };
 
-  let cardOption = getCardsOption(props.activity.is_creator, props.activity.is_attending);
+  let cardOption = getCardsOption(props.activity.isCreator, props.activity.isAttending);
   let optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
   let onOptionClick = (() => {
     switch(cardOption) {
@@ -37,7 +37,7 @@ let ActivityCard = (props) => {
 
   return (
     <Card
-      backgroundColor={props.activity.is_attending ? '#cdf9c9' : undefined}
+      backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
       <div style={{padding: '24px'}}>
@@ -46,13 +46,13 @@ let ActivityCard = (props) => {
         <div style={{overflow: 'hidden'}}>
           { /* Title section */ }
           <span>
-          { props.activity.is_creator ? <b>You</b> : <b>{props.activity.creator_name}</b> }
+          { props.activity.isCreator ? <b>You</b> : <b>{props.activity.creatorName}</b> }
             <span> will be </span>
           </span>
-          <b>{props.activity.title}</b> {getDateString(props.activity.start_time)}
+          <b>{props.activity.title}</b> {getDateString(props.activity.startTime)}
           {
             /* Description and attendees */
-            <Collapse isOpened={props.selected}>
+            <Collapse isOpened={props.selected} springConfig={{stiffness: 300}}>
               <div style={{paddingTop: '16px'}}>
                 { /* TODO: Tidy up this crap! */ }
                 <If condition={props.activity.description !== ''}>
@@ -66,12 +66,12 @@ let ActivityCard = (props) => {
                   </div>
                 </If>
                 <If condition={props.activity.description !== '' &&
-                                props.activity.attendees.length > 0}>
+                                props.activity.attendeeNames.length > 0}>
                   <br />
                 </If>
-                <AttendeesList attendees={props.activity.attendees}/>
+                <AttendeesList attendeeNames={props.activity.attendeeNames}/>
                 <If condition={props.activity.description == ''
-                                && props.activity.attendees.length == 0}>
+                                && props.activity.attendeeNames.length == 0}>
                   <p>No more information available for this plan</p>
                 </If>
               </div>
