@@ -96,12 +96,12 @@ let Tapalong = (props) => {
   let handleAttendClick = (activity) => {
     let {userId, sessionToken} = props.user;
     gotoListViaOptIn('if the plan changes');
-    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending);
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
   };
 
   let handleUnattendClick = (activity) => {
     let {userId, sessionToken} = props.user;
-    props.requestSetAttending(userId, sessionToken, activity, !activity.is_attending)
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
   };
 
   let handleLoginToFacebook = (fbToken) => {

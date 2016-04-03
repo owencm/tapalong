@@ -1,3 +1,5 @@
+// TODO: This code is all very inefficient with DB queries. Optimize me plz
+
 import FB from 'fb';
 import jwt from 'jsonwebtoken';
 import Sequelize from 'sequelize';
@@ -5,7 +7,8 @@ import webPush from 'web-push';
 
 // TODO: Move this to some configuration system and use different settings in prod
 const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
-  logging: console.log
+  // logging: console.log
+  logging: undefined
 });
 
 const SQPlan = sequelize.define('plan', {
@@ -14,10 +17,9 @@ const SQPlan = sequelize.define('plan', {
   title: Sequelize.STRING,
 });
 
-// TODO: ensure INTEGER is big enough for fb_id
 const SQUser = sequelize.define('user', {
   name: Sequelize.STRING,
-  fbId: Sequelize.INTEGER,
+  fbId: Sequelize.BIGINT,
   friends: Sequelize.STRING
 });
 
@@ -35,14 +37,13 @@ const SQPushSub = sequelize.define('push_sub', {
 
 SQUser.hasMany(SQPushSub, { as: 'PushSubs' });
 
-// SQPushSub.sync({ force: true });
-//
 // sequelize.query('SET FOREIGN_KEY_CHECKS = 0').then(() => {
-//   return SQPlan.sync({ force: true });
-// }).then(() => {
-//   return SQUser.sync({ force: true });
-// }).then(() => {
-//   return SQUserPlan.sync({ force: true });
+//  return Promise.all([
+//    SQUser.sync({ force: true }),
+//    SQPlan.sync({ force: true }),
+//    SQUserPlan.sync({ force: true }),
+//    SQPushSub.sync({ force: true })
+//  ]);
 // }).then(() => {
 //   sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
 // });
@@ -146,31 +147,38 @@ const Users = (() => {
 const Plans = (() => {
   const getPlanFromDBPlanForUser = (dbPlan, user) => {
 
-    const creator = dbPlan.getCreator();
-
-    const serializedCreator = creator.then((dbUser) => {
-      return Users.getUserFromDBUser(dbUser);
-    }).then((user) => user.serializedUser);
-
     const attendeeNames = dbPlan.getAttendees().then((dbAttendees) => {
-      // TODO: filter so this doesn't include user
+      // TODO: filter attendeeNames so this doesn't include user
       return dbAttendees.map((dbUser) => dbUser.get('name'));
     });
-
+    const isAttending = dbPlan.hasAttendee(user.dbUser);
+    const creator = dbPlan.getCreator().then(Users.getUserFromDBUser);
+    const isCreator = creator.then((creatorUser) => {
+      return creatorUser.dbUser.get('id') === user.dbUser.get('id')
+    });
+    const serializedCreator = creator.then((creator) => creator.serializedUser);
     const thumbnail = serializedCreator.then((serializedCreator) => serializedCreator.image);
     const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
-    const isCreator = creator.then((dbUser) => dbUser.get('id') === user.dbUser.get('id'));
 
-    const attrPromises = { attendeeNames, thumbnail, creatorName, isCreator };
+    const serializedAttrPromises = {
+      attendeeNames,
+      isAttending,
+      thumbnail,
+      creatorName,
+      isCreator
+    };
+    const attrPromises = { creator };
 
-    return promiseAllObj(attrPromises).then((attrs) => {
-      return {
-        dbPlan,
-        serializedPlan: Object.assign(
-          dbPlan.get({ plain: true }),
-          attrs
-        )
-      };
+    return promiseAllObj(serializedAttrPromises).then((serializedAttrs) => {
+      return promiseAllObj(attrPromises).then((attrs) => {
+        return Object.assign({
+          dbPlan,
+          serializedPlan: Object.assign(
+            dbPlan.get({ plain: true }),
+            serializedAttrs
+          )
+        }, attrs);
+      })
     });
   }
 
@@ -192,27 +200,32 @@ const Plans = (() => {
   const getPlanByIdForUser = (id, user) => {
     // TODO: ensure this user is either the creator, or friends with the creator
     return SQPlan.find({ where: { id: id } }).then((dbPlan) => {
-      return getPlanFromDBPlanForUser(dbPlan, user);
+      if (dbPlan) {
+        return getPlanFromDBPlanForUser(dbPlan, user);
+      } else {
+        throw new Error('This user cannot see this plan');
+      }
     });
   };
 
-  const toggleAttendingPlanForUser = (plan, user) => {
-    // TODO: ensure they're the able to see the plan
-    return plan.dbPlan.getAttendees().then((dbUsers) => {
-      const isAttending = (dbUsers.filter((dbUser) => dbUser.get('id') === user.dbUser.get('id')));
-      return (isAttending) ? plan.dbPlan.removeAttendee(user.dbUser) :
-                             plan.dbPlan.addAttendee(user.dbUser);
-      }).then((dbPlan) => {
-      return getPlanFromDBPlanForUser(dbPlan, user);
-    });
-  };
-
-  const updatePlanForUser = (plan, newSerializedPlan, user) => {
-    return plan.dbPlan.getCreator().then((dbUser) => {
-      if (dbUser.get('id') !== user.dbUser.get('id')) {
-        throw new Error('This user cant edit that plan');
+  const setUserAttendingPlanId = (planId, user, isNowAttending) => {
+    return getPlanByIdForUser(planId, user).then((plan) => {
+      // It looks like modifiying associations doesn't return the updated dbUser
+      if (isNowAttending) {
+        return plan.dbPlan.addAttendee(user.dbUser);
+      } else {
+        return plan.dbPlan.removeAttendee(user.dbUser);
       }
     }).then(() => {
+      return getPlanByIdForUser(planId, user);
+    });
+  }
+
+  const updatePlanByIdForUser = (planId, newSerializedPlan, user) => {
+    return getPlanByIdForUser(planId, user).then((plan) => {
+      if (!plan.serializedPlan.isCreator) {
+        throw new Error('This user cannot modify this plan');
+      }
       return plan.dbPlan.update(newSerializedPlan);
     }).then((dbPlan) => {
       return getPlanFromDBPlanForUser(dbPlan, user);
@@ -223,8 +236,8 @@ const Plans = (() => {
     getPlansVisibleToUser,
     getPlanByIdForUser,
     createPlanForUser,
-    updatePlanForUser,
-    toggleAttendingPlanForUser
+    updatePlanByIdForUser,
+    setUserAttendingPlanId
   };
 })();
 
@@ -269,6 +282,7 @@ const PushSubs = (() => {
   };
 
   const sendNotificationToUser = ({ title, body, url, tag }, user) => {
+    console.log('Sending a notification to ', user.serializedUser.name);
     return user.dbUser.getPushSubs().then((dbPushSubs) => {
       return Promise.all(dbPushSubs.map((dbPushSub) => {
         const endpoint = dbPushSub.get('endpoint');

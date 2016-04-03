@@ -11,7 +11,7 @@ const log = function () {
 }
 
 self.addEventListener('install', function(e) {
-    //Automatically take over the previous worker.
+    // Automatically take over the previous worker.
     e.waitUntil(self.skipWaiting());
 });
 
@@ -20,22 +20,22 @@ self.addEventListener('activate', function(e) {
 });
 
 self.addEventListener('push', function(event) {
-  log('Received a push', event);
   const data = event.data && event.data.json();
+  log('Received a push', event, data);
   const notification = {
     title: data.title || 'Up Dog',
     body: data.body || 'New content available',
     url: data.url || '/',
     tag: data.tag || 'static',
   }
-  showNotification(notification);
+  event.waitUntil(showNotification(notification));
 });
 
 self.addEventListener('notificationclick', (e) => {
   e.waitUntil(handleNotificationClick(e));
 });
 
-//Utility function to actually show the notification.
+// Utility function to actually show the notification.
 const showNotification = (note) => {
   const options = {
     body: note.body,
@@ -44,12 +44,13 @@ const showNotification = (note) => {
     icon: note.icon || 'images/icon-192.png',
     data: { url: note.url },
     vibrate: 1000,
-    noscreen: false
+    noscreen: false,
+    renotify: true
   };
-  self.registration.showNotification(note.title, options);
+  return self.registration.showNotification(note.title, options);
 }
 
-//Utility function to handle the click
+// Utility function to handle the click
 const handleNotificationClick = (e) => {
   log('Notification clicked ', e);
   e.notification.close();
@@ -64,7 +65,7 @@ const handleNotificationClick = (e) => {
 }
 
 // Old code that fetched the notifications from the server
-//Handle the push received event.
+// Handle the push received event.
 // self.addEventListener('push', function(e) {
 //   log('push listener', e);
 //   e.waitUntil(new Promise(function(resolve, reject) {

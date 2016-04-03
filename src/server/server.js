@@ -41,6 +41,7 @@ app.use('/api/v1', (req, res, next) => {
 
 // Setup routes
 
+// TODO: Only return plans in the future
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
   Plans.getPlansVisibleToUser(req.user).then((plans) => {
@@ -62,26 +63,27 @@ app.post('/api/v1/plans/', (req, res) => {
 app.post('/api/v1/plans/:planId/', (req, res) => {
   const newSerializedPlan = req.body;
   const planId = req.params.planId;
-  Plans.getPlanByIdForUser(planId, req.user).then((plan) => {
-    if (!plan) {
-      throw new Error('User could not edit that plan');
-    }
-    return Plans.updatePlanForUser(plan, newSerializedPlan, req.user);
-  }).then((plan) => {
+  return Plans.updatePlanByIdForUser(planId, newSerializedPlan, req.user).then((plan) => {
     res.send(JSON.stringify(plan.serializedPlan));
   });
 });
 
-
-// TODO: swap this toggling for an attend and unattend
 app.post('/api/v1/plans/:planId/attend/', (req, res) => {
   const planId = req.params.planId;
-  Plans.getPlanByIdForUser(planId, req.user).then((plan) => {
-    if (!plan) {
-      throw new Error('User could not edit that plan');
-    }
-    return Plans.toggleAttendingPlanForUser(plan, req.user);
-  }).then((plan) => {
+  return Plans.setUserAttendingPlanId(planId, req.user, true).then((plan) => {
+    res.send(JSON.stringify(plan.serializedPlan));
+    PushSubs.sendNotificationToUser({
+      title: `Up Dog: ${plan.serializedPlan.title}`,
+      body: `${req.user.serializedUser.name} is coming along`,
+      url: '/',
+      tag: 'static'
+    }, plan.creator);
+  });
+});
+
+app.post('/api/v1/plans/:planId/unattend/', (req, res) => {
+  const planId = req.params.planId;
+  return Plans.setUserAttendingPlanId(planId, req.user, false).then((plan) => {
     res.send(JSON.stringify(plan.serializedPlan));
   });
 });
@@ -94,14 +96,13 @@ app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   res.send(plan);
 });
 
-// TODO: Implement Facebook login
-
 app.post('/api/v1/login', (req, res) => {
   const fbToken = req.body.fb_token;
   // TODO: Handle accessing user data on FB failing
   Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
     return Sessions.createSessionWithUser(user).then((token) => {
       // This is the response we're going to send back
+      // TODO: Move away from underscore style
       return {
         success: true,
         user_id: user.serializedUser.id,
@@ -123,13 +124,6 @@ app.post('/api/v1/push_subscriptions', (req, res) => {
   console.log('got keys',userPublicKey, userAuthKey);
   PushSubs.createPushSubForUser(endpoint, userPublicKey, userAuthKey, req.user).then(() => {
     res.sendStatus(200);
-  }).then(() => {
-    PushSubs.sendNotificationToUser({
-      title: 'hello',
-      body: 'world',
-      url: '/',
-      tag: 'static'
-    }, req.user);
   });
 });
 

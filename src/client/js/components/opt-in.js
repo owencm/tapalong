@@ -31,7 +31,9 @@ let OptIn = React.createClass({
       this.props.onOptInComplete();
     }, () => {
       console.log('Failure');
-      // TODO: Handle failure or permission rejection
+      // TODO: Handle failure or permission rejection properly
+      this.setState({showingPermissionRequest: false});
+      this.props.onOptInComplete();
     });
   },
 

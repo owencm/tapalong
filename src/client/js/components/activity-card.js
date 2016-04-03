@@ -9,17 +9,17 @@ import If from './if.js';
 
 let ActivityCard = (props) => {
 
-  let getCardsOption = (isCreator, is_attending) => {
+  let getCardsOption = (isCreator, isAttending) => {
     if (isCreator) {
       return OPTIONS.edit;
-    } else if (is_attending) {
+    } else if (isAttending) {
       return OPTIONS.undoAttend;
     } else {
       return OPTIONS.attend;
     }
   };
 
-  let cardOption = getCardsOption(props.activity.isCreator, props.activity.is_attending);
+  let cardOption = getCardsOption(props.activity.isCreator, props.activity.isAttending);
   let optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
   let onOptionClick = (() => {
     switch(cardOption) {
@@ -37,7 +37,7 @@ let ActivityCard = (props) => {
 
   return (
     <Card
-      backgroundColor={props.activity.is_attending ? '#cdf9c9' : undefined}
+      backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
       <div style={{padding: '24px'}}>

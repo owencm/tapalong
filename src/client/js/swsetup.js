@@ -4,16 +4,16 @@
 import network from './network.js';
 import persistence from './persistence.js';
 
-let browserSupportsSWAndNotifications = function () {
+const browserSupportsSWAndNotifications = function () {
   return ('serviceWorker' in navigator && typeof Notification !== 'undefined');
 }
 
-let hasPushNotificationPermission = function(success, failure) {
+const hasPushNotificationPermission = function(success, failure) {
   if (!browserSupportsSWAndNotifications()) {
     failure();
     return;
   }
-  let status = Notification.permission;
+  const status = Notification.permission;
   if (status !== 'granted') {
     failure();
   } else {
@@ -21,31 +21,21 @@ let hasPushNotificationPermission = function(success, failure) {
   }
 };
 
-let requestPushNotificationPermission = function (success, failure) {
-  console.log('Requesting push permission');
-  Notification.requestPermission(function (decision) {
-    console.log(decision);
-    if (decision == 'granted') {
-      success();
-    } else {
-      failure();
+const requestPushNotificationPermissionAndSubscribe = function (user, success, failure) {
+  Notification.requestPermission().then((decision) => {
+    if (decision !== 'granted') {
+      throw new Error('User denied permission to receive push');
     }
-  });
-};
-
-let requestPushNotificationPermissionAndSubscribe = function (user, success, failure) {
-  requestPushNotificationPermission(() => {
-    subscribeForPushNotifications((subscription) => {
-      sendSubscriptionToServer(user, subscription);
-    });
     success();
-  }, () => {
-    // TODO: Handle failure
+    return subscribeForPushNotifications();
+  }).then((subscription) => {
+    return sendSubscriptionToServer(user, subscription);
+  }).catch((err) => {
     failure();
   });
 }
 
-let sendSubscriptionToServer = function (user, subscription) {
+const sendSubscriptionToServer = function (user, subscription) {
   // TODO: handle browsers without key support
   const subscriptionIntermediate = JSON.parse(JSON.stringify(subscription));
   const subscriptionWithKeys = {
@@ -58,20 +48,17 @@ let sendSubscriptionToServer = function (user, subscription) {
   network.requestCreatePushNotificationsSubscription(user, subscriptionWithKeys);
 };
 
-let subscribeForPushNotifications = function (callback) {
-  navigator.serviceWorker.ready.then(function(registration) {
+const subscribeForPushNotifications = () => {
+  return navigator.serviceWorker.ready.then((registration) => {
     console.log('Registering for push');
-    registration.pushManager.subscribe({userVisibleOnly: true})
-      .then(function(pushSubscription) {
-        console.log('Subscription succeeded', JSON.parse(JSON.stringify(pushSubscription)));
-        callback(pushSubscription);
-      }, function (e) {
-        console.log('registering for push failed', e);
-      });
+    return registration.pushManager.subscribe({userVisibleOnly: true});
+  }).then((pushSubscription) => {
+    console.log('Subscription succeeded', JSON.parse(JSON.stringify(pushSubscription)));
+    return pushSubscription;
   });
 };
 
-let unsubscribe = function (subscription, callback) {
+const unsubscribe = function (subscription, callback) {
   subscription.unsubscribe().then(function(){
     console.log('Unsubscribed');
     callback();
@@ -80,33 +67,35 @@ let unsubscribe = function (subscription, callback) {
   });
 };
 
-let sendMessageToSW = function (message, callback) {
-  let messageChannel = new MessageChannel();
-  messageChannel.port1.onmessage = function(event) {
-    callback(event.data);
-  };
-  if (navigator.serviceWorker.controller) {
-    navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
-    console.log('Sent message to service worker: ',message);
-  } else {
-    throw Error('No service worker exists, can\'t send a message');
-  }
-};
+// const sendMessageToSW = function (message, callback) {
+//   const messageChannel = new MessageChannel();
+//   messageChannel.port1.onmessage = function(event) {
+//     callback(event.data);
+//   };
+//   if (navigator.serviceWorker.controller) {
+//     navigator.serviceWorker.controller.postMessage(message, [messageChannel.port2]);
+//     console.log('Sent message to service worker: ',message);
+//   } else {
+//     throw Error('No service worker exists, can\'t send a message');
+//   }
+// };
 
-let _unsubscribeAndResubscribe = function () {
-  navigator.serviceWorker.ready.then(function(registration){
-    registration.pushManager.getSubscription().then(function(pushSubscription){
-      if (pushSubscription) {
-        unsubscribe(pushSubscription, function(){subscribeForPushNotifications(sendSubscriptionToServer);});
-      } else {
-        console.log('no subscription to unsubscribe');
-        subscribeForPushNotifications(sendSubscriptionToServer);
-      }
-    });
-  });
-}
+// const _unsubscribeAndResubscribe = function () {
+//   return navigator.serviceWorker.ready.then((registration) => {
+//     return registration.pushManager.getSubscription();
+//   }).then(function(pushSubscription){
+//     if (pushSubscription) {
+//       unsubscribe(pushSubscription, () => { subscribeForPushNotifications().then(sendSubscriptionToServer) });
+//     } else {
+//       console.log('no subscription to unsubscribe');
+//       subscribeForPushNotifications().then(sendSubscriptionToServer);
+//     }
+//   });
+// }
+//
+// window._unsubscribeAndResubscribe = _unsubscribeAndResubscribe;
 
-let init = function () {
+const init = function () {
   if (browserSupportsSWAndNotifications()) {
     navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
       // Registration was successful
@@ -117,7 +106,7 @@ let init = function () {
     }).then(function(pushSubscription) {
       if (!pushSubscription) {
         console.log('ruh roh, we lost our push subscription (or we never managed to make one - were you offline?). Better make a new one...');
-        subscribeForPushNotifications(sendSubscriptionToServer);
+        subscribeForPushNotifications().then(sendSubscriptionToServer);
       }
     }).catch((e) => {
 
@@ -135,5 +124,4 @@ module.exports = {
   browserSupportsSWAndNotifications,
   hasPushNotificationPermission,
   requestPushNotificationPermissionAndSubscribe,
-  _unsubscribeAndResubscribe
 }

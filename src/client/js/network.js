@@ -52,7 +52,8 @@ const requestCreateActivity = function (user, activity, success, failure) {
 };
 
 const requestSetAttending = function (user, activity, attending, success, failure) {
-  sendRequest(apiEndpoint+'/plans/'+activity.id+'/attend/', 'post', JSON.stringify({attending: attending}), user, function () {
+  const endpointAction = attending ? 'attend' : 'unattend';
+  sendRequest(`${apiEndpoint}/plans/${activity.id}/${endpointAction}`, 'post', '', user, function () {
     if(this.status >= 200 && this.status < 400) {
       let updatedActivity = JSON.parse(this.responseText);
       updatedActivity.startTime = new Date(updatedActivity.startTime);
