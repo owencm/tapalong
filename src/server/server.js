@@ -44,11 +44,14 @@ app.use('/api/v1', (req, res, next) => {
 // TODO: Only return plans in the future
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
-  Plans.getPlansVisibleToUser(req.user).then((plans) => {
+  // Update the list of this users FB friends in case one of their friends has joined
+  Users.refreshFbFriendsForUser(req.user).then(() => {
+    return Plans.getPlansVisibleToUser(req.user);
+  }).then((plans) => {
     return plans.map((plan) => plan.serializedPlan);
   }).then((plans) => {
     res.send(JSON.stringify(plans));
-  })
+  });
 });
 
 // Create new plan
@@ -88,12 +91,11 @@ app.post('/api/v1/plans/:planId/unattend/', (req, res) => {
   });
 });
 
-// TODO: swap this toggling for an attend and unattend
 app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   const planId = req.params.planId;
-  // Get this plan, from the perspective of this user
-  // Try to cancel the plan as this user
-  res.send(plan);
+  return Plans.cancelPlanByIdForUser(planId, req.user).then((plan) => {
+    res.send(plan);
+  });
 });
 
 app.post('/api/v1/login', (req, res) => {

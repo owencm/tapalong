@@ -1,4 +1,5 @@
 // TODO: This code is all very inefficient with DB queries. Optimize me plz
+// TODO: Move from denoting friends as serialized lists into real DB stuffs
 
 import FB from 'fb';
 import jwt from 'jsonwebtoken';
@@ -6,28 +7,36 @@ import Sequelize from 'sequelize';
 import webPush from 'web-push';
 
 // TODO: Move this to some configuration system and use different settings in prod
-const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
-  // logging: console.log
-  logging: undefined
+const sequelize = new Sequelize('tapalong_db_1', 'root', 'D0n\'tUseInProduction', {
+  logging: console.log
+  // logging: undefined
 });
 
 const SQPlan = sequelize.define('plan', {
   description: Sequelize.STRING,
   startTime: Sequelize.DATE,
   title: Sequelize.STRING,
+  cancelled: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false
+  }
 });
 
 const SQUser = sequelize.define('user', {
   name: Sequelize.STRING,
-  fbId: Sequelize.BIGINT,
-  friends: Sequelize.STRING
+  fbId: Sequelize.STRING,
+  fbToken: Sequelize.STRING,
+  friends: {
+    type: Sequelize.STRING,
+    defaultValue: '[]'
+  }
 });
 
 const SQUserPlan = sequelize.define('user_plan', {});
 
-SQPlan.belongsToMany(SQUser, { as: 'Attendees', through: SQUserPlan, foreignKey: 'planId' });
-SQUser.belongsToMany(SQPlan, { as: 'PlansToAttend', through: SQUserPlan, foreignKey: 'userId' });
-SQPlan.belongsTo(SQUser, { as: 'Creator' });
+SQPlan.belongsToMany(SQUser, { as: 'attendees', through: SQUserPlan, foreignKey: 'planId' });
+SQUser.belongsToMany(SQPlan, { as: 'plansToAttend', through: SQUserPlan, foreignKey: 'userId' });
+SQPlan.belongsTo(SQUser, { as: 'creator' });
 
 const SQPushSub = sequelize.define('push_sub', {
   endpoint: Sequelize.STRING,
@@ -35,15 +44,17 @@ const SQPushSub = sequelize.define('push_sub', {
   userAuthKey: Sequelize.STRING
 });
 
-SQUser.hasMany(SQPushSub, { as: 'PushSubs' });
+SQUser.hasMany(SQPushSub, { as: 'pushSubs' });
 
 // sequelize.query('SET FOREIGN_KEY_CHECKS = 0').then(() => {
-//  return Promise.all([
-//    SQUser.sync({ force: true }),
-//    SQPlan.sync({ force: true }),
-//    SQUserPlan.sync({ force: true }),
-//    SQPushSub.sync({ force: true })
-//  ]);
+//   return SQUser.sync({ force: true });
+// }).then(() => {
+//   return SQPlan.sync({ force: true });
+// }).then(() => {
+//   return Promise.all([
+//     SQUserPlan.sync({ force: true }),
+//     SQPushSub.sync({ force: true })
+//   ]);
 // }).then(() => {
 //   sequelize.query('SET FOREIGN_KEY_CHECKS = 1');
 // });
@@ -63,8 +74,9 @@ const promiseAllObj = (obj) => {
 }
 
 const Users = (() => {
-  const createUser = (fbId, name, friends) => {
-    return SQUser.create({ fbId, name, friends }).then(getUserFromDBUser);
+  // fbId is a string
+  const createUser = (fbId, fbToken, name, friends) => {
+    return SQUser.create({ fbId, fbToken, name, friends }).then(getUserFromDBUser);
   };
 
   const getUserFromDBUser = (dbUser) => {
@@ -106,24 +118,55 @@ const Users = (() => {
     });
   }
 
-  const getOrCreateUserWithFBToken = (FBToken) => {
+  const getFbUser = (FBToken) => {
     FB.setAccessToken(FBToken);
     return new Promise((resolve, reject) => {
-      FB.api('/me', (res) => {
+      // Request the users ID, name and friends
+      FB.api('/me?fields=id,name,friends', (res) => {
+        // Note the friends list returned includes only friends that use the app
+        // Note the user ID is a string, since it conveys a 64 bit integer which
+        //   cannot be accurately represented in JS's floating point number type
         if(!res || res.error) {
          reject(!res ? 'FB API error occurred' : res.error);
         }
         // TODO: grab friends and pass them through
-        resolve({fbId: res.id, name: res.name, friends: ''});
+        const friendIds = res.friends.data.map((friend) => friend.id);
+        const friendIdsString = JSON.stringify(friendIds);
+        resolve({ fbId: res.id, name: res.name, friends: friendIdsString });
       });
-    }).then((fbUser) => {
+    });
+  };
+
+  // TODO: Finish me
+  // Update all the users in fbIds to reflect the fact that they're friends
+  // const updateUsersByFbIdsToBeFriendsWithFbId = (fbIds, fbId) => {
+  //   SQUser.findAll({
+  //     where: {
+  //       fbId: {
+  //         $in: fbIds
+  //       }
+  //     }
+  //    }
+  //  })
+  // }
+
+  const getOrCreateUserWithFBToken = (FBToken) => {
+    return getFbUser(FBToken).then((fbUser) => {
       // Get the user from the database if they exist
       // Don't use normal chaining style since we may need access to fbUser
       let userPromise = getUserWithFBId(fbUser.fbId);
       return userPromise.then((user) => {
         if (!user) {
-          return createUser(fbUser.fbId, fbUser.name, fbUser.friends).then((user) => {
-            return { user, newlyCreated: true }
+          // TODO: Finish me. I decided to be lazy and just refresh friends
+            // every time the plan list gets requested
+          // setTimeout(() => {
+          //   updateUsersByFbIdsToBeFriendsWithFbId(JSON.parse(fbUser.friends), fbUser.fbId);
+          // }, 1000);
+          return createUser(fbUser.fbId, FBToken, fbUser.name, fbUser.friends).then((user) => {
+            return {
+              user,
+              newlyCreated: true
+            }
           });
         }
         // The user exists, so return them
@@ -135,12 +178,20 @@ const Users = (() => {
     });
   }
 
+  const refreshFbFriendsForUser = (user) => {
+    const fbToken = user.dbUser.get('fbToken');
+    return getFbUser(fbToken).then(({ fbId, name, friends }) => {
+      return user.dbUser.update({friends});
+    });
+  }
+
   return {
     createUser,
     getOrCreateUserWithFBToken,
     getUserWithId,
     getUserWithIdAndSessionToken,
-    getUserFromDBUser
+    getUserFromDBUser,
+    refreshFbFriendsForUser
   }
 })();
 
@@ -184,7 +235,27 @@ const Plans = (() => {
 
   const getPlansVisibleToUser = (user) => {
     // TODO: limit to only plans by their friends
-    return SQPlan.findAll().then((dbPlans) => {
+    const friendIds = JSON.parse(user.dbUser.friends);
+    return SQPlan.findAll({
+      // Find plans that haven't been cancelled that this user either created
+      //  or is friends with the creator of
+      where: {
+        cancelled: false,
+        // $or: {
+        //   // Can't find a way to do this direction with creator: user.dbUser
+        //   '$creator.id$': user.dbUser.id,
+        //   // Someone in Slack tells me this is the way to do it. Not in the
+        //   //   documentation thoguh...
+        //   '$creator.fbId$': {
+        //     $in: friendIds
+        //   }
+        // }
+      },
+      include: {
+        model: SQUser,
+        as: 'creator'
+      }
+    }).then((dbPlans) => {
       return Promise.all(dbPlans.map((dbPlan) => getPlanFromDBPlanForUser(dbPlan, user)));
     });
   };
@@ -232,10 +303,22 @@ const Plans = (() => {
     });
   };
 
+  const cancelPlanByIdForUser = (planId, user) => {
+    return getPlanByIdForUser(planId, user).then((plan) => {
+      if (!plan.serializedPlan.isCreator) {
+        throw new Error('This user cannot modify this plan');
+      }
+      return plan.dbPlan.update({ cancelled: true });
+    }).then((dbPlan) => {
+      return getPlanFromDBPlanForUser(dbPlan, user);
+    });
+  }
+
   return {
     getPlansVisibleToUser,
     getPlanByIdForUser,
     createPlanForUser,
+    cancelPlanByIdForUser,
     updatePlanByIdForUser,
     setUserAttendingPlanId
   };
