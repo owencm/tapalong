@@ -23,6 +23,21 @@ let Login = (props) => {
 
 let LoginInner = (props) => {
   // TODO: use props.readyToLogin to modify the rendering
+  const loginTextStyle = {
+    color: 'white',
+    fontSize: '2em'
+  }
+  const loginButtonStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 120,
+    width: '100%',
+    backgroundColor: '#3a5b98',
+    border: '1px solid #7aa9fb',
+    bottom: 0,
+    position: 'fixed',
+  }
   return (
     <div id='login'>
       <div id='splash'>
@@ -34,11 +49,21 @@ let LoginInner = (props) => {
           padding: '40px'
         }}>Do more together with friends</h1>
       </div>
-      <If condition={props.readyToLogin}>
-        <div id='loginButton'>
-          <img src='images/login-button.png' id='loginButtonImg'></img>
-        </div>
-      </If>
+      <div style={loginButtonStyle}>
+        <If condition={props.readyToLogin}>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <img src='images/facebook-f.png' style={{
+                width: 25,
+                height: 50,
+                marginRight: 20
+              }} />
+            <span style={loginTextStyle}>Login with Facebook</span>
+          </div>
+        </If>
+        <If condition={!props.readyToLogin}>
+          <span style={loginTextStyle}>Loading...</span>
+        </If>
+      </div>
     </div>
   );
 }

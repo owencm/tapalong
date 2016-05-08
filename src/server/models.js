@@ -128,6 +128,7 @@ const Users = (() => {
         //   cannot be accurately represented in JS's floating point number type
         if(!res || res.error) {
          reject(!res ? 'FB API error occurred' : res.error);
+         return;
         }
         // TODO: grab friends and pass them through
         const friendIds = res.friends.data.map((friend) => friend.id);

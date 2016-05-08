@@ -10,11 +10,28 @@
     <link rel='stylesheet' href='css/main.css'></style>
   </head>
   <body class='noselect'>
-    <div id='appShell'></div>
+    <div id='appShell'>
+
+      <div style='margin-top: 300px; text-align: center'>Preparing the awesome...</div>
+
+    </div>
     <div id='permissionOverlay' style='display: none'></div>
-    <script src='main.js' async></script>
+    <script src='main.js'></script>
     <link href='//fonts.googleapis.com/css?family=Roboto:300,400' rel='stylesheet' type='text/css' async>
     <!-- TODO: Move to sw precache. Included here for preloading purposes -->
     <img src='images/back-icon.svg' style='display: none'>
+    <img src='images/facebook-f.png' style='display: none'>
+    <img src='images/plus-grey.png' style='display: none'>
+    <!-- Add Google analytics tracking  -->
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-77408690-1', 'auto');
+      ga('send', 'pageview');
+
+    </script>
   </body>
 </html>

@@ -1,3 +1,6 @@
+// TODO: have the user login with Facebook again every now and again to prevent
+//   their token from expiring
+
 import https from 'https';
 import bodyParser from 'body-parser';
 import compression from 'compression';
@@ -39,13 +42,20 @@ app.use('/api/v1', (req, res, next) => {
   });
 });
 
+const promiseWithTimeout = (promise, timeout) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, timeout);
+    return promise.then(resolve);
+  });
+}
+
 // Setup routes
 
 // TODO: Only return plans in the future
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
   // Update the list of this users FB friends in case one of their friends has joined
-  Users.refreshFbFriendsForUser(req.user).then(() => {
+  promiseWithTimeout(Users.refreshFbFriendsForUser(req.user), 100).then(() => {
     return Plans.getPlansVisibleToUser(req.user);
   }).then((plans) => {
     return plans.map((plan) => plan.serializedPlan);
