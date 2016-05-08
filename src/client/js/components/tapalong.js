@@ -10,6 +10,7 @@ import Header from './header.js';
 import FabButton from './fab.js';
 import If from './if.js';
 import Hint from './hint.js';
+import InstallPromptDimmer from './install-prompt-dimmer.js';
 
 import { gotoScreen, gotoEditScreen, gotoCreateScreen,
   gotoNextScreen, queueNextScreen,
@@ -158,8 +159,7 @@ let Tapalong = (props) => {
       mainContents = (
         <div>
           <If condition={screen == SCREEN.create}>
-            <Hint text="What's one plan you have
-              that you'd like to have some Facebook friends join you for?" />
+            <Hint text="What's one plan you have that you'd like to have some Facebook friends join you for?" />
           </If>
           <EditActivity
             activity={activityForEditing}
@@ -187,6 +187,7 @@ let Tapalong = (props) => {
     }
     return (
       <div>
+        <InstallPromptDimmer />
         <div id='container'>
           { mainContents }
           <div style={{height: '100px'}}></div>
