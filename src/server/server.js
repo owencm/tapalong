@@ -1,6 +1,7 @@
 // TODO: have the user login with Facebook again every now and again to prevent
 //   their token from expiring
 
+import fs from 'fs';
 import https from 'https';
 import bodyParser from 'body-parser';
 import compression from 'compression';
