@@ -3,6 +3,7 @@ import m from '../m.js';
 import Card from './card.js';
 import CardOptions from './card-options.js';
 import TextAreaAutoResize from 'react-textarea-autosize';
+import isDateValid from '../is-date-valid.js';
 
 // TODO: set form fields to blur after enter pressed
 // titleInputElem.addEventListener('keydown', function(key) {
@@ -32,19 +33,29 @@ let EditActivity = React.createClass({
     scroll(window, 0);
   },
 
-  handleTitleChange: function (e) {
-    this.setState({title: e.target.value});
+  handleTitleChange: function (event) {
+    this.setState({title: event.target.value});
   },
 
-  handleDescriptionChange: function (e) {
-    this.setState({description: e.target.value});
+  handleTitleKeyDown: function(event) {
+    if (event.keyCode == 13 ) {
+      this.refs.dateInput.focus();
+    }
   },
 
-  handleDateChange: function (e) {
+  handleDescriptionChange: function (event) {
+    this.setState({description: event.target.value});
+  },
+
+  handleDateChange: function (event) {
     // Note date will parse the date as if it was UTC, and then convert it into local TZ
-    let newDate = new Date(e.target.value);
+    let newDate = new Date(event.target.value);
+    // Abort the change if the date isn't valid
+    if (!isDateValid(newDate)) {
+      return;
+    };
     // To solve the parsing as UTC issue we add the timezone offset
-    newDate.addMinutes(newDate.getTimezoneOffset())
+    newDate.addMinutes(newDate.getTimezoneOffset());
     let newStartTime = this.state.startTime.clone();
     // Set the date component of the state without modifying time
     newStartTime.set({
@@ -53,12 +64,11 @@ let EditActivity = React.createClass({
       // Year values start at 1900
       year: 1900 + newDate.getYear()
     });
-    console.log(newStartTime);
     this.setState({startTime: newStartTime});
   },
 
-  handleTimeChange: function (e) {
-    let tmp = e.target.value.split(':');
+  handleTimeChange: function (event) {
+    let tmp = event.target.value.split(':');
     let hour = parseInt(tmp[0]);
     let minute = parseInt(tmp[1]);
     let oldStartTime = this.state.startTime.clone();
@@ -66,6 +76,10 @@ let EditActivity = React.createClass({
       hour: hour,
       minute: minute
     });
+    // Abort the change if the date isn't valid
+    if (!isDateValid(newStartTime)) {
+      return;
+    };
     this.setState({startTime: newStartTime});
   },
 
@@ -165,9 +179,11 @@ let EditActivity = React.createClass({
             placeholder='Watching Spectre'
             autoCapitalize='words'
             required
-            onChange={this.handleTitleChange}>
+            onChange={this.handleTitleChange}
+            onKeyDown={this.handleTitleKeyDown}>
           </input>
           <input
+            ref='dateInput'
             type='date'
             style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
             className='input-placeholder-lighter focusUnderline'
