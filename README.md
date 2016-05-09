@@ -14,5 +14,5 @@ To deploy:
 - Kill node on the server using `killall nodejs` and `killall node`
 - Update node packaged with npm install
 - Migrate the database.... somehow!
-- Restart using `nohup forever NODE_ENV=production server.js &`
+- Restart using `NODE_ENV=production nohup forever server.js &`
 - `cat nohup.out` to ensure everything looks OK, and then browse to the server
