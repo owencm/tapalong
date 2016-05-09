@@ -149,13 +149,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 if (app.get('env') === 'development') {
   app.set('port', 8080);
-} else if (app.get('env') === 'production') {
-  app.set('port', 80);
-};
-
-app.listen(app.get('port'), () => {
-  console.log('Listening on HTTP, port', app.get('port'));
-});
+  app.listen(app.get('port'), () => {
+    console.log('Listening on HTTP, port', app.get('port'));
+  });
+}
 
 if (app.get('env') === 'production') {
   const apphttps = https.createServer(
@@ -167,5 +164,13 @@ if (app.get('env') === 'production') {
   );
   apphttps.listen(443, () => {
     console.log('Listening on HTTPS, port', 443);
+  });
+  var httpRedirectionApp = express();
+  // set up a route to redirect http to https
+  httpRedirectionApp.get('*', (req,res) => {
+      res.redirect('https://' + req.headers.host + req.url);
+  })
+  httpRedirectionApp.listen(80, () => {
+    console.log('Listening on HTTP to redirect, port', 80);
   });
 }
