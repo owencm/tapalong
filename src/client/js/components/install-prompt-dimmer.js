@@ -17,7 +17,11 @@ let InstallPromptDimmer = React.createClass({
       handleInstallPromptShowing(window.installPromptUserChoice);
     }
     window.addEventListener('beforeinstallprompt', (event) => {
-      handleInstallPromptShowing(event.userChoice);
+      setTimeout(() => {
+        if (window.installPromptUserChoice) {
+          handleInstallPromptShowing(window.installPromptUserChoice);
+        }
+      }, 200);
     });
   },
 
