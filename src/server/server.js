@@ -52,6 +52,26 @@ const promiseWithTimeout = (promise, timeout) => {
 
 // Setup routes
 
+app.post('/api/v1/login', (req, res) => {
+  const fbToken = req.body.fb_token;
+  // TODO: Handle accessing user data on FB failing
+  Users.getOrCreateUserWithFbToken(fbToken).then(({ user, newlyCreated }) => {
+    return Sessions.createSessionWithUser(user).then((token) => {
+      // This is the response we're going to send back
+      // TODO: Move away from underscore style
+      return {
+        success: true,
+        user_id: user.serializedUser.id,
+        user_name: user.serializedUser.name,
+        session_token: token,
+        first_login: newlyCreated
+      };
+    });
+  }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
+    setImmediate(() => { throw e });
+  });
+});
+
 // TODO: Only return plans in the future
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
@@ -106,26 +126,6 @@ app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   const planId = req.params.planId;
   return Plans.cancelPlanByIdForUser(planId, req.user).then((plan) => {
     res.send(plan);
-  });
-});
-
-app.post('/api/v1/login', (req, res) => {
-  const fbToken = req.body.fb_token;
-  // TODO: Handle accessing user data on FB failing
-  Users.getOrCreateUserWithFBToken(fbToken).then(({ user, newlyCreated }) => {
-    return Sessions.createSessionWithUser(user).then((token) => {
-      // This is the response we're going to send back
-      // TODO: Move away from underscore style
-      return {
-        success: true,
-        user_id: user.serializedUser.id,
-        user_name: user.serializedUser.name,
-        session_token: token,
-        first_login: newlyCreated
-      };
-    });
-  }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
-    setImmediate(() => { throw e });
   });
 });
 

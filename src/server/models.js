@@ -7,6 +7,7 @@ import Sequelize from 'sequelize';
 import webPush from 'web-push';
 
 // TODO: Move this to some configuration system and use different settings in prod
+// Local password is 'D0n\'tUseInProduction'
 const sequelize = new Sequelize('tapalong_db_1', 'root', 'D0n\'tUseInProduction', {
   logging: console.log
   // logging: undefined
@@ -118,8 +119,8 @@ const Users = (() => {
     });
   }
 
-  const getFbUser = (FBToken) => {
-    FB.setAccessToken(FBToken);
+  const getFbUser = (fbToken) => {
+    FB.setAccessToken(fbToken);
     return new Promise((resolve, reject) => {
       // Request the users ID, name and friends
       FB.api('/me?fields=id,name,friends', (res) => {
@@ -151,8 +152,9 @@ const Users = (() => {
   //  })
   // }
 
-  const getOrCreateUserWithFBToken = (FBToken) => {
-    return getFbUser(FBToken).then((fbUser) => {
+  // If the user exists, also update their fbtoken with this one
+  const getOrCreateUserWithFbToken = (fbToken) => {
+    return getFbUser(fbToken).then((fbUser) => {
       // Get the user from the database if they exist
       // Don't use normal chaining style since we may need access to fbUser
       let userPromise = getUserWithFBId(fbUser.fbId);
@@ -163,18 +165,21 @@ const Users = (() => {
           // setTimeout(() => {
           //   updateUsersByFbIdsToBeFriendsWithFbId(JSON.parse(fbUser.friends), fbUser.fbId);
           // }, 1000);
-          return createUser(fbUser.fbId, FBToken, fbUser.name, fbUser.friends).then((user) => {
+          return createUser(fbUser.fbId, fbToken, fbUser.name, fbUser.friends).then((user) => {
             return {
               user,
               newlyCreated: true
             }
           });
+        } else {
+          // Update the user with this fb token which is probably newer
+          user.dbUser.update({ fbToken: fbToken });
+          // The user exists, so return them
+          return {
+            user,
+            newlyCreated: false
+          };
         }
-        // The user exists, so return them
-        return {
-          user,
-          newlyCreated: false
-        };
       });
     });
   }
@@ -183,12 +188,16 @@ const Users = (() => {
     const fbToken = user.dbUser.get('fbToken');
     return getFbUser(fbToken).then(({ fbId, name, friends }) => {
       return user.dbUser.update({friends});
+    }).then(() => {
+      console.log('successfully updated list of friends');
+    }).catch((e) => {
+      console.error('Failed to update list of friends', e);
     });
   }
 
   return {
     createUser,
-    getOrCreateUserWithFBToken,
+    getOrCreateUserWithFbToken,
     getUserWithId,
     getUserWithIdAndSessionToken,
     getUserFromDBUser,

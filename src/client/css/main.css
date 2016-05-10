@@ -6,6 +6,11 @@ html {
     touch-action: manipulation;
 }
 
+/* This should have been the default all along. What was everyone thinking. */
+* {
+  box-sizing: border-box;
+}
+
 body {
 	background-color: #eee;
 	font-family: 'Roboto', sans-serif;
