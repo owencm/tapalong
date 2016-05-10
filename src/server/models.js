@@ -83,7 +83,7 @@ const Users = (() => {
     // TODO: move to rest syntax
     // TODO: whitelist values passed through for safety
     let serializedUser = dbUser.get({ plain: true });
-    serializedUser.image = `http://graph.facebook.com/${serializedUser.fbId}/picture`;
+    serializedUser.image = `https://graph.facebook.com/${serializedUser.fbId}/picture`;
     serializedUser.bigImage = serializedUser.image + '?type=large';
     return { dbUser, serializedUser };
   };

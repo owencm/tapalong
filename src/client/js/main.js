@@ -4,7 +4,6 @@ import { Provider } from 'react-redux'
 import App from './app.js';
 import m from './m.js';
 
-// Require model
 import { createStore, combineReducers, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import { gotoScreen, gotoEditScreen,
@@ -34,12 +33,12 @@ persistence.isLoggedIn().then(({userId, userName, sessionToken}) => {
   store.dispatch(gotoScreen(SCREEN.loggedOut));
 });
 
+import FastClick from 'fastclick';
+FastClick(document.body);
+
 render(
   <Provider store={store}>
     <App />
   </Provider>,
   document.getElementById('appShell')
 );
-
-// TODO: Is this the right way to share the store with non-React views?
-module.exports = { hello: 'world' };

@@ -21,9 +21,6 @@ import swLibrary from '../swsetup.js'
 // Initialize the SW installation and push subscriptions
 swLibrary.init();
 
-import FastClick from 'fastclick';
-FastClick(document.body);
-
 import { SCREEN } from '../screens.js';
 
 let Tapalong = (props) => {
