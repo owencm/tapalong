@@ -37,12 +37,13 @@ const requestPushNotificationPermissionAndSubscribe = function (user, success, f
 
 const sendSubscriptionToServer = function (user, subscription) {
   // TODO: handle browsers without key support
-  const subscriptionIntermediate = JSON.parse(JSON.stringify(subscription));
+  let temp = JSON.stringify(subscription);
+  temp = JSON.parse(temp);
   const subscriptionWithKeys = {
-    endpoint: subscriptionIntermediate.endpoint,
+    endpoint: temp.endpoint,
     encodedKeys: {
-      p256dh: subscriptionIntermediate.keys.p256dh,
-      auth: subscriptionIntermediate.keys.auth
+      p256dh: temp.keys.p256dh,
+      auth: temp.keys.auth
     }
   };
   network.requestCreatePushNotificationsSubscription(user, subscriptionWithKeys);
@@ -100,16 +101,17 @@ const init = () => {
     navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
-    });
-    // Re-subscribe the user for push every time in case something went wrong
-    persistence.isLoggedIn().then((user) => {
-      return registration.pushManager.getSubscription()
-    }).then((pushSubscription) => {
-      setTimeout(() => {
-        subscribeForPushNotifications().then(sendSubscriptionToServer);
-      }, 2000);
-    }).catch((e) => {
-
+      // Re-subscribe the user for push every time in case something went wrong
+      persistence.isLoggedIn().then((user) => {
+        console.log(user);
+        setTimeout(() => {
+          return subscribeForPushNotifications().then((subscription) => {
+            return sendSubscriptionToServer(user, subscription);
+          });
+        }, 2000);
+      }).catch((e) => {
+        console.error(e);
+      });
     });
   //   // If we don't have permission for push messages make sure we've cleared subscriptions (Chrome has a bug where it doesn't do this)
   //   registration.pushManager.getSubscription().then(function(pushSubscription) {

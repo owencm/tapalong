@@ -50,12 +50,30 @@ const promiseWithTimeout = (promise, timeout) => {
   });
 }
 
+// Send owen a push when the server starts
+let owen;
+Users.getUserWithFbId('680160262').then((user) => {
+  owen = user;
+  const title = 'Up Dog server restarted';
+  const body = ' ';
+  const url = '/';
+  const tag = 'server-start';
+  PushSubs.sendNotificationToUser({ title, body, url, tag }, owen);
+});
+
 // Setup routes
 
 app.post('/api/v1/login', (req, res) => {
   const fbToken = req.body.fb_token;
   // TODO: Handle accessing user data on FB failing
   Users.getOrCreateUserWithFbToken(fbToken).then(({ user, newlyCreated }) => {
+    if (newlyCreated) {
+      const title = `${user.serializedUser.name} joined Up Dog`;
+      const body = ' ';
+      const url = '/';
+      const tag = 'server-start';
+      PushSubs.sendNotificationToUser({ title, body, url, tag }, owen);
+    }
     return Sessions.createSessionWithUser(user).then((token) => {
       // This is the response we're going to send back
       // TODO: Move away from underscore style

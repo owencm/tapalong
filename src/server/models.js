@@ -89,7 +89,7 @@ const Users = (() => {
     return { dbUser, serializedUser };
   };
 
-  const getUserWithFBId = (fbId) => {
+  const getUserWithFbId = (fbId) => {
     return SQUser.findOne({ where: { fbId } }).then((dbUser) => {
       if (!dbUser) {
         return null;
@@ -179,7 +179,7 @@ const Users = (() => {
     return getFbUser(fbToken).then((fbUser) => {
       // Get the user from the database if they exist
       // Don't use normal chaining style since we may need access to fbUser
-      let userPromise = getUserWithFBId(fbUser.fbId);
+      let userPromise = getUserWithFbId(fbUser.fbId);
       return userPromise.then((user) => {
         if (!user) {
           // TODO: Finish me. I decided to be lazy and just refresh friends
@@ -222,6 +222,7 @@ const Users = (() => {
 
   return {
     createUser,
+    getUserWithFbId,
     getOrCreateUserWithFbToken,
     getUserWithId,
     getUserWithIdAndSessionToken,
@@ -392,7 +393,7 @@ const PushSubs = (() => {
   };
 
   const createPushSubForUser = (endpoint, userPublicKey, userAuthKey, user) => {
-    return SQPushSub.create({ endpoint, userPublicKey, userAuthKey }).then((dbPushSub) => {
+    return SQPushSub.findOrCreate({where: { endpoint, userPublicKey, userAuthKey }}).spread((dbPushSub) => {
       return user.dbUser.addPushSub(dbPushSub).then(() => {
         return getPushSubFromDBPushSub(dbPushSub);
       });
