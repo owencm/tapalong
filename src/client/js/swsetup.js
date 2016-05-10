@@ -95,19 +95,19 @@ const unsubscribe = function (subscription, callback) {
 //
 // window._unsubscribeAndResubscribe = _unsubscribeAndResubscribe;
 
-const init = function () {
+const init = () => {
   if (browserSupportsSWAndNotifications()) {
     navigator.serviceWorker.register('./service-worker.js').then(function(registration) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     });
+    // Re-subscribe the user for push every time in case something went wrong
     persistence.isLoggedIn().then((user) => {
       return registration.pushManager.getSubscription()
-    }).then(function(pushSubscription) {
-      if (!pushSubscription) {
-        console.log('ruh roh, we lost our push subscription (or we never managed to make one - were you offline?). Better make a new one...');
+    }).then((pushSubscription) => {
+      setTimeout(() => {
         subscribeForPushNotifications().then(sendSubscriptionToServer);
-      }
+      }, 2000);
     }).catch((e) => {
 
     });
