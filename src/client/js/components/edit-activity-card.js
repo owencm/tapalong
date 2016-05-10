@@ -177,7 +177,6 @@ let EditActivity = React.createClass({
             className='input-placeholder-lighter focusUnderline'
             value={this.state.title}
             placeholder='Watching Spectre'
-            autoCapitalize='words'
             required
             onChange={this.handleTitleChange}
             onKeyDown={this.handleTitleKeyDown}>
