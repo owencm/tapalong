@@ -152,6 +152,28 @@ const Users = (() => {
   //  })
   // }
 
+  // By deafult FB Tokens expire very quickly so swap it for a long-lived token
+  const setupLongFbTokenForUser = (user, fbToken) => {
+    // TODO: Move the ID and secret to a config file
+    FB.api('oauth/access_token', {
+      client_id: '175370155978273',
+      client_secret: 'eb33b0e99c6d4d856c7460ffe66bdb92',
+      grant_type: 'fb_exchange_token',
+      fb_exchange_token: fbToken
+    }, (res) => {
+      if(!res || res.error) {
+          console.log(!res ? 'error occurred' : res.error);
+          return;
+      }
+
+      const longFbToken = res.access_token;
+      // TODO: Log the user out on the client after this time, probably 60 days
+      const expires = res.expires ? res.expires : 0;
+
+      user.dbUser.update({ fbToken: longFbToken });
+    });
+  }
+
   // If the user exists, also update their fbtoken with this one
   const getOrCreateUserWithFbToken = (fbToken) => {
     return getFbUser(fbToken).then((fbUser) => {
@@ -172,8 +194,6 @@ const Users = (() => {
             }
           });
         } else {
-          // Update the user with this fb token which is probably newer
-          user.dbUser.update({ fbToken: fbToken });
           // The user exists, so return them
           return {
             user,
@@ -181,6 +201,11 @@ const Users = (() => {
           };
         }
       });
+    }).then(({ user, newlyCreated }) => {
+      // Return the user and newlyCreated but async swap the fbToken for a long-
+      //   lived token
+      setupLongFbTokenForUser(user, fbToken);
+      return { user, newlyCreated };
     });
   }
 
