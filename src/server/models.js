@@ -242,15 +242,15 @@ const Plans = (() => {
       //  or is friends with the creator of
       where: {
         cancelled: false,
-        // $or: {
-        //   // Can't find a way to do this direction with creator: user.dbUser
-        //   '$creator.id$': user.dbUser.id,
-        //   // Someone in Slack tells me this is the way to do it. Not in the
-        //   //   documentation thoguh...
-        //   '$creator.fbId$': {
-        //     $in: friendIds
-        //   }
-        // }
+        $or: {
+          // Can't find a way to do this direction with creator: user.dbUser
+          '$creator.id$': user.dbUser.id,
+          // Someone in Slack tells me this is the way to do it. Not in the
+          //   documentation thoguh...
+          '$creator.fbId$': {
+            $in: friendIds
+          }
+        }
       },
       include: {
         model: SQUser,
