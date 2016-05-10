@@ -10,7 +10,7 @@ let Header = (props) => {
     position: 'fixed',
     width: '100%',
     zIndex: '1',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   }
 
   // Note we set paddingLeft explicitely as if we don't, React creates a strange bug
@@ -21,17 +21,17 @@ let Header = (props) => {
     fontWeight: 'bold',
     padding: '19px',
     paddingLeft: '19px',
-    float: 'left'
+  }
+
+  let backButtonStyle = {
+    float: 'left',
+  	margin: '18px',
+    width: '20px',
+    height: '20px',
   }
 
   if (props.shouldShowBackButton) {
     titleStyle = Object.assign({}, titleStyle, {paddingLeft: '0'});
-  }
-
-  let backButtonStyle = {
-  	width: '20px',
-  	padding: '18px',
-    float: 'left'
   }
 
   return (
