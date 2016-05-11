@@ -45,7 +45,7 @@ let ActivityCard = (props) => {
 
   options.push({ label: optionString, onClick: onOptionClick });
 
-  const detailsAvaialable = props.activity.description !== '' &&
+  const detailsAvaialable = props.activity.description !== '' ||
                             props.activity.attendeeNames.length > 0;
   const detailsOptionString = props.selected ? 'Hide details' : 'Details';
 
