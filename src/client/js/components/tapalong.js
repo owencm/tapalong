@@ -156,7 +156,7 @@ let Tapalong = (props) => {
       mainContents = (
         <div>
           <If condition={screen == SCREEN.create}>
-            <Hint text="What's one plan you have that you'd like to have some Facebook friends join you for?" />
+            <Hint text="Let friends using the app know what you have planned so they can tag along." />
           </If>
           <EditActivity
             activity={activityForEditing}
