@@ -30,7 +30,7 @@ let ActivityCard = (props) => {
 
   const cardOptionEnum = getOptionEnum(props.activity.isCreator, props.activity.isAttending);
   const optionString = ['Edit', 'Go along', 'Cancel attending'][cardOptionEnum];
-  const optionType = ['secondary', '', ''][cardOptionEnum];
+  const optionType = ['secondary', '', 'secondary'][cardOptionEnum];
 
   const onOptionClick = (() => {
     switch(cardOptionEnum) {
