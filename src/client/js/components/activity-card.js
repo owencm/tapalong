@@ -71,33 +71,37 @@ let ActivityCard = (props) => {
             <span> will be </span>
           </span>
           <b>{props.activity.title}</b> {getDateString(props.activity.startTime)}
-          {
-            /* Description and attendees */
-            <Collapse isOpened={props.selected} springConfig={{stiffness: 300}}>
-              <div style={{paddingTop: '16px'}}>
-                { /* TODO: Tidy up this crap! */ }
-                <If condition={props.activity.description !== ''}>
-                  <div>
-                    <p><b>Description</b></p>
-                    { /* whiteSpace ensures we retain line breaks from the text.
-                      userSelect enables selection for copy pasting */ }
-                    <p style={{whiteSpace: 'pre-wrap', WebkitUserSelect: 'text'}}>
-                      {props.activity.description}
-                    </p>
-                  </div>
-                </If>
+          { /* Description and attendees */ }
+          <Collapse isOpened={props.selected} springConfig={{stiffness: 300}}>
+            <div style={{paddingTop: '16px'}}>
+              { /* TODO: Tidy up this crap! */ }
+              <If condition={props.activity.description !== ''}>
+                <div>
+                  <p><b>Description</b></p>
+                  { /* whiteSpace ensures we retain line breaks from the text.
+                    userSelect enables selection for copy pasting */ }
+                  <p style={{whiteSpace: 'pre-wrap', WebkitUserSelect: 'text'}}>
+                    {props.activity.description}
+                  </p>
+                </div>
+              </If>
+              <If condition={ !props.activity.isCreator }>
                 <If condition={props.activity.description !== '' &&
                                 props.activity.attendeeNames.length > 0}>
                   <br />
                 </If>
                 <AttendeesList attendeeNames={props.activity.attendeeNames}/>
-                <If condition={props.activity.description == ''
-                                && props.activity.attendeeNames.length == 0}>
-                  <p>No more information available for this plan</p>
-                </If>
-              </div>
-            </Collapse>
-          }
+              </If>
+              <If condition={props.activity.description === '' &&
+                              props.activity.attendeeNames.length === 0}>
+                <p>No more information available for this plan</p>
+              </If>
+            </div>
+          </Collapse>
+          { /* Always show attendees if it's your plan and there are any */ }
+          <If condition={ props.activity.isCreator && props.activity.attendeeNames.length > 0 }>
+            <AttendeesList attendeeNames={props.activity.attendeeNames}/>
+          </If>
         </div>
       </div>
       <CardOptions
