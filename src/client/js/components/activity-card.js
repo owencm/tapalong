@@ -58,7 +58,7 @@ let ActivityCard = (props) => {
 
   return (
     <Card
-      backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
+      backgroundColor={props.activity.isAttending || props.activity.isCreator ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
       <div style={{padding: '16px', paddingBottom: '8px'}}>

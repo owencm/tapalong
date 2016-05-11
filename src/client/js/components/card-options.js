@@ -26,9 +26,9 @@ const CardOptions = (props) => {
     } else if (option.type === 'bad') {
       color = '#E33';
     } else if (option.type === 'secondary') {
-      color = '#444';
+      color = '#4C4C4C';
     } else {
-      color = '#00BCD4';
+      color = '#02b0c6';
     }
 
     return (
