@@ -2,7 +2,7 @@ import React from 'react';
 import m from '../m.js';
 
 let Hint = (props) => {
-  let style = {
+  const defaultStyle = {
     color: '#555',
     maxWidth: '500px',
     margin: '0 auto',
@@ -10,6 +10,10 @@ let Hint = (props) => {
     lineHeight: '1.4em',
     textAlign: 'center'
   }
+
+  const overridingStyles = props.style || {};
+
+  const style = Object.assign({}, defaultStyle, overridingStyles);
 
   return (
     <div style={style}>

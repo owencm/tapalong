@@ -165,6 +165,12 @@ let Tapalong = (props) => {
             onCreateClick={handleCreateClick}
             onDeleteClick={handleDeleteClick}
           />
+          <If condition={screen == SCREEN.create}>
+            <Hint
+              text="Plans created are only visible to your Facebook friends that use Up Dog. Up Dog will never post to Facebook."
+              style={{ fontSize: '0.85em', padding: '12px', opacity: '0.7' }}
+            />
+          </If>
         </div>
       );
     }
