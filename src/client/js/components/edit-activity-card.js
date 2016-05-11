@@ -176,7 +176,7 @@ let EditActivity = React.createClass({
             style={m(inputStyle, {fontSize: '1.2em'})}
             className='input-placeholder-lighter focusUnderline'
             value={this.state.title}
-            placeholder='Watching Spectre'
+            placeholder='Watching Game of Thrones'
             required
             onChange={this.handleTitleChange}
             onKeyDown={this.handleTitleKeyDown}>
