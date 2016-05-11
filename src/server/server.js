@@ -50,15 +50,10 @@ const promiseWithTimeout = (promise, timeout) => {
   });
 }
 
-// Send owen a push when the server starts
+// Find Owen so we can send him push when stuff happens later
 let owen;
 Users.getUserWithFbId('680160262').then((user) => {
   owen = user;
-  const title = 'Up Dog server restarted';
-  const body = ' ';
-  const url = '/';
-  const tag = 'server-start';
-  PushSubs.sendNotificationToUser({ title, body, url, tag }, owen);
 });
 
 // Setup routes

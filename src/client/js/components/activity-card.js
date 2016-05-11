@@ -40,7 +40,7 @@ let ActivityCard = (props) => {
       backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
-      <div style={{padding: '24px'}}>
+      <div style={{padding: '24px', paddingBottom: '0'}}>
         <FriendIcon thumbnail={props.activity.thumbnail}/>
         {/* This forces the title to not wrap around the bottom of the icon */}
         <div style={{overflow: 'hidden'}}>
