@@ -15,6 +15,8 @@ let ActivityCard = (props) => {
     undoAttend: 2
   };
 
+  let options = [];
+
   let getCardsOption = (isCreator, isAttending) => {
     if (isCreator) {
       return OPTIONS.edit;
@@ -25,9 +27,9 @@ let ActivityCard = (props) => {
     }
   };
 
-  let cardOption = getCardsOption(props.activity.isCreator, props.activity.isAttending);
-  let optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
-  let onOptionClick = (() => {
+  const cardOption = getCardsOption(props.activity.isCreator, props.activity.isAttending);
+  const optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
+  const onOptionClick = (() => {
     switch(cardOption) {
       case OPTIONS.edit:
         return (e) => { e.stopPropagation(); props.onEditClick(props.activity) };
@@ -41,14 +43,22 @@ let ActivityCard = (props) => {
     }
   })();
 
-  let detailsOptionString = props.selected ? 'Hide details' : 'Details';
+  options.push({ label: optionString, onClick: onOptionClick });
+
+  const detailsAvaialable = props.activity.description !== '' &&
+                            props.activity.attendeeNames.length > 0;
+  const detailsOptionString = props.selected ? 'Hide details' : 'Details';
+
+  if (detailsAvaialable) {
+    options.push({ label: detailsOptionString });
+  }
 
   return (
     <Card
       backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
-      <div style={{padding: '24px', paddingBottom: '0'}}>
+      <div style={{padding: '24px', paddingBottom: '6px'}}>
         <FriendIcon thumbnail={props.activity.thumbnail}/>
         {/* This forces the title to not wrap around the bottom of the icon */}
         <div style={{overflow: 'hidden'}}>
@@ -88,7 +98,7 @@ let ActivityCard = (props) => {
         </div>
       </div>
       <CardOptions
-        options={[{label: optionString, onClick: onOptionClick}, {label: detailsOptionString }]}
+        options={options}
       />
     </Card>
   );
