@@ -6,9 +6,9 @@ import m from '../m.js';
 // without disallowing it to be used to create cards with disabled options.
 // Also the string should be changed to the gerrand and have '...' added.
 
-let CardOptions = (props) => {
+const CardOptions = (props) => {
 
-  let optionStyle = {
+  const defaultStyle = {
     textTransform: 'uppercase',
     fontWeight: '600',
     fontSize: '14px',
@@ -19,31 +19,25 @@ let CardOptions = (props) => {
     float: 'right'
   };
 
-  let enabledOptionStyle = {
-    color: '#00BCD4'
-  };
+  const optionCards = props.options.map((option) => {
+    let color;
+    if (option.disabled) {
+      color = '#CCC';
+    } else if (option.type === 'bad') {
+      color = '#E33';
+    } else if (option.type === 'secondary') {
+      color = '#444';
+    } else {
+      color = '#00BCD4';
+    }
 
-  let badEnabledOptionStyle = {
-    color: '#e33'
-  };
-
-  let disabledOptionStyle = {
-    color: '#CCC'
-  };
-
-  let optionCards = props.options.map((option) => {
     return (
       <div
-        style = { m(optionStyle, option.position == 'left' ? {float: 'left'} : {}) }
+        style = { m(defaultStyle, option.position == 'left' ? {float: 'left'} : {}) }
         onClick = { option.disabled ? function(){} : option.onClick }
         key = { option.label }
       >
-        <a style={
-            option.disabled ? disabledOptionStyle : (
-              option.type == 'bad' ? badEnabledOptionStyle : enabledOptionStyle
-            )
-          }
-        >
+        <a style={{ color }}>
           {option.label}
         </a>
       </div>

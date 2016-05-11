@@ -9,7 +9,8 @@ import If from './if.js';
 
 let ActivityCard = (props) => {
 
-  let OPTIONS = {
+  // TODO: Refactor how we manage options
+  const OPTIONS = {
     edit: 0,
     attend: 1,
     undoAttend: 2
@@ -17,7 +18,7 @@ let ActivityCard = (props) => {
 
   let options = [];
 
-  let getCardsOption = (isCreator, isAttending) => {
+  const getOptionEnum = (isCreator, isAttending) => {
     if (isCreator) {
       return OPTIONS.edit;
     } else if (isAttending) {
@@ -27,10 +28,12 @@ let ActivityCard = (props) => {
     }
   };
 
-  const cardOption = getCardsOption(props.activity.isCreator, props.activity.isAttending);
-  const optionString = ['Edit', 'Go along', 'Cancel attending'][cardOption];
+  const cardOptionEnum = getOptionEnum(props.activity.isCreator, props.activity.isAttending);
+  const optionString = ['Edit', 'Go along', 'Cancel attending'][cardOptionEnum];
+  const optionType = ['secondary', '', ''][cardOptionEnum];
+
   const onOptionClick = (() => {
-    switch(cardOption) {
+    switch(cardOptionEnum) {
       case OPTIONS.edit:
         return (e) => { e.stopPropagation(); props.onEditClick(props.activity) };
         break;
@@ -43,14 +46,14 @@ let ActivityCard = (props) => {
     }
   })();
 
-  options.push({ label: optionString, onClick: onOptionClick });
+  options.push({ label: optionString, onClick: onOptionClick, type: optionType });
 
   const detailsAvaialable = props.activity.description !== '' ||
                             props.activity.attendeeNames.length > 0;
   const detailsOptionString = props.selected ? 'Hide details' : 'Details';
 
   if (detailsAvaialable) {
-    options.push({ label: detailsOptionString });
+    options.push({ label: detailsOptionString, type: 'secondary' });
   }
 
   return (
@@ -58,7 +61,7 @@ let ActivityCard = (props) => {
       backgroundColor={props.activity.isAttending ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
-      <div style={{padding: '24px', paddingBottom: '6px'}}>
+      <div style={{padding: '16px', paddingBottom: '0'}}>
         <FriendIcon thumbnail={props.activity.thumbnail}/>
         {/* This forces the title to not wrap around the bottom of the icon */}
         <div style={{overflow: 'hidden'}}>
