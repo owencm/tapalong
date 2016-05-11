@@ -30,7 +30,7 @@ let validateNewActivity = function (activity) {
     let now = new Date;
     now = now.add(-2).hours();
     if (activity.startTime < now) {
-      return {isValid: false, reason: 'date (' + activity.startTime.toString() + ') was in the past'};
+      return {isValid: false, reason: `date must be in the future (${activity.startTime.toString()} was invalid)`};
     }
   }
   return {isValid: true};
@@ -78,7 +78,7 @@ export function activities(state = {
     case ADD_ACTIVITY:
       let validity = validateNewActivity(action.activity);
       if (!validity.isValid) {
-        console.log('Invalid activity attempted to be added: '+validity.reason);
+        console.log(`Invalid activity attempted to be added: ${validity.reason}`);
         return state;
       }
       return Object.assign({}, state,

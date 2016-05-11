@@ -1,7 +1,7 @@
 import { SCREEN } from './screens.js';
 import network from './network.js';
 
-// TODO: Refactor to somewhere else
+// TODO: Refactor to somewhere else (duplicated with actions.js)
 let validateNewActivity = function (activity) {
   // TODO: Validate values of the properties
   // TODO: Validate client generated ones separately to server given ones
@@ -23,7 +23,7 @@ let validateNewActivity = function (activity) {
     let now = new Date;
     now = now.add(-2).hours();
     if (activity.startTime < now) {
-      return {isValid: false, reason: 'date (' + activity.startTime.toString() + ') was in the past'};
+      return {isValid: false, reason: `date must be in the future (${activity.startTime.toString()} was invalid)`};
     }
   }
   return {isValid: true};
@@ -163,12 +163,14 @@ export function requestCreateActivity(userId, sessionToken, newActivity) {
           resolve();
         }, reject);
       } else {
+        alert(`Error: ${validity.reason}. Please refresh and try again`);
         console.log('activity wasn\'t valid because '+validity.reason, newActivity);
       }
     })
   }
 };
 
+// TODO: Implement client side validity checking
 export function requestUpdateActivity(userId, sessionToken, activity, activityChanges) {
   return (dispatch) => {
     return new Promise((resolve, reject) => {
