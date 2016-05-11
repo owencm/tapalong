@@ -9,6 +9,12 @@ import If from './if.js';
 
 let ActivityCard = (props) => {
 
+  let OPTIONS = {
+    edit: 0,
+    attend: 1,
+    undoAttend: 2
+  };
+
   let getCardsOption = (isCreator, isAttending) => {
     if (isCreator) {
       return OPTIONS.edit;
@@ -34,6 +40,8 @@ let ActivityCard = (props) => {
         break;
     }
   })();
+
+  let detailsOptionString = props.selected ? 'Hide details' : 'Details';
 
   return (
     <Card
@@ -80,17 +88,11 @@ let ActivityCard = (props) => {
         </div>
       </div>
       <CardOptions
-        options={[{label: optionString, onClick: onOptionClick}]}
+        options={[{label: optionString, onClick: onOptionClick}, {label: detailsOptionString }]}
       />
     </Card>
   );
 
-};
-
-let OPTIONS = {
-  edit: 0,
-  attend: 1,
-  undoAttend: 2
 };
 
 // E.g. "tomorrow at 2pm", or "on Wednesday at 8pm"
