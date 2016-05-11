@@ -168,7 +168,7 @@ let EditActivity = React.createClass({
     }
     return (
       <Card>
-        <div style={{padding: '24px'}}>
+        <div style={{padding: '24px', paddingBottom: '6px'}}>
           <b>{this.props.userName}</b> is planning on<br />
           <input
             ref='titleInput'
