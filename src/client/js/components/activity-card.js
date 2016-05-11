@@ -102,7 +102,10 @@ let ActivityCard = (props) => {
           </Collapse>
           { /* Always show attendees if it's your plan and there are any */ }
           <If condition={ props.activity.isCreator && props.activity.attendeeNames.length > 0 }>
-            <AttendeesList attendeeNames={props.activity.attendeeNames}/>
+            <div>
+              <br />
+              <AttendeesList attendeeNames={props.activity.attendeeNames}/>
+            </div>
           </If>
         </div>
       </div>
