@@ -8,7 +8,7 @@ import webPush from 'web-push';
 
 // TODO: Move this to some configuration system and use different settings in prod
 // Local password is 'D0n\'tUseInProduction'
-const sequelize = new Sequelize('tapalong_db_1', 'root', 'D0n\'tUseInProduction', {
+const sequelize = new Sequelize('tapalong_db_1', 'root', 'password', {
   logging: console.log
   // logging: undefined
 });

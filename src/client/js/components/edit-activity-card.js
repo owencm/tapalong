@@ -15,10 +15,12 @@ import isDateValid from '../is-date-valid.js';
 let EditActivity = React.createClass({
 
   getInitialState: function () {
+    const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
+    const todayFourPm = Date.today().set({hour: 16});
     return {
       title: this.props.activity ? this.props.activity.title : '',
       description: this.props.activity ? this.props.activity.description : '',
-      startTime: this.props.activity ? this.props.activity.startTime : Date.today().add(1).days().set({hour: 16}),
+      startTime: this.props.activity ? this.props.activity.startTime : todayFourPm,
       saveRequestPending: false,
       deleteRequestPending: false,
     };
