@@ -103,12 +103,13 @@ const init = () => {
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
       // Re-subscribe the user for push every time in case something went wrong
       persistence.isLoggedIn().then((user) => {
-        console.log(user);
-        setTimeout(() => {
-          return subscribeForPushNotifications().then((subscription) => {
-            return sendSubscriptionToServer(user, subscription);
-          });
-        }, 2000);
+        hasPushNotificationPermission(() => {
+          setTimeout(() => {
+            return subscribeForPushNotifications().then((subscription) => {
+              return sendSubscriptionToServer(user, subscription);
+            });
+          }, 2000);
+        }, () => {});
       }).catch((e) => {
         console.error(e);
       });
