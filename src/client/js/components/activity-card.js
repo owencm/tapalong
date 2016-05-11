@@ -86,11 +86,13 @@ let ActivityCard = (props) => {
                 </div>
               </If>
               <If condition={ !props.activity.isCreator }>
-                <If condition={props.activity.description !== '' &&
-                                props.activity.attendeeNames.length > 0}>
-                  <br />
-                </If>
-                <AttendeesList attendeeNames={props.activity.attendeeNames}/>
+                <div>
+                  <If condition={props.activity.description !== '' &&
+                                  props.activity.attendeeNames.length > 0}>
+                    <br />
+                  </If>
+                  <AttendeesList attendeeNames={props.activity.attendeeNames}/>
+                </div>
               </If>
               <If condition={props.activity.description === '' &&
                               props.activity.attendeeNames.length === 0}>
