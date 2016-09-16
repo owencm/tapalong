@@ -1,113 +1,46 @@
-import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  Navigator,
-  TouchableHighlight,
-} from 'react-native';
+/*
 
-class tapalongnative extends Component {
+  Set up Redux store and pass it to the app container
+
+  Temporarily also log the user in and download the new activities
+
+*/
+
+
+import React, { Component } from 'react'
+import { AppRegistry } from 'react-native'
+import { Provider } from 'react-redux'
+import App from './containers/app.js'
+import { createStore, combineReducers, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
+import { screens, user, activities } from './reducers.js'
+import { requestRefreshActivities, setUser } from './actions.js'
+
+const createStoreWithMiddleware = applyMiddleware(
+  thunk
+)(createStore);
+
+const store = createStoreWithMiddleware(combineReducers({screens, user, activities}));
+
+// To ease debugging, output state whenever it changes
+store.subscribe(() => console.log(store.getState()))
+
+// I'm not sure where this code should go. Before the app boots up it checks
+//   whether the user is logged in and sets up the screens
+// TODO: Handle the session token expiring
+const userId = '1'
+const sessionToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A'
+store.dispatch(setUser('Owen Campbell-Moore', userId, sessionToken))
+store.dispatch(requestRefreshActivities(userId, sessionToken))
+
+class Tapalong extends Component {
   render() {
-    const LeftButton = (route, navigator, index, navState) => {
-      if (route.index === 0) {
-        return null;
-      } else {
-        return (
-          <TouchableHighlight onPress={() => navigator.pop()}>
-            <Text>Back</Text>
-          </TouchableHighlight>
-        );
-      }
-    }
-
-    const Title = (route, navigator, index, navState) => {
-      return <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-        <Text style={styles.navBarText}>{ route.title }</Text>
-      </View>
-    }
-
-    const toRow = (title) => {
-      return <View style={
-        {
-          flex: 1,
-          borderBottomWidth: 1,
-          borderBottomColor: '#E3E3E3',
-          padding: 20,
-          backgroundColor: 'white' }
-        }
-        key={Math.random()}>
-          <Text>{title}</Text>
-          <View style={{ flex: 1, alignItems: 'flex-end', marginTop: 16}}>
-            <TouchableHighlight onPress={() => {}} underlayColor='#eee'>
-              <Text style={{ color: '#00BCD4', fontWeight: 'bold' }}>
-                INTERESTED
-              </Text>
-            </TouchableHighlight>
-          </View>
-      </View>
-    }
-
     return (
-      <Navigator
-        initialRoute={{ title: 'Upcoming Plans', index: 0 }}
-        renderScene={(route, navigator) => {
-          return <ScrollView style={styles.container}>
-            {['Owen Campbell-Moore will be hiking on Saturday at 7pm',
-              'Elizabeth Harwood will be salsa dancing on Saturday at 9pm'].map(toRow)}
-          </ScrollView>
-        }}
-        navigationBar={
-          <Navigator.NavigationBar
-            routeMapper={{
-              LeftButton: LeftButton,
-              RightButton: () => {},
-              Title: Title,
-            }}
-            style={ styles.navBar }
-          />
-        }
-      />
-    );
+      <Provider store={store}>
+        <App />
+      </Provider>
+    )
   }
-  // componentDidMount() {
-  //   const headers = new Headers({
-  //     'Session-Token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A',
-  //     'User-Id': '1'
-  //   })
-  //   fetch('http://localhost:8080/api/v1/plans/visible_to_user/', { headers })
-  //     .then((response) => response.json())
-  //     .then((plans) => {
-  //       console.log(plans);
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // }
 }
 
-console.log(Navigator.NavigationBar.Styles.General.NavBarHeight);
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F5FCFF',
-    paddingTop: Navigator.NavigationBar.Styles.General.TotalNavHeight,
-  },
-  navBar: {
-    backgroundColor: '#00BCD4',
-  },
-  navBarText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
-
-AppRegistry.registerComponent('tapalongnative', () => tapalongnative);
+AppRegistry.registerComponent('Tapalong', () => Tapalong)
