@@ -99,7 +99,9 @@ let Tapalong = (props) => {
 
   let handleUnattendClick = (activity) => {
     let {userId, sessionToken} = props.user;
-    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+    if (confirm('Are you sure?')) {
+      props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+    }
   };
 
   let handleLoginToFacebook = (fbToken) => {
@@ -167,7 +169,7 @@ let Tapalong = (props) => {
           />
           <If condition={screen == SCREEN.create}>
             <Hint
-              text="Plans created are only visible to your Facebook friends that use Up Dog. Up Dog will never post to Facebook."
+              text="Up Dog will never post to Facebook on your behalf."
               style={{ fontSize: '0.85em', padding: '12px', opacity: '0.7' }}
             />
           </If>

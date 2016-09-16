@@ -149,9 +149,9 @@ let EditActivity = React.createClass({
       }
     } else {
       if (this.state.saveRequestPending) {
-        options.push({label: 'Creating...', disabled: true, onClick: this.handleCreateClick});
+        options.push({label: 'Loading...', disabled: true, onClick: this.handleCreateClick});
       } else {
-        options.push({label: 'Create', onClick: this.handleCreateClick});
+        options.push({label: 'Done', onClick: this.handleCreateClick});
       }
     }
     // Provide dates and times for the input elements
