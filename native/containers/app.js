@@ -14,7 +14,7 @@ import * as Actions from '../actions.js'
 function mapStateToProps(state) {
   return {
     user: state.user,
-    activities: state.activities,
+    activities: state.activities.activities,
     screens: state.screens
   }
 }

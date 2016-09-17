@@ -14,7 +14,11 @@ import App from './containers/app.js'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import { screens, user, activities } from './reducers.js'
-import { requestRefreshActivities, setUser } from './actions.js'
+import {
+  requestRefreshActivities,
+  setUser,
+  gotoScreen,
+} from './actions.js'
 
 const createStoreWithMiddleware = applyMiddleware(
   thunk
@@ -32,6 +36,7 @@ const userId = '1'
 const sessionToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A'
 store.dispatch(setUser('Owen Campbell-Moore', userId, sessionToken))
 store.dispatch(requestRefreshActivities(userId, sessionToken))
+store.dispatch(gotoScreen(1))
 
 class Tapalong extends Component {
   render() {

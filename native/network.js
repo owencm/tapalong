@@ -93,10 +93,10 @@ const requestCreatePushNotificationsSubscription = function (user, subscription)
 };
 
 const sendRequest = function (url, method, body, user, onload) {
-  console.log('requesting', arguments)
   let req = new XMLHttpRequest();
   req.onload = onload;
-  req.open(method, 'http://localhost:8080'+url, true);
+  // TODO: Fix me
+  req.open(method, 'http://localhost:8080'+ url, true);
   // The user isn't logged in when they are logging in
   if (user) {
     req.setRequestHeader('Session-Token', user.sessionToken);

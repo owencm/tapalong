@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React from 'react';
+import m from '../m.js';
 import {
   AppRegistry,
   StyleSheet,
@@ -8,107 +9,214 @@ import {
   Navigator,
   TouchableHighlight,
 } from 'react-native';
+import Login from './login.js';
+import ActivityCardList from './activity-card-list.js';
+import ActivityCardListPlaceholder from './activity-card-list-placeholder.js';
+import EditActivity from './edit-activity-card.js';
+import OptIn from './opt-in.js';
+import Header from './header.js';
+import FabButton from './fab.js';
+import If from './if.js';
+import Hint from './hint.js';
+import InstallPromptDimmer from './install-prompt-dimmer.js';
 
-export default class App extends Component {
-  render() {
-    const LeftButton = (route, navigator, index, navState) => {
-      if (route.index === 0) {
-        return null;
+import { gotoScreen, gotoEditScreen, gotoCreateScreen,
+  gotoNextScreen, queueNextScreen,
+  setUser, addActivity } from '../actions.js';
+
+// // Require core logic
+// import swLibrary from '../swsetup.js'
+// // Initialize the SW installation and push subscriptions
+// swLibrary.init();
+
+const SCREEN = {
+  create: 0,
+  list: 1,
+  edit: 2,
+  loggedOut: 3,
+  uninitialized: 4,
+  notificationsOptIn: 5
+};
+
+export default function(props) {
+
+  /* Stateless helpers */
+
+  let shouldShowHeader = (screen) => {
+    return !([SCREEN.uninitialized, SCREEN.loggedOut].indexOf(screen) > -1);
+  };
+
+  let shouldShowBackButton = (screen) => {
+    return ([SCREEN.create, SCREEN.edit].indexOf(screen) > -1);
+  };
+
+  let shouldShowCreateButton = (screen) => {
+    return (screen == SCREEN.list);
+  };
+
+  let getScreenTitle = (screen) => {
+    if (screen == SCREEN.list) {
+      return 'Upcoming Plans';
+    } else if (screen == SCREEN.edit) {
+      return 'Edit';
+    } else if (screen == SCREEN.create) {
+      return 'Create'
+    } else if (screen == SCREEN.notificationsOptIn) {
+      return 'Stay up to date'
+    } else {
+      return 'Uh oh: title shouldn\'t be showing';
+    }
+  };
+
+  /* Stateful action wrapper */
+
+  let gotoListViaOptIn = (reason) => {
+
+    console.log('not supported')
+    // window.swLibrary = swLibrary;
+    // // Don't ask the user to grant permission unless the browser supports it
+    // if (swLibrary.browserSupportsSWAndNotifications()) {
+    //   swLibrary.hasPushNotificationPermission(() => {
+    //     props.gotoScreen(SCREEN.list);
+    //   }, () => {
+    //     props.queueNextScreen(SCREEN.list, reason);
+    //     props.gotoScreen(SCREEN.notificationsOptIn);
+    //   });
+    // } else {
+    //   props.gotoScreen(SCREEN.list);
+    // }
+  }
+
+  let handleSaveClick = (activity, activityChanges) => {
+    props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
+            activity, activityChanges).then(() => {
+      gotoListViaOptIn('when a user says they\'re coming along');
+    });
+  };
+
+  let handleCreateClick = (activity) => {
+    props.requestCreateActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      gotoListViaOptIn('when a user says they\'re coming along');
+    });
+  };
+
+  let handleDeleteClick = (activity) => {
+    props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      props.gotoScreen(SCREEN.list);
+    });
+  }
+
+  let handleAttendClick = (activity) => {
+    let {userId, sessionToken} = props.user;
+    gotoListViaOptIn('if the plan changes');
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
+  };
+
+  let handleUnattendClick = (activity) => {
+    let {userId, sessionToken} = props.user;
+    if (confirm('Are you sure?')) {
+      props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+    }
+  };
+
+  let handleLoginToFacebook = (fbToken) => {
+    props.login(fbToken).then(({userId, sessionToken}) => {
+      return props.requestRefreshActivities(userId, sessionToken);
+    }).then(() => {
+      return props.gotoScreen(SCREEN.list);
+    }).catch((e) => {
+      setTimeout(() => { throw e }, 0);
+    });
+  }
+
+  let { screen, optInReason, nextScreen, activityForEditing } = props.screens;
+  let {userId, userName, sessionToken} = props.user;
+  let activities = props.activities;
+
+  if (screen == SCREEN.uninitialized) {
+    // TODO: Work out how to return nothing from a stateless component
+    return <Text>Yo</Text>;
+  }
+
+  // TODO: Move to a router solution
+  if (screen == SCREEN.loggedOut) {
+    return <Login onLoginToFacebook={handleLoginToFacebook} />;
+  } else {
+    let mainContents;
+    if (screen == SCREEN.list) {
+      if (activities.length === 0) {
+        mainContents = <Text>Hai</Text>
+        // mainContents = (
+        //   <ActivityCardListPlaceholder
+        //     onCreateClick={() => props.gotoCreateScreen()}
+        //   />
+        // )
       } else {
-        return (
-          <TouchableHighlight onPress={() => navigator.pop()}>
-            <Text>Back</Text>
-          </TouchableHighlight>
+        mainContents = (
+          <ActivityCardList
+            activities ={activities}
+            onAttendClick={handleAttendClick}
+            onUnattendClick={handleUnattendClick}
+            onEditClick={(activity) => props.gotoEditScreen(activity)}
+          />
         );
       }
-    }
-
-    const Title = (route, navigator, index, navState) => {
-      return <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'center' }}>
-        <Text style={styles.navBarText}>{ route.title }</Text>
-      </View>
-    }
-
-    const toRow = (title) => {
-      return <View style={
-        {
-          flex: 1,
-          borderBottomWidth: 1,
-          borderBottomColor: '#EEE',
-          padding: 20,
-          backgroundColor: 'white' }
-        }
-        key={Math.random()}>
-          <Text>{title}</Text>
-          <View style={{ flex: 1, alignItems: 'flex-end', marginTop: 16}}>
-            <TouchableHighlight onPress={() => {}} underlayColor='#EEE'>
-              <Text style={{ color: '#00BCD4', fontWeight: '500' }}>
-                INTERESTED
-              </Text>
-            </TouchableHighlight>
-          </View>
-      </View>
-    }
-
-    return (
-      <Navigator
-        initialRoute={{ title: 'Upcoming Plans', index: 0 }}
-        renderScene={(route, navigator) => {
-          return <View style={{ flex: 1 }}>
-            <ScrollView style={styles.container}>
-              {['Owen Campbell-Moore will be hiking on Saturday at 7pm',
-                'Elizabeth Harwood will be salsa dancing on Saturday at 9pm'].map(toRow)}
-            </ScrollView>
-            <View style={{ alignItems: 'center', padding: 16, borderTopWidth: 1, borderTopColor: '#EEE' }}>
-              <Text style={{ color: '#00BCD4', fontWeight: 'bold' }}>CREATE PLAN</Text>
-            </View>
-          </View>
-        }}
-        navigationBar={
-          <Navigator.NavigationBar
-            routeMapper={{
-              LeftButton: LeftButton,
-              RightButton: () => {},
-              Title: Title,
-            }}
-            style={ styles.navBar }
+    } else if (screen == SCREEN.notificationsOptIn) {
+      mainContents = (
+        <OptIn
+          reason={optInReason}
+          nextState={nextScreen}
+          onOptInComplete={() => props.gotoNextScreen()}
+          user={props.user}
+        />
+      );
+    } else if (screen == SCREEN.create || screen == SCREEN.edit) {
+      mainContents = (
+        <div>
+          <If condition={screen == SCREEN.create}>
+            <Hint text="Let friends using the app know what you have planned so they can tag along." />
+          </If>
+          <EditActivity
+            activity={activityForEditing}
+            userName={userName}
+            onSaveClick={handleSaveClick}
+            onCreateClick={handleCreateClick}
+            onDeleteClick={handleDeleteClick}
           />
-        }
-      />
-    );
+          <If condition={screen == SCREEN.create}>
+            <Hint
+              text="Up Dog will never post to Facebook on your behalf."
+              style={{ fontSize: '0.85em', padding: '12px', opacity: '0.7' }}
+            />
+          </If>
+        </div>
+      );
+    }
+    let headerIfNeeded = null;
+    if (shouldShowHeader(screen)) {
+      headerIfNeeded = (
+        <Header
+          title={getScreenTitle(screen)}
+          shouldShowBackButton={shouldShowBackButton(screen)}
+          onBackButtonClick={() => { props.gotoScreen(SCREEN.list) } }
+        />
+      );
+    }
+    let createButtonIfNeeded = null;
+    if (shouldShowCreateButton(screen)) {
+      createButtonIfNeeded = <FabButton onClick={ () => props.gotoCreateScreen() } />;
+    }
+    return (
+      <View>
+        {/* <InstallPromptDimmer /> */}
+        { mainContents }
+        <View style={{height: 100}}></View>
+        { /* Note these must be below the container to capture the clicks */ }
+        { headerIfNeeded }
+        { createButtonIfNeeded }
+      </View>
+    )
   }
-  // componentDidMount() {
-  //   const headers = new Headers({
-  //     'Session-Token': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A',
-  //     'User-Id': '1'
-  //   })
-  //   fetch('http://localhost:8080/api/v1/plans/visible_to_user/', { headers })
-  //     .then((response) => response.json())
-  //     .then((plans) => {
-  //       console.log(plans);
-  //     })
-  //     .catch((e) => {
-  //       console.log(e);
-  //     });
-  // }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F5FCFF',
-    paddingTop: Navigator.NavigationBar.Styles.General.TotalNavHeight,
-  },
-  navBar: {
-    backgroundColor: '#00BCD4',
-  },
-  navBarText: {
-    color: '#FFF',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-});
