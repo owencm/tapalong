@@ -8,19 +8,19 @@
 
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-import App from '../components/app.js'
-import * as Actions from '../actions.js'
+import NavRoot from '../components/nav-root.js'
+import actions from '../actions/index.js'
 
 function mapStateToProps(state) {
   return {
     user: state.user,
-    activities: state.activities.activities,
-    screens: state.screens
+    activities: state.activities,
+    nav: state.nav
   }
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(Actions, dispatch)
+  return bindActionCreators(actions, dispatch)
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(App)
+export default connect(mapStateToProps, mapDispatchToProps)(NavRoot)
