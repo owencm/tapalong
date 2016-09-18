@@ -28,19 +28,19 @@ let ImgFadeInOnLoad = React.createClass({
       width: this.props.width,
       height: this.props.height,
       backgroundColor: this.props.backgroundColor,
-      opacity: '1',
+      opacity: 1,
       transition: 'opacity 300ms',
       position: 'absolute',
-      top: '0',
-      left: '0'
+      top: 0,
+      left: 0
     };
     if (this.state.loaded) {
       overlayStyle.opacity = 0;
     }
     let imgStyle = {
       position: 'absolute',
-      top: '0',
-      left: '0',
+      top: 0,
+      left: 0,
       width: this.props.width,
       height: this.props.height
     }
