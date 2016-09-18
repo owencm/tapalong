@@ -4,7 +4,6 @@ import Card from './card.js';
 import FriendIcon from './friend-icon.js';
 
 let ActivityCardPlaceholder = (props) => {
-console.log('sup')
   return (
     <Card>
       <View style={{padding: 24}}>

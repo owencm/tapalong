@@ -1,12 +1,22 @@
 import React from 'react'
+import {
+  View,
+  Text,
+  TextInput,
+} from 'react-native'
 import m from '../m.js'
 import Card from './card.js'
 import CardOptions from './card-options.js'
 // import TextAreaAutoResize from 'react-textarea-autosize'
-import isDateValid from '../lib/is-date-valid.js'
+import AutoExpandingTextInput from './auto-expanding-text-input.js'
 import {
-  TextInput
-} from 'react-native'
+  isDateValid,
+  getHyphenSeparatedTime,
+  getHyphenSeparatedDate,
+  getHyphenSeparatedToday,
+  getHyphenSeparatedTomorrow,
+} from '../lib/date-helpers.js'
+import DatePicker from 'react-native-datepicker'
 
 // TODO: set form fields to blur after enter pressed
 // titleInputElem.addEventListener('keydown', function(key) {
@@ -15,7 +25,7 @@ import {
 //   }
 // });
 
-let EditActivity = React.createClass({
+const EditActivityCard = React.createClass({
 
   getInitialState: function () {
     const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
@@ -35,7 +45,7 @@ let EditActivity = React.createClass({
       this.refs.titleInput.focus();
     }
     // Scroll to the top of the page to ensure the editing screen is visible
-    scroll(window, 0);
+    // scroll(window, 0);
   },
 
   handleTitleChange: function (event) {
@@ -52,40 +62,45 @@ let EditActivity = React.createClass({
     this.setState({description: event.target.value});
   },
 
-  handleDateChange: function (event) {
-    // Note date will parse the date as if it was UTC, and then convert it into local TZ
-    let newDate = new Date(event.target.value);
-    // Abort the change if the date isn't valid
-    if (!isDateValid(newDate)) {
-      return;
-    };
-    // To solve the parsing as UTC issue we add the timezone offset
-    newDate.addMinutes(newDate.getTimezoneOffset());
-    let newStartTime = this.state.startTime.clone();
-    // Set the date component of the state without modifying time
-    newStartTime.set({
-      day: newDate.getDate(),
-      month: newDate.getMonth(),
-      // Year values start at 1900
-      year: 1900 + newDate.getYear()
-    });
-    this.setState({startTime: newStartTime});
-  },
+  // handleDateChange: function (event) {
+  //   // Note date will parse the date as if it was UTC, and then convert it into local TZ
+  //   let newDate = new Date(event.target.value);
+  //   // Abort the change if the date isn't valid
+  //   if (!isDateValid(newDate)) {
+  //     return;
+  //   };
+  //   // To solve the parsing as UTC issue we add the timezone offset
+  //   newDate.addMinutes(newDate.getTimezoneOffset());
+  //   let newStartTime = this.state.startTime.clone();
+  //   // Set the date component of the state without modifying time
+  //   newStartTime.set({
+  //     day: newDate.getDate(),
+  //     month: newDate.getMonth(),
+  //     // Year values start at 1900
+  //     year: 1900 + newDate.getYear()
+  //   });
+  //   this.setState({startTime: newStartTime});
+  // },
+  //
+  // handleTimeChange: function (event) {
+  //   let tmp = event.target.value.split(':');
+  //   let hour = parseInt(tmp[0]);
+  //   let minute = parseInt(tmp[1]);
+  //   let oldStartTime = this.state.startTime.clone();
+  //   let newStartTime = oldStartTime.set({
+  //     hour: hour,
+  //     minute: minute
+  //   });
+  //   // Abort the change if the date isn't valid
+  //   if (!isDateValid(newStartTime)) {
+  //     return;
+  //   };
+  //   this.setState({startTime: newStartTime});
+  // },
 
-  handleTimeChange: function (event) {
-    let tmp = event.target.value.split(':');
-    let hour = parseInt(tmp[0]);
-    let minute = parseInt(tmp[1]);
-    let oldStartTime = this.state.startTime.clone();
-    let newStartTime = oldStartTime.set({
-      hour: hour,
-      minute: minute
-    });
-    // Abort the change if the date isn't valid
-    if (!isDateValid(newStartTime)) {
-      return;
-    };
-    this.setState({startTime: newStartTime});
+  handleDateTimeChange: function (event){
+    console.log(event)
+    this.setState({ startTime: event.value })
   },
 
   handleSaveClick: function () {
@@ -115,28 +130,7 @@ let EditActivity = React.createClass({
     }
   },
 
-  render: function () {
-    let editing = !!this.props.activity;
-    /*
-      Set up styles
-    */
-    let inputStyle = {
-      display: 'block',
-      boxSizing: 'border-box',
-      width: '100%',
-      margin: '10px 0',
-      padding: '10px 10px 10px 2px',
-      borderTop: 'none',
-      borderRight: 'none',
-      borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-      borderLeft: 'none',
-      backgroundColor: 'rgba(0,0,0,0)',
-      outline: 'none',
-      // This prevents iOS from rounding corners on input elements
-      borderRadius: 0,
-      fontFamily: 'inherit',
-      fontSize: 'inherit'
-    };
+  getOptions: function(editing) {
     // Set up the options on the card
     let options = [];
     if (editing) {
@@ -157,70 +151,92 @@ let EditActivity = React.createClass({
         options.push({label: 'Done', onClick: this.handleCreateClick});
       }
     }
-    // Provide dates and times for the input elements
-    // Documentation for date formatting: https://code.google.com/p/datejs/wiki/FormatSpecifiers
-    let getHyphenSeparatedTime = function(date) {
-      return date.toString('HH:mm');
+    return options
+  },
+
+  render: function () {
+    let editing = !!this.props.activity;
+    /*
+      Set up styles
+    */
+    let inputStyle = {
+      height: 20,
+      flex: 1,
+      // display: 'block',
+      // boxSizing: 'border-box',
+      marginVertical: 10,
+      marginHorizontal: 0,
+      padding: 10,
+      paddingLeft: 0,
+      // borderTop: 'none',
+      // borderRight: 'none',
+      borderBottomWidth: 1,
+      borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+      // borderLeft: 'none',
+      backgroundColor: 'rgba(0,0,0,0)',
+      // outline: 'none',
+      // This prevents iOS from rounding corners on input elements
+      borderRadius: 0,
+      // fontFamily: 'inherit',
+      // fontSize: 'inherit'
+    };
+
+    const bigInputStyle = {
+      fontSize: 18,
+      height: 48,
     }
-    let getHyphenSeparatedDate = function(date) {
-      return date.toString('yyyy-MM-dd');
-    }
-    let getHyphenSeparatedToday = function () {
-      return Date.today().toString('yyyy-MM-dd');
-    }
-    let getHyphenSeparatedTomorrow = function () {
-      return Date.today().add(1).days().toString('yyyy-MM-dd');
-    }
+
+    const options = this.getOptions(editing)
+
     return (
       <Card>
-        <div style={{padding: '16px', paddingBottom: '8px'}}>
-          <b>{this.props.userName}</b> is planning on<br />
-          <input
-            ref='titleInput'
-            type='text'
-            style={m(inputStyle, {fontSize: '1.2em'})}
-            className='input-placeholder-lighter focusUnderline'
-            value={this.state.title}
-            placeholder='Watching Game of Thrones'
-            required
-            onChange={this.handleTitleChange}
-            onKeyDown={this.handleTitleKeyDown}>
-          </input>
-          <input
-            ref='dateInput'
-            type='date'
-            style={m(inputStyle, {float: 'left', fontSize: '1em', width: 'auto'})}
-            className='input-placeholder-lighter focusUnderline'
-            min={getHyphenSeparatedToday()}
-            value={ getHyphenSeparatedDate(this.state.startTime) }
-            onChange={this.handleDateChange}
-            required>
-          </input>
-          <input
-            type='time'
-            style={m(inputStyle, {float: 'right', fontSize: '1em', width: '150px'})}
-            className='input-placeholder-lighter focusUnderline'
-            step="900"
-            value={ getHyphenSeparatedTime(this.state.startTime) }
-            onChange={this.handleTimeChange}
-            required>
-          </input>
-          <div style={{clear: 'both'}}></div>
+        <View style={{padding: 16, paddingBottom: 8}}>
+          <Text><Text>{this.props.userName}</Text> is planning on</Text>
           <TextInput
-            id='description'
-            style={inputStyle}
-            className='focusUnderline'
-            placeholder='Extra information (what? where?)'
-            rows={1}
-            maxRows={8}
-            value={this.state.description}
-            onChange={this.handleDescriptionChange}>
+            ref='titleInput'
+            style={ m(inputStyle, bigInputStyle) }
+            value={ this.state.title }
+            placeholder='Watching Game of Thrones'
+            onChange={ this.handleTitleChange }
+            onKeyDown={ this.handleTitleKeyDown }
+            required
+            multiline
+          >
           </TextInput>
-        </div>
-        <CardOptions options={options}/>
+          <DatePicker
+            customStyles={{
+              dateInput: {
+                borderWidth: 0,
+                borderBottomWidth: 1,
+                borderBottomColor: '#DDD',
+                alignItems: 'flex-start',
+              }
+            }}
+            showIcon={false}
+            mode='datetime'
+            confirmBtnText='Confirm'
+            cancelBtnText='Cancel'
+            format='MM/DD/YY HH:MM'
+            min={ Date.today() }
+            date={ this.state.startTime }
+            onChange={ this.handleDateTimeChange }
+            style={{ marginBottom: 10 }}
+          >
+          </DatePicker>
+          <AutoExpandingTextInput
+            style={ inputStyle }
+            placeholder='Extra information (what? where?)'
+            rows={ 1 }
+            maxRows={ 8 }
+            value={ this.state.description }
+            onChange={ this.handleDescriptionChange }
+          >
+          </AutoExpandingTextInput>
+        </View>
+        <CardOptions options={ options }/>
       </Card>
     )
   }
 });
 
-module.exports = EditActivity;
+export default EditActivityCard

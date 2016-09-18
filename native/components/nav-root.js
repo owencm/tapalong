@@ -1,16 +1,20 @@
-import React, { Component } from 'react'
+  import React, { Component } from 'react'
 import ListScene from './list-scene.js'
 import EditScene from './edit-scene.js'
+import {
+  NavigationExperimental,
+  StatusBar,
+  View,
+} from 'react-native'
 
-import { NavigationExperimental } from 'react-native'
-
+// Destructure from NavigationExperimental so NavigationCardStack and
+//  NavigationHeader are now defined
 const {
-  CardStack: NavigationCardStack
+  CardStack: NavigationCardStack,
+  Header: NavigationHeader
 } = NavigationExperimental
 
 const NavRoot = (props) => {
-
-  console.log(props)
 
   const handleNavigate = (action) => {
     switch (action && action.type) {
@@ -31,15 +35,57 @@ const NavRoot = (props) => {
   }
 
   const gotoEditActivityScene = (activity) => {
-    // props.onActivitySelected(activity);
     handleNavigate({
       type: 'push',
       route: {
         key: 'edit',
         title: 'Edit',
+        activity
       }
     })
   }
+
+  const popScene = () => {
+    handleNavigate({
+      type: 'pop'
+    })
+  }
+
+  const handleSaveClick = (activity, activityChanges) => {
+    props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
+            activity, activityChanges).then(() => {
+      // gotoListViaOptIn('when a user says they\'re coming along');
+      popScene()
+    });
+  };
+
+  const handleCreateClick = (activity) => {
+    props.requestCreateActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      popScene()
+      // gotoListViaOptIn('when a user says they\'re coming along');
+    });
+  };
+
+  const handleDeleteClick = (activity) => {
+    props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
+            activity).then(() => {
+      popScene()
+    });
+  }
+
+  const handleAttendClick = (activity) => {
+    const { userId, sessionToken } = props.user;
+    gotoListViaOptIn('if the plan changes');
+    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
+  };
+
+  const handleUnattendClick = (activity) => {
+    const { userId, sessionToken } = props.user;
+    if (confirm('Are you sure?')) {
+      props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+    }
+  };
 
   const renderScene = ({ scene }) => {
     // props.nav.index reflects the currently active route, but in cases where
@@ -53,13 +99,22 @@ const NavRoot = (props) => {
           activities={ props.activities }
           requestRefreshActivities={ props.requestRefreshActivities }
           gotoEditActivityScene={ gotoEditActivityScene }
+          style={{ flex: 1 }}
         />
         break
       case 'create':
-        return <CreateScene />
+        return <EditScene
+          creating
+        />
         break
       case 'edit':
-        return <EditScene />
+        return <EditScene
+          activity={ route.activity }
+          userName={ props.user.userName }
+          onSaveClick={ handleSaveClick }
+          onCreateClick={ handleCreateClick }
+          onDeleteClick={ handleDeleteClick }
+        />
         break
       case 'login':
         return <LoginScene />
@@ -70,11 +125,29 @@ const NavRoot = (props) => {
     }
   }
 
+  const renderHeader = props => {
+    return <NavigationHeader
+      { ...props }
+      onNavigateBack={ popScene }
+      style={{ backgroundColor: '#00BCD4' }}
+      renderTitleComponent={ (props) => {
+        const title = String(props.scene.route.title || '');
+        return <NavigationHeader.Title textStyle={{ color: 'white' }}>{title}</NavigationHeader.Title>;
+      }}
+    />
+  }
+
   return (
-    <NavigationCardStack
-      navigationState={ props.nav }
-      onNavigate={ handleNavigate }
-      renderScene={ renderScene } />
+    <View style={{ flex: 1 }} >
+      <StatusBar barStyle='light-content'/>
+      <NavigationCardStack
+        navigationState={ props.nav }
+        onNavigate={ handleNavigate }
+        renderScene={ renderScene }
+        renderHeader={ renderHeader }
+      >
+      </NavigationCardStack>
+    </View>
   )
 }
 
@@ -161,40 +234,6 @@ export default NavRoot
 //     // }
 //   }
 //
-//   let handleSaveClick = (activity, activityChanges) => {
-//     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
-//             activity, activityChanges).then(() => {
-//       gotoListViaOptIn('when a user says they\'re coming along');
-//     });
-//   };
-//
-//   let handleCreateClick = (activity) => {
-//     props.requestCreateActivity(props.user.userId, props.user.sessionToken,
-//             activity).then(() => {
-//       gotoListViaOptIn('when a user says they\'re coming along');
-//     });
-//   };
-//
-//   let handleDeleteClick = (activity) => {
-//     props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
-//             activity).then(() => {
-//       props.gotoScreen(SCREEN.list);
-//     });
-//   }
-//
-//   let handleAttendClick = (activity) => {
-//     let {userId, sessionToken} = props.user;
-//     gotoListViaOptIn('if the plan changes');
-//     props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
-//   };
-//
-//   let handleUnattendClick = (activity) => {
-//     let {userId, sessionToken} = props.user;
-//     if (confirm('Are you sure?')) {
-//       props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
-//     }
-//   };
-//
 //   let handleLoginToFacebook = (fbToken) => {
 //     props.login(fbToken).then(({userId, sessionToken}) => {
 //       return props.requestRefreshActivities(userId, sessionToken);
@@ -219,24 +258,7 @@ export default NavRoot
 //     return <Login onLoginToFacebook={handleLoginToFacebook} />;
 //   } else {
 //     let mainContents;
-//     if (screen == SCREEN.list) {
-//       if (activities.length === 0) {
-//         mainContents = <Text>Hai</Text>
-//         // mainContents = (
-//         //   <ActivityCardListPlaceholder
-//         //     onCreateClick={() => props.gotoCreateScreen()}
-//         //   />
-//         // )
-//       } else {
-//         mainContents = (
-//           <ActivityCardList
-//             activities ={activities}
-//             onAttendClick={handleAttendClick}
-//             onUnattendClick={handleUnattendClick}
-//             onEditClick={(activity) => props.gotoEditScreen(activity)}
-//           />
-//         );
-//       }
+
 //     } else if (screen == SCREEN.notificationsOptIn) {
 //       mainContents = (
 //         <OptIn
@@ -248,24 +270,7 @@ export default NavRoot
 //       );
 //     } else if (screen == SCREEN.create || screen == SCREEN.edit) {
 //       mainContents = (
-//         <div>
-//           <If condition={screen == SCREEN.create}>
-//             <Hint text="Let friends using the app know what you have planned so they can tag along." />
-//           </If>
-//           <EditActivity
-//             activity={activityForEditing}
-//             userName={userName}
-//             onSaveClick={handleSaveClick}
-//             onCreateClick={handleCreateClick}
-//             onDeleteClick={handleDeleteClick}
-//           />
-//           <If condition={screen == SCREEN.create}>
-//             <Hint
-//               text="Up Dog will never post to Facebook on your behalf."
-//               style={{ fontSize: '0.85em', padding: '12px', opacity: '0.7' }}
-//             />
-//           </If>
-//         </div>
+
 //       );
 //     }
 //     let headerIfNeeded = null;

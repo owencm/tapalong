@@ -22,7 +22,7 @@ export default function(props) {
         <Text style={ m(style, { fontWeight: '500' })}>Description</Text>
         { /* whiteSpace ensures we retain line breaks from the text.
           userSelect enables selection for copy pasting */ }
-        <Text style={m(style, { whiteSpace: 'pre-wrap', WebkitUserSelect: 'text' })}>
+        <Text style={m(style, { /* whiteSpace: 'pre-wrap', WebkitUserSelect: 'text' */ })}>
           { props.description }
         </Text>
       </If>

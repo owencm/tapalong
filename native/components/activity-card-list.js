@@ -1,6 +1,6 @@
 import React from 'react'
 import m from '../m.js'
-import { View } from 'react-native'
+import { ScrollView } from 'react-native'
 import ActivityCard from './activity-card.js'
 
 let ActivityCardList = React.createClass({
@@ -12,7 +12,7 @@ let ActivityCardList = React.createClass({
   },
 
   render: function () {
-    let activitiesList = this.props.activities.map((activity) => {
+    const activitiesList = this.props.activities.map((activity) => {
       return (
         <ActivityCard
           activity = { activity }
@@ -29,9 +29,9 @@ let ActivityCardList = React.createClass({
       );
     });
     return (
-      <View>
+      <ScrollView style={{ flex: 1 }}>
         { activitiesList }
-      </View>
+      </ScrollView>
     );
   },
 

@@ -6,12 +6,12 @@ export default function(props) {
 
   let cardStyle = {
     /* This puts the border inside the edge */
-    boxSizing: 'border-box',
+    // boxSizing: 'border-box',
     maxWidth: 600,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(0, 0, 0, 0.1)',
-    color: '#444',
-    lineHeight: '1.5em',
+    // color: '#444',
+    // lineHeight: '1.5em',
     backgroundColor: '#FAFAFA',
     /* For fading into 'attending' */
     // WebkitTransition: 'background-color 0.5s',

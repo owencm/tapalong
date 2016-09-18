@@ -25,6 +25,7 @@ const ListScene = (props) => {
   } else {
     return (
       <ActivityCardList
+        style={{ flex: 1 }}
         activities ={ activities }
         onAttendClick={ handleAttendClick }
         onUnattendClick={ handleUnattendClick }

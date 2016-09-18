@@ -10,7 +10,7 @@ let Header = (props) => {
     position: 'fixed',
     width: '100%',
     zIndex: 1,
-    boxSizing: 'border-box',
+    // boxSizing: 'border-box',
   }
 
   // Note we set paddingLeft explicitely as if we don't, React creates a strange bug

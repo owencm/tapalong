@@ -37,7 +37,10 @@ const CardOptions = (props) => {
     }
 
     return (
-      <TouchableWithoutFeedback onPress={ option.disabled ? () => {} : option.onClick }>
+      <TouchableWithoutFeedback
+        onPress={ option.disabled ? () => {} : option.onClick }
+        key={ option.label }
+      >
         <View style = { defaultStyle } >
           <Text style={m(textStyle, { color })}>
             { option.label.toUpperCase() }

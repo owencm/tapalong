@@ -5,6 +5,8 @@ import { Text } from 'react-native';
 const styles = {
   text: {
     color: '#444',
+    fontSize: 14,
+    lineHeight: 20,
   },
   boldText: {
     fontWeight: '600'
@@ -44,7 +46,10 @@ export default function (props) {
       </Text>
       <Text> will be </Text>
       <Text style={styles.boldText}>
-        { `${props.title} ${getDateString(props.startTime)}` }
+        { props.title + ' ' }
+      </Text>
+      <Text>
+         { getDateString(props.startTime) }
       </Text>
     </Text>
   )
