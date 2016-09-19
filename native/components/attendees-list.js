@@ -1,23 +1,34 @@
-import React from 'react';
-import m from '../m.js';
+import React from 'react'
+import {
+  Text,
+  View,
+} from 'react-native'
+import m from '../m.js'
 
-let AttendeesList = (props) => {
+const defaultTextStyle = {
+  color: '#444'
+}
 
-  if (props.attendeeNames < 1) {
-    return <div />;
-  } else {
-    return (
-      <div>
-        <p><b>People going</b></p>
-        {
-          props.attendeeNames.map((attendee, index) => {
-            return <p key = { index }>{attendee}</p>
-          })
-        }
-      </div>
-    )
-  }
+const AttendeesList = (props) => {
+
+  if (props.attendeeNames < 1) return null
+
+  const attendeeNameElements = props.attendeeNames.map((attendee) => {
+    return <Text
+      style={ defaultTextStyle }
+      key={ attendee }
+    >
+      { attendee }
+    </Text>
+  })
+
+  return (
+    <View style={ props.style }>
+      <Text style={m(defaultTextStyle, { fontWeight: '500' })}>People going:</Text>
+      { attendeeNameElements }
+    </View>
+  )
 
 }
 
-module.exports = AttendeesList;
+export default AttendeesList

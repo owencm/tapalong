@@ -8,14 +8,6 @@ import TextButton from './text-button.js'
 
 let init = false;
 
-const handleAttendClick = () => {
-  console.log('Attend clicked', arguments)
-}
-
-const handleUnattendClick = () => {
-  console.log('Unattend clicked', arguments)
-}
-
 const ListScene = (props) => {
   if (init === false) {
     init = true;
@@ -32,9 +24,12 @@ const ListScene = (props) => {
         <ActivityCardList
           style={{ flex: 1 }}
           activities ={ activities }
-          onAttendClick={ handleAttendClick }
-          onUnattendClick={ handleUnattendClick }
+          onAttendClick={ props.onAttendActivity }
+          onUnattendClick={ props.onUnattendActivity }
           onEditClick={ props.gotoEditActivityScene }
+          selectedActivity={ props.activities.selectedActivity }
+          onExpandActivity={ props.onExpandActivity }
+          onUnexpandActivity={ props.onUnexpandActivity }
         />
         <View style={{
           backgroundColor: 'white',

@@ -78,28 +78,32 @@ const NavRoot = (props) => {
             activity).then(() => {
       popScene()
       // gotoListViaOptIn('when a user says they\'re coming along');
-    });
-  };
+    })
+  }
 
   const handleDeleteActivity = (activity) => {
     props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       popScene()
-    });
+    })
   }
 
   const handleAttendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
-    gotoListViaOptIn('if the plan changes');
+    // gotoListViaOptIn('if the plan changes');
     props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
-  };
+  }
 
   const handleUnattendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
-    if (confirm('Are you sure?')) {
+    // if (confirm('Are you sure?')) {
       props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
-    }
-  };
+    // }
+  }
+
+  const handleExpandActivity = props.expandActivity
+
+  const handleUnexpandActivity = props.unexpandActivity
 
   const renderScene = ({ scene }) => {
     // props.nav.index reflects the currently active route, but in cases where
@@ -114,6 +118,10 @@ const NavRoot = (props) => {
           requestRefreshActivities={ props.requestRefreshActivities }
           gotoEditActivityScene={ gotoEditActivityScene }
           gotoCreateActivityScene={ gotoCreateActivityScene }
+          onAttendActivity={ handleAttendActivity }
+          onUnattendActivity={ handleUnattendActivity }
+          onExpandActivity={ handleExpandActivity }
+          onUnexpandActivity={ handleUnexpandActivity }
           style={{ flex: 1 }}
         />
         break

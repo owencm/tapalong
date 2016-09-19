@@ -57,12 +57,15 @@ export default function(props) {
   const detailsOptionString = props.selected ? 'Hide details' : 'Details';
 
   if (detailsAvaialable) {
-    options.push({ label: detailsOptionString, type: 'secondary' });
+    options.push({
+      label: detailsOptionString,
+      type: 'secondary',
+      onClick: () => { props.onClick(props.activity) }
+    });
   }
 
   return (
     <Card
-      backgroundColor={props.activity.isAttending || props.activity.isCreator ? '#cdf9c9' : undefined}
       onClick={ () => props.onClick(props.activity) }
     >
       <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
@@ -80,7 +83,7 @@ export default function(props) {
               attendeeNames={ props.activity.attendeeNames }
             />
           </Collapsible>
-      </View>
+        </View>
       </View>
       <CardOptions
         options={options}

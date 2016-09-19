@@ -1,7 +1,8 @@
 import {
   ADD_ACTIVITY,
   REMOVE_ACTIVITY,
-  MARK_ACTIVITIES_INITIALIZED,
+  EXPAND_ACTIVITY,
+  UNEXPAND_ACTIVITY,
 } from '../constants/action-types.js'
 import m from '../m.js'
 
@@ -61,8 +62,18 @@ const activityReducer = (state = {
           })
         }
       );
-    case MARK_ACTIVITIES_INITIALIZED:
-      return Object.assign({}, state, { initialized: true })
+    case EXPAND_ACTIVITY:
+      return Object.assign({}, state,
+        {
+          selectedActivity: action.activity
+        }
+      )
+    case UNEXPAND_ACTIVITY:
+      return Object.assign({}, state,
+        {
+          selectedActivity: undefined
+        }
+      )
     default:
       return state;
     }

@@ -1,7 +1,8 @@
 import {
   ADD_ACTIVITY,
   REMOVE_ACTIVITY,
-  MARK_ACTIVITIES_INITIALIZED,
+  EXPAND_ACTIVITY,
+  UNEXPAND_ACTIVITY,
 } from '../constants/action-types.js'
 
 import network from '../network.js'
@@ -23,9 +24,17 @@ export function removeActivity(clientId) {
   }
 }
 
-export function markActivitiesInitialized() {
+export function expandActivity(activity) {
   return {
-    type: MARK_ACTIVITIES_INITIALIZED,
+    type: EXPAND_ACTIVITY,
+    activity
+  }
+}
+
+export function unexpandActivity(activity) {
+  return {
+    type: UNEXPAND_ACTIVITY,
+    activity
   }
 }
 
@@ -48,7 +57,6 @@ export function requestSetAttending(userId, sessionToken, activity, attending) {
 
 export function requestRefreshActivities(userId, sessionToken) {
   return (dispatch) => {
-    dispatch(markActivitiesInitialized())
     return new Promise((resolve, reject) => {
       network.requestActivitiesFromServer({userId, sessionToken}, (activities) => {
         for (let i = 0; i < activities.length; i++) {
