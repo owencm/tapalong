@@ -1,6 +1,7 @@
   import React, { Component } from 'react'
 import ListScene from './list-scene.js'
 import EditScene from './edit-scene.js'
+import NavigationHeaderCustomBackButton from './navigation-header-custom-back-button.js'
 import {
   NavigationExperimental,
   StatusBar,
@@ -134,6 +135,16 @@ const NavRoot = (props) => {
         const title = String(props.scene.route.title || '');
         return <NavigationHeader.Title textStyle={{ color: 'white' }}>{title}</NavigationHeader.Title>;
       }}
+      renderLeftComponent={ (props) => {
+        if (props.scene.index === 0 || !props.onNavigateBack) {
+          return null;
+        }
+        return (
+          <NavigationHeaderCustomBackButton
+            onPress={props.onNavigateBack}
+          />
+        );
+      } }
     />
   }
 

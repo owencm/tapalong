@@ -16,13 +16,15 @@ export default function(props) {
     <View style={{paddingTop: 16}}>
       <If condition={ props.description === '' &&
                       props.attendeeNames.length === 0}>
-        <Text>No more information available for this plan</Text>
+        <Text style={ m(style, { fontStyle: 'italic' }) } >No details</Text>
       </If>
       <If condition={ props.description !== '' }>
-        <Text style={ m(style, { fontWeight: '500' })}>Description</Text>
+        { /* <Text style={ m(style, { fontWeight: '500' })}>Details</Text> */ }
         { /* whiteSpace ensures we retain line breaks from the text.
-          userSelect enables selection for copy pasting */ }
-        <Text style={m(style, { /* whiteSpace: 'pre-wrap', WebkitUserSelect: 'text' */ })}>
+          userSelect enables selection for copy pasting
+          css: whiteSpace: 'pre-wrap', WebkitUserSelect: 'text' */
+        }
+        <Text style={m(style, { fontStyle: 'italic' })}>
           { props.description }
         </Text>
       </If>

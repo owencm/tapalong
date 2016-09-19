@@ -16,7 +16,6 @@ class AutoExpandingTextInput extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
       height: 0,
     };
   }
@@ -25,14 +24,12 @@ class AutoExpandingTextInput extends React.Component {
       <TextInput
         {...this.props}
         multiline={true}
-        onChangeText={(text) => {
-          this.setState({text});
-        }}
+        onChangeText={ this.props.onChangeText }
         onContentSizeChange={(event) => {
           this.setState({height: event.nativeEvent.contentSize.height});
         }}
         style={[style, {height: Math.max(35, this.state.height)}]}
-        value={this.state.text}
+        value={this.props.value}
       />
     );
   }
