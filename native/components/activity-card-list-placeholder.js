@@ -2,36 +2,39 @@ import React from 'react';
 import m from '../m.js';
 import RaisedButton from './raised-button.js';
 import Card from './card.js';
+import {
+  View,
+  Text,
+} from 'react-native'
 
-let ActivityCardListPlaceholder = (props) => {
-  let styles = {
-    container: {
-      width: '100%',
-      // Set to 80% as a hack so the fab doesn't create a scroll
-      height: '80%',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    inner: {
-      maxWidth: '300px',
-      color: '#555',
-      textAlign: 'center',
-      lineHeight: '1.4em'
-    }
+const styles = {
+  container: {
+    marginTop: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  inner: {
+    maxWidth: 300,
+  },
+  text: {
+    color: '#555',
+    textAlign: 'center',
   }
+}
+
+const ActivityCardListPlaceholder = (props) => {
 
   return (
-    <div style={styles.container}>
-      <div style={styles.inner}>
-          <div>When your friends share their plans in the app, you'll see them here.</div>
-          <RaisedButton
-            label='Make a Plan'
-            onClick={props.onCreateClick}
-          />
-      </div>
-    </div>
+    <View style={styles.container}>
+      <View style={styles.inner}>
+        <Text style={styles.text}>When your friends share their plans in the app, you'll see them here.</Text>
+        <RaisedButton
+          label='Add Plan'
+          onClick={ props.onCreateClick }
+        />
+      </View>
+    </View>
   );
 }
 
-module.exports = ActivityCardListPlaceholder;
+export default ActivityCardListPlaceholder

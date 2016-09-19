@@ -2,8 +2,13 @@ import React from 'react'
 import m from '../m.js'
 import { ScrollView } from 'react-native'
 import ActivityCard from './activity-card.js'
+import ActivityCardListPlaceholder from './activity-card-list-placeholder'
 
-const ActivityCardList = (props) => {
+const getActivitiesList = (props) => {
+
+  if (props.activities.length === 0) {
+    return <ActivityCardListPlaceholder onCreateClick={ props.onCreateClick } />
+  }
 
   const handleActivityClick = (activity) => {
     // If something is selected, and it's the activity clicked...
@@ -16,7 +21,7 @@ const ActivityCardList = (props) => {
   }
 
   // TODO: bind the activity in these functions rather than in the child
-  const activitiesList = props.activities.map((activity) => {
+  return props.activities.map((activity) => {
     return (
       <ActivityCard
         activity = { activity }
@@ -32,6 +37,13 @@ const ActivityCardList = (props) => {
       />
     );
   });
+
+
+}
+
+const ActivityCardList = (props) => {
+
+  const activitiesList = getActivitiesList(props)
 
   return (
     <ScrollView style={{ flex: 1 }}>

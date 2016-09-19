@@ -129,6 +129,7 @@ const NavRoot = (props) => {
         return <EditScene
           userName={ props.user.userName }
           onCreateClick={ handleCreateActivity }
+          creating={ true }
         />
         break
       case 'edit':

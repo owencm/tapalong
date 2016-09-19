@@ -1,25 +1,29 @@
-import React from 'react';
-import m from '../m.js';
+import React from 'react'
+import m from '../m.js'
+import {
+  Text,
+  View,
+} from 'react-native'
 
-let Hint = (props) => {
+const Hint = (props) => {
   const defaultStyle = {
     color: '#555',
-    maxWidth: '500px',
-    margin: '0 auto',
-    padding: '20px',
-    lineHeight: '1.4em',
-    textAlign: 'center'
+    maxWidth: 600,
+    flex: 1,
+    textAlign: 'center',
   }
 
-  const overridingStyles = props.style || {};
+  const overridingStyles = props.style || {}
 
-  const style = Object.assign({}, defaultStyle, overridingStyles);
+  const style = Object.assign({}, defaultStyle, overridingStyles)
 
   return (
-    <div style={style}>
-      { props.text }
-    </div>
+    <View style={{ margin: 20 }}>
+      <Text style={style}>
+        { props.text }
+      </Text>
+    </View>
   )
 }
 
-module.exports = Hint;
+export default Hint

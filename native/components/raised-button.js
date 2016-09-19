@@ -1,31 +1,43 @@
 import React from 'react';
 import m from '../m.js';
+import {
+  View,
+  Text,
+  TouchableWithoutFeedback,
+} from 'react-native'
 
 let RaisedButton = (props) => {
   let style = {
     outer: {
       backgroundColor: '#FFFF00',
-      color: '#333',
-      minWidth: '128px',
-      padding: '16px',
-      margin: '24px',
-      borderRadius: '2px',
-      fontWeight: '400',
-      boxShadow: '0px 1px 2px rgba(0,0,0,0.3)',
-      textAlign: 'center'
+      minWidth: 128,
+      padding: 16,
+      margin: 24,
+      borderRadius: 2,
+      shadowColor: 'black',
+      shadowOpacity: 0.3,
+      shadowRadius: 2,
+      shadowOffset: { width: 0, height: 3 },
+      alignItems: 'center',
     },
     inner: {
-      display: 'inline-block'
+      // display: 'inline-block'
+      fontWeight: '500',
+      color: '#333',
     }
   }
 
   return (
-    <div style={style.outer} onClick={props.onClick}>
-      <div style={style.inner}>
-        {props.label.toUpperCase()}
-      </div>
-    </div>
+    <TouchableWithoutFeedback onPress={ props.onClick }>
+      <View style={style.outer}>
+        <View>
+          <Text style={style.inner}>
+            { props.label.toUpperCase() }
+          </Text>
+        </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 }
 
-module.exports = RaisedButton;
+export default RaisedButton
