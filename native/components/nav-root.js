@@ -35,6 +35,8 @@ const NavRoot = (props) => {
     }
   }
 
+  // TODO: Maybe find a way to integrate scene transitions into Redux more
+
   const gotoEditActivityScene = (activity) => {
     handleNavigate({
       type: 'push',
@@ -46,13 +48,24 @@ const NavRoot = (props) => {
     })
   }
 
+  const gotoCreateActivityScene = (activity) => {
+    handleNavigate({
+      type: 'push',
+      route: {
+        key: 'create',
+        title: 'Create',
+        activity
+      }
+    })
+  }
+
   const popScene = () => {
     handleNavigate({
       type: 'pop'
     })
   }
 
-  const handleSaveClick = (activity, activityChanges) => {
+  const handleSaveActivity = (activity, activityChanges) => {
     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
       // gotoListViaOptIn('when a user says they\'re coming along');
@@ -60,7 +73,7 @@ const NavRoot = (props) => {
     });
   };
 
-  const handleCreateClick = (activity) => {
+  const handleCreateActivity = (activity) => {
     props.requestCreateActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       popScene()
@@ -68,20 +81,20 @@ const NavRoot = (props) => {
     });
   };
 
-  const handleDeleteClick = (activity) => {
+  const handleDeleteActivity = (activity) => {
     props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       popScene()
     });
   }
 
-  const handleAttendClick = (activity) => {
+  const handleAttendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
     gotoListViaOptIn('if the plan changes');
     props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
   };
 
-  const handleUnattendClick = (activity) => {
+  const handleUnattendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
     if (confirm('Are you sure?')) {
       props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
@@ -100,21 +113,22 @@ const NavRoot = (props) => {
           activities={ props.activities }
           requestRefreshActivities={ props.requestRefreshActivities }
           gotoEditActivityScene={ gotoEditActivityScene }
+          gotoCreateActivityScene={ gotoCreateActivityScene }
           style={{ flex: 1 }}
         />
         break
       case 'create':
         return <EditScene
-          creating
+          userName={ props.user.userName }
+          onCreateClick={ handleCreateActivity }
         />
         break
       case 'edit':
         return <EditScene
           activity={ route.activity }
           userName={ props.user.userName }
-          onSaveClick={ handleSaveClick }
-          onCreateClick={ handleCreateClick }
-          onDeleteClick={ handleDeleteClick }
+          onSaveClick={ handleSaveActivity }
+          onDeleteClick={ handleDeleteActivity }
         />
         break
       case 'login':

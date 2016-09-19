@@ -5,6 +5,7 @@ import {
   TouchableWithoutFeedback
 } from 'react-native'
 import m from '../m.js';
+import TextButton from './text-button.js'
 
 // Remember to disable the option after it lets you know it's been clicked
 // We don't do that here as disabled is a prop and we can't move it to state
@@ -13,46 +14,18 @@ import m from '../m.js';
 
 const CardOptions = (props) => {
 
-  const defaultStyle = {
-    /* Put the padding and margin on the options so the click targets are larger */
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-  }
-
-  const textStyle = {
-    fontWeight: '600',
-    fontSize: 14,
-  }
-
-  const optionCards = props.options.map((option) => {
-    let color;
-    if (option.disabled) {
-      color = '#CCC';
-    } else if (option.type === 'bad') {
-      color = '#E33';
-    } else if (option.type === 'secondary') {
-      color = '#4C4C4C';
-    } else {
-      color = '#02b0c6';
-    }
-
-    return (
-      <TouchableWithoutFeedback
-        onPress={ option.disabled ? () => {} : option.onClick }
-        key={ option.label }
-      >
-        <View style = { defaultStyle } >
-          <Text style={m(textStyle, { color })}>
-            { option.label.toUpperCase() }
-          </Text>
-        </View>
-      </TouchableWithoutFeedback>
-    )
-  });
+  const optionButtons = props.options.map(option => <TextButton
+      label={ option.label }
+      onClick={ option.onClick }
+      type={ option.type }
+      disabled={ option.disabled }
+      key={ option.label }
+    />
+  );
 
   return (
     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-      { optionCards }
+      { optionButtons }
     </View>
   )
 

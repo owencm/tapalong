@@ -66,6 +66,7 @@ const EditActivityCard = React.createClass({
   },
 
   handleDateTimeChange: function (date){
+    date = new Date(date)
     console.log(date)
     this.setState({ startTime: date })
   },
