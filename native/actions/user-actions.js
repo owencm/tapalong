@@ -14,11 +14,10 @@ export function setUser(userId, userName, sessionToken) {
 // TODO: Handle failure here
 export function login(fbToken) {
   return (dispatch) => {
-    return new Promise((resolve, reject) => {
-      network.requestLogin(fbToken).then(({userId, userName, sessionToken}) => {
-        dispatch(setUser(userId, userName, sessionToken));
-        resolve({userId, sessionToken});
-      });
-    });
+    return network.requestLogin(fbToken)
+      .then(({userId, userName, sessionToken}) => {
+        dispatch(setUser(userId, userName, sessionToken))
+        return {userId, userName, sessionToken}
+      })
   }
-};
+}

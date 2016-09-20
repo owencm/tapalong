@@ -6,7 +6,7 @@ import {
   View,
   TouchableWithoutFeedback,
 } from 'react-native'
-import { LoginManager } from 'react-native-fbsdk'
+import { LoginManager, AccessToken } from 'react-native-fbsdk'
 
 const FacebookLoginNative = (props) => {
 
@@ -16,9 +16,7 @@ const FacebookLoginNative = (props) => {
         if (result.isCancelled) {
           alert('Login cancelled');
         } else {
-          props.onLogin(result)
-          alert('Login success with permissions: '
-            +result.grantedPermissions.toString());
+          AccessToken.getCurrentAccessToken().then(props.onLogin)
         }
       },
       (error) => {

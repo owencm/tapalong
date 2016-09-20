@@ -1,54 +1,36 @@
 require('datejs');
 
-const apiEndpoint = '/api/v1';
+const apiEndpoint = 'http://localhost:8080/api/v1';
 
-const requestLogin = function (fbToken) {
-  return new Promise((resolve, reject) => {
-    sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined, function() {
-      if(this.status >= 200 && this.status < 400) {
-        const response = JSON.parse(this.responseText);
-        resolve({userId: response.user_id, userName: response.user_name, sessionToken: response.session_token});
-      } else {
-        reject();
-        throw ('login request failed');
+const requestLogin = (fbToken) => {
+  return sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
+    .then((response) => {
+      return {
+        userId: response.user_id,
+        userName: response.user_name,
+        sessionToken: response.session_token
       }
     });
-  })
 };
 
-const requestActivitiesFromServer = function (user, success, failure) {
-  const parseActivitiesFromJSON = function (responseText) {
-    // Strip activity label for each item
-    const activities = JSON.parse(responseText).map(function (activity) {
+const requestActivitiesFromServer = (user, success, failure) => {
+  const parseActivitiesFromJSON = (json) => {
+    return json.map((activity) => {
       // Parse the datetimes into actual objects.
       activity.startTime = new Date(activity.startTime);
       return activity;
     });
-    return activities;
   };
 
-  sendRequest(apiEndpoint+'/plans/visible_to_user/', 'get', '', user, function() {
-    if (this.status >= 200 && this.status < 400) {
-      // TODO: Check this actually succeeded
-      const activities = parseActivitiesFromJSON(this.responseText);
-      success(activities);
-    } else {
-      failure();
-    }
-  });
+  return sendRequest(apiEndpoint+'/plans/visible_to_user/', 'get', '', user)
+            .then(parseActivitiesFromJSON)
 };
 
 const requestCreateActivity = function (user, activity, success, failure) {
-  sendRequest(apiEndpoint+'/plans/', 'post', JSON.stringify(activity), user, function() {
-    if(this.status >= 200 && this.status < 400) {
-      const activity = JSON.parse(this.responseText);
-      activity.startTime = new Date(activity.startTime);
-      success(activity);
-    } else {
-      console.log('Server error: ', this.responseText)
-      failure();
-    }
-  });
+  return sendRequest(apiEndpoint+'/plans/', 'post', JSON.stringify(activity), user)
+            .then((activity) => {
+              activity.startTime = new Date(activity.startTime);
+            })
 };
 
 const requestSetAttending = function (user, activity, attending, success, failure) {
@@ -92,18 +74,47 @@ const requestCreatePushNotificationsSubscription = function (user, subscription)
   sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
 };
 
-const sendRequest = function (url, method, body, user, onload) {
-  let req = new XMLHttpRequest();
-  req.onload = onload;
-  // TODO: Fix me
-  req.open(method, 'http://localhost:8080'+ url, true);
-  // The user isn't logged in when they are logging in
-  if (user) {
-    req.setRequestHeader('Session-Token', user.sessionToken);
-    req.setRequestHeader('User-Id', user.userId);
+const checkStatus = (response) => {
+  if (response.status >= 200 && response.status < 300) {
+    return response
+  } else {
+    var error = new Error(response.statusText)
+    error.response = response
+    throw error
   }
-  req.setRequestHeader('Content-Type', 'application/json');
-  req.send(body);
+}
+
+const sendRequest = function (url, method, body, user) {
+
+  let headers = {
+    'Content-Type': 'application/json',
+  }
+
+  if (user) {
+    headers = Object.assign({}, headers, {
+      'Session-Token': user.sessionToken,
+      'User-Id': user.userId,
+    })
+  }
+
+  return fetch(url, {
+    method,
+    body,
+    headers
+  }).then(checkStatus).then(response => response.json())
+
+  // console.log('requesting', url)
+  // let req = new XMLHttpRequest();
+  // req.onload = onload;
+  // // TODO: Fix me
+  // req.open(method, url, true);
+  // // The user isn't logged in when they are logging in
+  // if (user) {
+  //   req.setRequestHeader('Session-Token', user.sessionToken);
+  //   req.setRequestHeader('User-Id', user.userId);
+  // }
+  // req.setRequestHeader('Content-Type', 'application/json');
+  // req.send(body);
 }
 
 const sendToServiceWorker = function (data) {

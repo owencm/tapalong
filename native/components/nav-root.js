@@ -32,6 +32,7 @@ const NavRoot = (props) => {
         props.popRoute()
         return true
       case 'replace':
+      console.log(props)
         props.replaceRoute(action.route)
       default:
         return false

@@ -5,9 +5,9 @@ import m from '../m.js'
 // TODO: Read this out of storage
 // TODO: Handle the session token expiring
 const initialState = {
-  userId: '1',
-  userName: 'Owen Campbell-Moore',
-  sessionToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A'
+  // userId: '1',
+  // userName: 'Owen Campbell-Moore',
+  // sessionToken: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImlhdCI6MTQ3Mzk5Mzg5NCwiZXhwIjoxNDgxNzY5ODk0fQ.innhI4FFRJBcaV_dPP7RBfB0GWCXxE82yy7L23hEw2A'
 }
 
 const userReducer = (state = initialState, action) => {

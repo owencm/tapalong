@@ -57,15 +57,12 @@ export function requestSetAttending(userId, sessionToken, activity, attending) {
 
 export function requestRefreshActivities(userId, sessionToken) {
   return (dispatch) => {
-    return new Promise((resolve, reject) => {
-      network.requestActivitiesFromServer({userId, sessionToken}, (activities) => {
-        for (let i = 0; i < activities.length; i++) {
-          const activity = activities[i]
-          dispatch(addActivity(activity))
-        }
-        resolve();
-      }, reject);
-    });
+    return network.requestActivitiesFromServer({userId, sessionToken}).then((activities) => {
+      for (let i = 0; i < activities.length; i++) {
+        const activity = activities[i]
+        dispatch(addActivity(activity))
+      }
+    })
   }
 }
 
