@@ -14,9 +14,10 @@ const FacebookLoginNative = (props) => {
     LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_birthday']).then(
       (result) => {
         if (result.isCancelled) {
-          alert('Login cancelled');
+          alert('Login cancelled')
         } else {
-          AccessToken.getCurrentAccessToken().then(props.onLogin)
+          props.onLogin()
+          AccessToken.getCurrentAccessToken().then(props.onTokenReady)
         }
       },
       (error) => {

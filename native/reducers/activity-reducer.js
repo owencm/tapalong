@@ -44,15 +44,18 @@ const activityReducer = (state = {
       let validity = validateNewActivity(action.activity);
       if (!validity.isValid) {
         console.log(`Invalid activity attempted to be added: ${validity.reason}`);
-        return state;
+        return Object.assign({}, state, { initialized: true });
       }
-      return Object.assign({}, state,
+      return Object.assign(
+        {},
+        state,
         {
           activities: [...state.activities,
             Object.assign({}, action.activity, { clientId: state.maxActivityId })
           ].sort((a, b) => { return a.startTime < b.startTime ? -1 : 1 }),
           maxActivityId: state.maxActivityId + 1
-        }
+        },
+        { initialized: true }
       );
     case REMOVE_ACTIVITY:
       return Object.assign({}, state,

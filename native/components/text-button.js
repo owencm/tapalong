@@ -30,7 +30,6 @@ const getColor = (disabled, type) => {
 }
 
 const TextButton = (props) => {
-
   const color = getColor(props.disabled, props.type);
 
   return (

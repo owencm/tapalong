@@ -13,44 +13,34 @@ import If from './if.js';
 
 export default function(props) {
 
-  // TODO: Refactor how we manage options
-  const OPTIONS = {
-    edit: 0,
-    attend: 1,
-    undoAttend: 2
-  };
-
   let options = [];
 
-  const getOptionEnum = (isCreator, isAttending) => {
+  const getOption = (isCreator, isAttending) => {
+    let string
     if (isCreator) {
-      return OPTIONS.edit;
+      // Editing
+      return {
+        label: 'Edit',
+        type: 'secondary',
+        onClick: (e) => { e.stopPropagation(); props.onEditClick(props.activity) },
+      }
     } else if (isAttending) {
-      return OPTIONS.undoAttend;
+      // Unattending
+      return {
+        label: 'Cancel attending',
+        type: 'secondary',
+        onClick: (e) => { e.stopPropagation(); props.onAttendClick(props.activity) },
+      }
     } else {
-      return OPTIONS.attend;
+      // Attending
+      return {
+        label: 'Go along',
+        onClick: (e) => { e.stopPropagation(); props.onUnattendClick(props.activity) },
+      }
     }
   };
 
-  const cardOptionEnum = getOptionEnum(props.activity.isCreator, props.activity.isAttending);
-  const optionString = ['Edit', 'Go along', 'Cancel attending'][cardOptionEnum];
-  const optionType = ['secondary', '', 'secondary'][cardOptionEnum];
-
-  const onOptionClick = (() => {
-    switch(cardOptionEnum) {
-      case OPTIONS.edit:
-        return (e) => { e.stopPropagation(); props.onEditClick(props.activity) };
-        break;
-      case OPTIONS.attend:
-        return (e) => { e.stopPropagation(); props.onAttendClick(props.activity) };
-        break;
-      case OPTIONS.undoAttend:
-        return (e) => { e.stopPropagation(); props.onUnattendClick(props.activity) };
-        break;
-    }
-  })();
-
-  options.push({ label: optionString, onClick: onOptionClick, type: optionType });
+  options.push(getOption(props.activity.isCreator, props.activity.isAttending))
 
   const detailsAvaialable = props.activity.description !== '' ||
                             props.activity.attendeeNames.length > 0;

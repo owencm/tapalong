@@ -14,8 +14,8 @@ const initialState = {
   index: 0,
   routes: [
     {
-      key: 'login',
-      title: 'Login',
+      key: 'uninitialized',
+      title: ' ',
     },
   ]
 }
@@ -33,7 +33,7 @@ const navigationState = (state = initialState, action) => {
       return NavigationStateUtils.pop(state)
 
     case REPLACE_ROUTE:
-      return NavigationStateUtils.reset(state, [action.route], 0) 
+      return NavigationStateUtils.reset(state, [action.route], 0)
 
     default:
       return state

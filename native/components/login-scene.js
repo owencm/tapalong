@@ -11,8 +11,12 @@ import FacebookLoginNative from './facebook-login-native.js'
 
 const LoginScene = (props) => {
 
-  let handleLogin = (fbResponse) => {
-    props.onLoginToFacebook(fbResponse.accessToken)
+  const handleLoginDismissed = () => {
+    props.onLoginDismissed()
+  }
+
+  const handleTokenReady = ({ accessToken }) => {
+    props.onLoginComplete(accessToken)
   }
 
   const loginTextStyle = {
@@ -48,7 +52,8 @@ const LoginScene = (props) => {
 
   const loginButton = (
     <FacebookLoginNative
-      onLogin={ handleLogin }
+      onLogin={ handleLoginDismissed }
+      onTokenReady={ handleTokenReady }
     >
       <View style={ loginButtonStyle }>
         <If condition={ readyToLogin }>

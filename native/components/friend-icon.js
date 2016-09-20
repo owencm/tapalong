@@ -8,13 +8,13 @@ let FriendIcon = (props) => {
 
   let friendIconStyle = {
     borderWidth: 1,
-    borderColor: '#CCC',
+    borderColor: '#DDD',
     borderRadius: 19,
     width: 38,
     height: 38,
     marginRight: 24,
     overflow: 'hidden',
-    backgroundColor: '#DDD'
+    backgroundColor: '#EEE'
   };
   return (
     <View style={friendIconStyle}>

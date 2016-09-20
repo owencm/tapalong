@@ -13,65 +13,49 @@ const requestLogin = (fbToken) => {
     });
 };
 
-const requestActivitiesFromServer = (user, success, failure) => {
-  const parseActivitiesFromJSON = (json) => {
-    return json.map((activity) => {
-      // Parse the datetimes into actual objects.
-      activity.startTime = new Date(activity.startTime);
-      return activity;
-    });
-  };
+const fixDateOnActivity = (activity) => {
+  activity.startTime = new Date(activity.startTime);
+  return activity;
+}
 
+const requestActivitiesFromServer = (user) => {
   return sendRequest(apiEndpoint+'/plans/visible_to_user/', 'get', '', user)
-            .then(parseActivitiesFromJSON)
+    .then((activities) => {
+      return activities.map(fixDateOnActivity)
+    })
 };
 
-const requestCreateActivity = function (user, activity, success, failure) {
+const requestCreateActivity = function (user, activity) {
   return sendRequest(apiEndpoint+'/plans/', 'post', JSON.stringify(activity), user)
-            .then((activity) => {
-              activity.startTime = new Date(activity.startTime);
-            })
+    .then(fixDateOnActivity)
 };
 
-const requestSetAttending = function (user, activity, attending, success, failure) {
+const requestSetAttending = function (user, activity, attending) {
   const endpointAction = attending ? 'attend' : 'unattend';
-  sendRequest(`${apiEndpoint}/plans/${activity.id}/${endpointAction}`, 'post', '', user, function () {
-    if(this.status >= 200 && this.status < 400) {
-      let updatedActivity = JSON.parse(this.responseText);
-      updatedActivity.startTime = new Date(updatedActivity.startTime);
-      updatedActivity.clientId = activity.clientId;
-      success(updatedActivity);
-    } else {
-      failure();
-    }
-  });
+  return sendRequest(`${apiEndpoint}/plans/${activity.id}/${endpointAction}`, 'post', '', user)
+    .then((updatedActivity) => {
+      updatedActivity = fixDateOnActivity(updatedActivity)
+      updatedActivity.clientId = activity.clientId
+      return updatedActivity
+    })
 };
 
-const requestUpdateActivity = function(user, activity, activityChanges, success, failure) {
-  sendRequest(apiEndpoint+'/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user, function () {
-    if(this.status >= 200 && this.status < 400) {
-      let updatedActivity = JSON.parse(this.responseText);
-      updatedActivity.startTime = new Date(updatedActivity.startTime);
-      updatedActivity.clientId = activity.clientId;
-      success(updatedActivity);
-    } else {
-      failure();
-    }
-  });
+const requestUpdateActivity = function(user, activity, activityChanges) {
+  return sendRequest(apiEndpoint+'/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user)
+    .then((updatedActivity) => {
+      updatedActivity = fixDateOnActivity(updatedActivity)
+      updatedActivity.clientId = activity.clientId
+      return updatedActivity
+    })
 };
 
-const requestCancelActivity = function (user, activity, success, failure) {
-  sendRequest(apiEndpoint+'/plans/'+activity.id+'/cancel/', 'post', '', user, function () {
-    if(this.status >= 200 && this.status < 400) {
-      success(activity);
-    } else {
-      failure();
-    }
-  })
+const requestCancelActivity = function (user, activity) {
+  return sendRequest(apiEndpoint+'/plans/'+activity.id+'/cancel/', 'post', '', user)
+    .then(() => { return activity })
 };
 
 const requestCreatePushNotificationsSubscription = function (user, subscription) {
-  sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user, function () {});
+  return sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user)
 };
 
 const checkStatus = (response) => {
@@ -84,7 +68,13 @@ const checkStatus = (response) => {
   }
 }
 
-const sendRequest = function (url, method, body, user) {
+const wait = (ms) => {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms)
+  })
+}
+
+const sendRequest = (url, method, body, user) => {
 
   let headers = {
     'Content-Type': 'application/json',
@@ -97,11 +87,15 @@ const sendRequest = function (url, method, body, user) {
     })
   }
 
-  return fetch(url, {
-    method,
-    body,
-    headers
-  }).then(checkStatus).then(response => response.json())
+  return wait(1000)
+    .then(() => { return fetch(url, {
+      method,
+      body,
+      headers
+    })
+    .then(checkStatus)
+    .then(response => response.json())
+; return js })
 
   // console.log('requesting', url)
   // let req = new XMLHttpRequest();

@@ -6,21 +6,14 @@ import {
 import ActivityCardList from './activity-card-list.js'
 import TextButton from './text-button.js'
 
-let init = false;
-
 const ListScene = (props) => {
-  if (init === false) {
-    init = true;
-    props.requestRefreshActivities(props.user.userId, props.user.sessionToken);
-  }
-
-  const activities = props.activities.activities;
 
   return (
     <View style={{ flex: 1 }}>
       <ActivityCardList
         style={{ flex: 1 }}
-        activities ={ activities }
+        activities={ props.activities.activities }
+        activitiesInitialized={ props.activities.initialized }
         onAttendClick={ props.onAttendActivity }
         onUnattendClick={ props.onUnattendActivity }
         onEditClick={ props.gotoEditActivityScene }

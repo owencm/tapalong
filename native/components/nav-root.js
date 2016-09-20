@@ -7,7 +7,18 @@ import {
   NavigationExperimental,
   StatusBar,
   View,
+  Text,
 } from 'react-native'
+
+// Temporary hacks to remember auth until I implement redux-persist
+import { AsyncStorage } from 'react-native'
+
+const getUser = () => {
+  return AsyncStorage.getItem('user')
+    .then((user) => { return JSON.parse(user) })
+}
+
+let init = false
 
 // Destructure from NavigationExperimental so NavigationCardStack and
 //  NavigationHeader are now defined
@@ -18,7 +29,25 @@ const {
 
 const NavRoot = (props) => {
 
+  // HACKS to restore the current user
+  if (!init) {
+    init = true
+    getUser().then((user) => {
+      if (!user.sessionToken) {
+        // User is not logged in
+        gotoLoginScene()
+      } else {
+        // User is logged in
+        console.log('Restored a user from storage so setting them', user)
+        gotoListScene()
+        props.setUser(user.userId, user.userName, user.sessionToken)
+        props.requestRefreshActivities(user.userId, user.sessionToken)
+      }
+    })
+  }
+
   const handleNavigate = (action) => {
+    console.log('navigating', action)
     switch (action && action.type) {
       case 'push':
         props.pushRoute(action.route)
@@ -32,7 +61,6 @@ const NavRoot = (props) => {
         props.popRoute()
         return true
       case 'replace':
-      console.log(props)
         props.replaceRoute(action.route)
       default:
         return false
@@ -79,6 +107,16 @@ const NavRoot = (props) => {
     })
   }
 
+  const gotoLoginScene = () => {
+    handleNavigate({
+      type: 'replace',
+      route: {
+        key: 'login',
+        title: 'ERROR'
+      }
+    })
+  }
+
   const handleSaveActivity = (activity, activityChanges) => {
     props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
@@ -119,10 +157,12 @@ const NavRoot = (props) => {
 
   const handleUnexpandActivity = props.unexpandActivity
 
-  const handleLoginToFacebook = (fbToken) => {
-    props.login(fbToken).then(gotoListScene).catch((e) => {
-      setTimeout(() => { throw e }, 0);
-    });
+  const handleFacebookLoginDismissed = (fbToken) => {
+    gotoListScene()
+  }
+
+  const handleFacebookLoginComplete = (fbToken) => {
+    props.login(fbToken)
   }
 
   const renderScene = ({ scene }) => {
@@ -160,9 +200,12 @@ const NavRoot = (props) => {
           onDeleteClick={ handleDeleteActivity }
         />
         break
+      case 'uninitialized':
+        return null
       case 'login':
         return <LoginScene
-          onLoginToFacebook={ handleLoginToFacebook }
+          onLoginDismissed={ handleFacebookLoginDismissed }
+          onLoginComplete={ handleFacebookLoginComplete }
         />
         break
       case 'notifpermission':
@@ -172,8 +215,12 @@ const NavRoot = (props) => {
   }
 
   const renderHeader = props => {
+    // TODO: This isn't actually the header rendered by
+    //  navigation header... Find a way to prevent it from being rendered
+    //  correctly
     // We don't want a header on the login screen
     if (props.scene.route.key === 'login') {
+      console.log('no header')
       return null
     }
     return <NavigationHeader

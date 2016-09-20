@@ -1,10 +1,20 @@
 import React from 'react'
 import m from '../m.js'
-import { ScrollView } from 'react-native'
+import {
+  ScrollView,
+  View,
+} from 'react-native'
 import ActivityCard from './activity-card.js'
+import ActivityCardLoader from './activity-card-loader.js'
 import ActivityCardListPlaceholder from './activity-card-list-placeholder'
 
 const getActivitiesList = (props) => {
+  if (props.activitiesInitialized === false) {
+    return <View>
+      <ActivityCardLoader/>
+      <ActivityCardLoader/>
+    </View>
+  }
 
   if (props.activities.length === 0) {
     return <ActivityCardListPlaceholder onCreateClick={ props.onCreateClick } />
