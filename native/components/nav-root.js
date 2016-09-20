@@ -1,6 +1,7 @@
   import React, { Component } from 'react'
 import ListScene from './list-scene.js'
 import EditScene from './edit-scene.js'
+import LoginScene from './login-scene.js'
 import NavigationHeaderCustomBackButton from './navigation-header-custom-back-button.js'
 import {
   NavigationExperimental,
@@ -30,9 +31,17 @@ const NavRoot = (props) => {
         }
         props.popRoute()
         return true
+      case 'replace':
+        props.replaceRoute(action.route)
       default:
         return false
     }
+  }
+
+  const popScene = () => {
+    handleNavigate({
+      type: 'pop'
+    })
   }
 
   // TODO: Maybe find a way to integrate scene transitions into Redux more
@@ -59,9 +68,13 @@ const NavRoot = (props) => {
     })
   }
 
-  const popScene = () => {
+  const gotoListScene = () => {
     handleNavigate({
-      type: 'pop'
+      type: 'replace',
+      route: {
+        key: 'list',
+        title: 'Upcoming Plans'
+      }
     })
   }
 
@@ -105,6 +118,12 @@ const NavRoot = (props) => {
 
   const handleUnexpandActivity = props.unexpandActivity
 
+  const handleLoginToFacebook = (fbToken) => {
+    props.login(fbToken).then(gotoListScene).catch((e) => {
+      setTimeout(() => { throw e }, 0);
+    });
+  }
+
   const renderScene = ({ scene }) => {
     // props.nav.index reflects the currently active route, but in cases where
     //   scenes are transitioning this function may still be supposed to render
@@ -141,7 +160,9 @@ const NavRoot = (props) => {
         />
         break
       case 'login':
-        return <LoginScene />
+        return <LoginScene
+          onLoginToFacebook={ handleLoginToFacebook }
+        />
         break
       case 'notifpermission':
         return <NotifPermissionScene />
@@ -150,6 +171,10 @@ const NavRoot = (props) => {
   }
 
   const renderHeader = props => {
+    // We don't want a header on the login screen
+    if (props.scene.route.key === 'login') {
+      return null
+    }
     return <NavigationHeader
       { ...props }
       onNavigateBack={ popScene }

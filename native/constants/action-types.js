@@ -1,5 +1,6 @@
 export const PUSH_ROUTE = 'PUSH_ROUTE'
 export const POP_ROUTE = 'POP_ROUTE'
+export const REPLACE_ROUTE = 'REPLACE_ROUTE'
 export const SET_USER = 'SET_USER'
 export const ADD_ACTIVITY = 'ADD_ACTIVITY'
 export const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY'
