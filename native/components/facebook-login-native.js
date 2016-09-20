@@ -11,9 +11,21 @@ import { LoginManager } from 'react-native-fbsdk'
 const FacebookLoginNative = (props) => {
 
   const handlePress = () => {
-    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_birthday']).catch((e) => {
-      console.log(e);
-    })
+    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_birthday']).then(
+      (result) => {
+        if (result.isCancelled) {
+          alert('Login cancelled');
+        } else {
+          props.onLogin(result)
+          alert('Login success with permissions: '
+            +result.grantedPermissions.toString());
+        }
+      },
+      (error) => {
+        console.log(error)
+        alert(error);
+      }
+    );
   }
 
   // Clone the children so we can set props on them indicating the state of the login process
