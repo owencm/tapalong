@@ -17,7 +17,7 @@ const textStyle = {
   fontSize: 14,
 }
 
-const getColor = (disabled, type) => {
+const getColor = (disabled, type) => {)
   if (disabled) {
     return '#CCC'
   } else if (type === 'bad') {

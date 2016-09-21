@@ -14,14 +14,17 @@ import TextButton from './text-button.js'
 
 const CardOptions = (props) => {
 
-  const optionButtons = props.options.map(option => <TextButton
+  const getOptionButton = (option) => {
+   return <TextButton
       label={ option.label }
       onClick={ option.onClick }
       type={ option.type }
       disabled={ option.disabled }
       key={ option.label }
     />
-  );
+  }
+
+  const optionButtons = props.options.map(getOptionButton);
 
   return (
     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end' }}>

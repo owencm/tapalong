@@ -35,10 +35,10 @@ const getActivitiesList = (props) => {
     return (
       <ActivityCard
         activity = { activity }
-        onClick = { handleActivityClick }
-        onAttendClick = { props.onAttendClick }
-        onUnattendClick = { props.onUnattendClick }
-        onEditClick = { props.onEditClick }
+        onClick = { () => handleActivityClick(activity) }
+        onAttendClick = { () => props.onAttendActivity(activity) }
+        onUnattendClick = { () => props.onUnattendActivity(activity) }
+        onEditClick = { () => props.onEditActivity(activity) }
         selected = {
           !!props.selectedActivity &&
           props.selectedActivity.clientId == activity.clientId

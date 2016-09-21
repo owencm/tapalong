@@ -22,20 +22,20 @@ export default function(props) {
       return {
         label: 'Edit',
         type: 'secondary',
-        onClick: (e) => { e.stopPropagation(); props.onEditClick(props.activity) },
+        onClick: (e) => { e.stopPropagation(); props.onEditClick() },
       }
     } else if (isAttending) {
       // Unattending
       return {
         label: 'Cancel attending',
         type: 'secondary',
-        onClick: (e) => { e.stopPropagation(); props.onAttendClick(props.activity) },
+        onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
       }
     } else {
       // Attending
       return {
         label: 'Go along',
-        onClick: (e) => { e.stopPropagation(); props.onUnattendClick(props.activity) },
+        onClick: (e) => { e.stopPropagation(); props.onAttendClick() },
       }
     }
   };
@@ -50,13 +50,13 @@ export default function(props) {
     options.push({
       label: detailsOptionString,
       type: 'secondary',
-      onClick: () => { props.onClick(props.activity) }
+      onClick: () => { props.onClick() }
     });
   }
 
   return (
     <Card
-      onClick={ () => props.onClick(props.activity) }
+      onClick={ () => props.onClick() }
     >
       <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
         <FriendIcon thumbnail={props.activity.thumbnail}/>

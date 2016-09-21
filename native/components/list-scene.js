@@ -14,9 +14,9 @@ const ListScene = (props) => {
         style={{ flex: 1 }}
         activities={ props.activities.activities }
         activitiesInitialized={ props.activities.initialized }
-        onAttendClick={ props.onAttendActivity }
-        onUnattendClick={ props.onUnattendActivity }
-        onEditClick={ props.gotoEditActivityScene }
+        onAttendActivity={ props.onAttendActivity }
+        onUnattendActivity={ props.onUnattendActivity }
+        onEditActivity={ props.gotoEditActivityScene }
         selectedActivity={ props.activities.selectedActivity }
         onExpandActivity={ props.onExpandActivity }
         onUnexpandActivity={ props.onUnexpandActivity }

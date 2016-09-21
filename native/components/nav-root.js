@@ -36,9 +36,7 @@ const NavRoot = (props) => {
   if (!init) {
     init = true
     getUser().then((user) => {
-      console.log(user)
       if (!user.sessionToken) {
-        console.log('login plz')
         // User is not logged in
         gotoLoginScene()
       } else {
