@@ -12,7 +12,7 @@ let FriendIcon = (props) => {
     borderRadius: 19,
     width: 38,
     height: 38,
-    marginRight: 24,
+    marginRight: 18,
     overflow: 'hidden',
     backgroundColor: '#EEE'
   };

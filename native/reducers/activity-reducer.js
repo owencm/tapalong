@@ -3,6 +3,7 @@ import {
   REMOVE_ACTIVITY,
   EXPAND_ACTIVITY,
   UNEXPAND_ACTIVITY,
+  UPDATE_ACTIVITY,
 } from '../constants/action-types.js'
 import m from '../m.js'
 
@@ -34,11 +35,14 @@ let validateNewActivity = function (activity) {
   return {isValid: true};
 };
 
+const sortByTime = (a, b) => { return a.startTime < b.startTime ? -1 : 1 }
+
 const activityReducer = (state = {
                           activities: [],
                           maxActivityId: 0,
                           initialized: false,
                         }, action) => {
+
   switch (action.type) {
     case ADD_ACTIVITY:
       let validity = validateNewActivity(action.activity);
@@ -52,7 +56,7 @@ const activityReducer = (state = {
         {
           activities: [...state.activities,
             Object.assign({}, action.activity, { clientId: state.maxActivityId })
-          ].sort((a, b) => { return a.startTime < b.startTime ? -1 : 1 }),
+          ].sort(sortByTime),
           maxActivityId: state.maxActivityId + 1
         },
         { initialized: true }
@@ -63,6 +67,23 @@ const activityReducer = (state = {
           activities: [...state.activities].filter((activity) => {
             return activity.clientId !== action.clientId;
           })
+        }
+      );
+    case UPDATE_ACTIVITY:
+      // TODO: validate activity
+
+      const oneRemoved = [...state.activities].filter((activity) => {
+        return activity.clientId !== action.clientId;
+      })
+
+      const newActivities = [...oneRemoved, action.activity].sort(sortByTime)
+
+      return Object.assign(
+        {},
+        state,
+        {
+          activities: newActivities,
+          initialized: true
         }
       );
     case EXPAND_ACTIVITY:

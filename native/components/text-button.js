@@ -17,7 +17,7 @@ const textStyle = {
   fontSize: 14,
 }
 
-const getColor = (disabled, type) => {)
+const getColor = (disabled, type) => {
   if (disabled) {
     return '#CCC'
   } else if (type === 'bad') {
@@ -38,7 +38,7 @@ const TextButton = (props) => {
       key={ props.label }
     >
       <View style={ defaultStyle } >
-        <Text style={m(textStyle, { color })}>
+        <Text style={m(textStyle, { color }, props.style)}>
           { props.label.toUpperCase() }
         </Text>
       </View>

@@ -19,7 +19,8 @@ export default function(props) {
 
   let sections = []
 
-  if (props.description === '' && props.attendeeNames.length === 0) {
+  const hasDescription = !(props.description === undefined || props.description === '')
+  if ( !hasDescription && props.attendeeNames.length === 0 && props.placeholderIfEmpty) {
     sections.push(
       <Text
         style={ m(defaultTextStyle, sectionStyle, { fontStyle: 'italic' }) }
@@ -30,7 +31,7 @@ export default function(props) {
     )
   }
 
-  if (props.description !== '') {
+  if (hasDescription) {
     /* whiteSpace ensures we retain line breaks from the text.
       userSelect enables selection for copy pasting
       css: whiteSpace: 'pre-wrap', WebkitUserSelect: 'text' */

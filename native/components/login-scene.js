@@ -38,16 +38,18 @@ const LoginScene = (props) => {
   const readyToLogin = true
 
   const promo = (
-    <Text
-      style={{
-        fontSize: 20,
-        color: 'white',
-        padding: 40,
-        backgroundColor: 'rgba(0, 0, 0, 0)',
-      }}
-    >
-      Do more together with friends
-    </Text>
+    <View style={{ flex: 1, justifyContent: 'space-around' }}>
+      <Text
+        style={{
+          fontSize: 20,
+          color: 'white',
+          padding: 40,
+          backgroundColor: 'rgba(0, 0, 0, 0)',
+        }}
+      >
+        Do more together with friends
+      </Text>
+    </View>
   )
 
   const loginButton = (
@@ -78,7 +80,7 @@ const LoginScene = (props) => {
 
   return (
     <Image
-      style={{ flex: 1, width: null, height: null, justifyContent: 'flex-end' }}
+      style={{ flex: 1, width: null, height: null }}
       source={ require('../assets/background-mobile.jpg') }
     >
       { promo }

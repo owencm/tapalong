@@ -3,6 +3,7 @@ import {
   REMOVE_ACTIVITY,
   EXPAND_ACTIVITY,
   UNEXPAND_ACTIVITY,
+  UPDATE_ACTIVITY,
 } from '../constants/action-types.js'
 
 import network from '../network.js'
@@ -13,28 +14,36 @@ import validateActivity from '../lib/validate-activity.js'
 export function addActivity(activity) {
   return {
     type: ADD_ACTIVITY,
-    activity
+    activity,
   }
 }
 
 export function removeActivity(clientId) {
   return {
     type: REMOVE_ACTIVITY,
-    clientId
+    clientId,
+  }
+}
+
+export function updateActivity(clientId, activity) {
+  return {
+    type: UPDATE_ACTIVITY,
+    clientId,
+    activity,
   }
 }
 
 export function expandActivity(activity) {
   return {
     type: EXPAND_ACTIVITY,
-    activity
+    activity,
   }
 }
 
 export function unexpandActivity(activity) {
   return {
     type: UNEXPAND_ACTIVITY,
-    activity
+    activity,
   }
 }
 
@@ -44,11 +53,14 @@ export function unexpandActivity(activity) {
 
 export function requestSetAttending(userId, sessionToken, activity, attending) {
   return (dispatch) => {
+    // This is the poor man's optimistic UI. We dispatch an update and mark
+    //   it as pending and then replace with the real activity when we get it
+    //   back from the server
+    const optimisticActivity = Object.assign({}, activity, { isAttending: attending, pending: true })
+    dispatch(updateActivity(activity.clientId, optimisticActivity))
     return network.requestSetAttending({userId, sessionToken}, activity, attending)
       .then((updatedActivity) => {
-        // TODO: support updating instead of removing as right now you can select an activity which will get removed and re-added
-        dispatch(removeActivity(activity.clientId));
-        dispatch(addActivity(updatedActivity));
+        dispatch(updateActivity(activity.clientId, updatedActivity));
       })
   }
 };

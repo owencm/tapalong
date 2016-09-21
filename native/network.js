@@ -1,6 +1,8 @@
 require('datejs');
 
-const apiEndpoint = 'http://localhost:8080/api/v1';
+const apiEndpoint = 'http://localhost:8080/api/v1'
+
+const delayNetworkRequests = false
 
 const requestLogin = (fbToken) => {
   return sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
@@ -87,7 +89,7 @@ const sendRequest = (url, method, body, user) => {
     })
   }
 
-  return wait(1000)
+  return wait(delayNetworkRequests ? 500 + Math.random() * 1500 : 0)
     .then(() => { return fetch(url, {
       method,
       body,

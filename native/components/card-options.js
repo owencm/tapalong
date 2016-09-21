@@ -24,11 +24,19 @@ const CardOptions = (props) => {
     />
   }
 
-  const optionButtons = props.options.map(getOptionButton);
-
+  const leftOptions = props.options.filter((option) => option.position === 'left')
+  const rightOptions = props.options.filter((option) => option.position !== 'left')
+  const leftOptionButtons = leftOptions.map(getOptionButton);
+  const rightOptionButtons = rightOptions.map(getOptionButton);
+  
   return (
-    <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
-      { optionButtons }
+    <View style={{ flex: 1, flexDirection: 'row' }}>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' }}>
+        { leftOptionButtons }
+      </View>
+      <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-end' }}>
+        { rightOptionButtons }
+      </View>
     </View>
   )
 

@@ -15,6 +15,21 @@ export default function(props) {
 
   let options = [];
 
+  const detailsAvaialable = props.activity.description !== '' ||
+                            props.activity.attendeeNames.length > 0
+  const alreadyShowingAllDetailsInSummary = props.activity.description === '' &&
+                                            props.activity.isCreator
+
+  const detailsOptionString = props.selected ? 'Hide details' : 'Details'
+
+  if (detailsAvaialable && !alreadyShowingAllDetailsInSummary) {
+    options.push({
+      label: detailsOptionString,
+      type: 'secondary',
+      onClick: () => { props.onClick() }
+    });
+  }
+
   const getOption = (isCreator, isAttending) => {
     let string
     if (isCreator) {
@@ -42,18 +57,6 @@ export default function(props) {
 
   options.push(getOption(props.activity.isCreator, props.activity.isAttending))
 
-  const detailsAvaialable = props.activity.description !== '' ||
-                            props.activity.attendeeNames.length > 0;
-  const detailsOptionString = props.selected ? 'Hide details' : 'Details';
-
-  if (detailsAvaialable) {
-    options.push({
-      label: detailsOptionString,
-      type: 'secondary',
-      onClick: () => { props.onClick() }
-    });
-  }
-
   return (
     <Card
       onClick={ () => props.onClick() }
@@ -66,11 +69,16 @@ export default function(props) {
             title={ props.activity.title }
             startTime={ props.activity.startTime }
           />
+          <If condition={ props.activity.isCreator }>
+            <ActivityCardDetails
+              attendeeNames={ props.activity.attendeeNames }
+            />
+          </If>
           <Collapsible collapsed={!props.selected}>
             <ActivityCardDetails
               description={ props.activity.description }
-              isCreator={ props.activity.isCreator }
-              attendeeNames={ props.activity.attendeeNames }
+              attendeeNames={ props.activity.isCreator ? [] : props.activity.attendeeNames }
+              placeholderIfEmpty={ true }
             />
           </Collapsible>
         </View>

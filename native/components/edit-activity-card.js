@@ -119,6 +119,7 @@ const EditActivityCard = React.createClass({
         options.push({label: 'Done', onClick: this.handleCreateClick});
       }
     }
+    console.log(options)
     return options
   },
 

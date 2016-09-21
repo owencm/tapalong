@@ -10,9 +10,12 @@ import FriendIcon from './friend-icon.js'
 const ActivityCardLoader = (props) => {
   return (
     <Card>
-      <View style={{padding: 16, flex: 1, flexDirection: 'row', paddingBottom: 50}}>
+      <View style={{ padding: 16, flex: 1, flexDirection: 'row', paddingBottom: 56 }}>
         <FriendIcon/>
-        <View style={{ backgroundColor: '#EEE', width: 150, height: 16 }}></View>
+        <View style={{flex: 1, flexDirection: 'column' }}>
+          <View style={{ backgroundColor: '#EEE', width: 140, height: 8 }}></View>
+          <View style={{ backgroundColor: '#EEE', width: 250, height: 8, marginTop: 10 }}></View>
+        </View>
       </View>
     </Card>
   )
