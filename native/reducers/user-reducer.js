@@ -16,7 +16,8 @@ const userReducer = (state = initialState, action) => {
       const newUser = {
         userId: action.userId,
         userName: action.userName,
-        sessionToken: action.sessionToken
+        sessionToken: action.sessionToken,
+        thumbnail: action.thumbnail,
       };
       // HACKS to restore previously logged in user
       AsyncStorage.setItem('user', JSON.stringify(newUser))

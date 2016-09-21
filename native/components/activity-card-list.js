@@ -34,16 +34,17 @@ const getActivitiesList = (props) => {
   return props.activities.map((activity) => {
     return (
       <ActivityCard
-        activity = { activity }
-        onClick = { () => handleActivityClick(activity) }
-        onAttendClick = { () => props.onAttendActivity(activity) }
-        onUnattendClick = { () => props.onUnattendActivity(activity) }
-        onEditClick = { () => props.onEditActivity(activity) }
-        selected = {
+        activity={ activity }
+        user={ props.user }
+        onClick={ () => handleActivityClick(activity) }
+        onAttendClick={ () => props.onAttendActivity(activity) }
+        onUnattendClick={ () => props.onUnattendActivity(activity) }
+        onEditClick={ () => props.onEditActivity(activity) }
+        selected={
           !!props.selectedActivity &&
           props.selectedActivity.clientId == activity.clientId
         }
-        key = { activity.clientId }
+        key={ activity.clientId }
       />
     );
   });

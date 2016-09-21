@@ -6,24 +6,27 @@ import If from './if.js';
 
 let FriendIcon = (props) => {
 
-  let friendIconStyle = {
+  const size = props.size || 38
+
+  const friendIconStyle = {
     borderWidth: 1,
     borderColor: '#DDD',
-    borderRadius: 19,
-    width: 38,
-    height: 38,
+    borderRadius: size/2,
+    width: size,
+    height: size,
     marginRight: 18,
     overflow: 'hidden',
     backgroundColor: '#EEE'
-  };
+  }
+
   return (
-    <View style={friendIconStyle}>
-      <If condition={props.thumbnail}>
+    <View style={ m(friendIconStyle, props.style) }>
+      <If condition={ props.thumbnail }>
         <ImgFadeInOnLoad
-          src={props.thumbnail}
+          src={ props.thumbnail }
           backgroundColor='DDD'
-          width={38}
-          height={38}
+          width={size}
+          height={size}
           circular
           />
       </If>

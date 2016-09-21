@@ -62,7 +62,12 @@ export default function(props) {
       onClick={ () => props.onClick() }
     >
       <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
-        <FriendIcon thumbnail={props.activity.thumbnail}/>
+        <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+          <FriendIcon thumbnail={props.activity.thumbnail}/>
+          <If condition={ !props.activity.isCreator && props.activity.isAttending }>
+            <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
+          </If>
+        </View>
         <View style={{flex: 1, flexDirection: 'column'}}>
           <ActivityCardTitle
             creatorName={ props.activity.isCreator ? 'You' : props.activity.creatorName }

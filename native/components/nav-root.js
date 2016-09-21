@@ -13,6 +13,10 @@ import {
 // Temporary hacks to remember auth until I implement redux-persist
 import { AsyncStorage } from 'react-native'
 
+// Debug code for logging out the user
+const clearUser = true
+if (clearUser) { AsyncStorage.removeItem('user') }
+
 const getUser = () => {
   return AsyncStorage.getItem('user')
     .then((user) => { return JSON.parse(user) || {} })
@@ -27,9 +31,6 @@ const {
   Header: NavigationHeader
 } = NavigationExperimental
 
-// Debug code for logging out the user
-// AsyncStorage.removeItem('user')
-
 const NavRoot = (props) => {
 
   // HACKS to restore the current user
@@ -43,7 +44,7 @@ const NavRoot = (props) => {
         // User is logged in
         console.log('Restored a user from storage so setting them', user)
         gotoListScene()
-        props.setUser(user.userId, user.userName, user.sessionToken)
+        props.setUser(user.userId, user.userName, user.sessionToken, user.thumbnail)
         props.requestRefreshActivities(user.userId, user.sessionToken)
       }
     })

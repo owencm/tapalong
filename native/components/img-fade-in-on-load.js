@@ -55,18 +55,18 @@ let ImgFadeInOnLoad = React.createClass({
     if (Platform.OS == 'ios') {
       return <Image
         source={{ uri: this.props.src }}
-        style = { imgStyle }
+        style={ imgStyle }
       />
     }
 
-    return (
-      <View style={{position: 'relative'}}>
-        <If condition={this.state.loaded}>
-          <img src = { this.props.src } style = { imgStyle } />
-        </If>
-        <View style={overlayStyle} />
-      </View>
-    )
+    // return (
+    //   <View style={{position: 'relative'}}>
+    //     <If condition={this.state.loaded}>
+    //       <img src={ this.props.src } style = { imgStyle } />
+    //     </If>
+    //     <View style={overlayStyle} />
+    //   </View>
+    // )
   }
 
 });

@@ -2,12 +2,13 @@ import { SET_USER } from '../constants/action-types.js'
 import { requestRefreshActivities } from './activity-actions.js'
 import network from '../network.js';
 
-export function setUser(userId, userName, sessionToken) {
+export function setUser(userId, userName, sessionToken, thumbnail) {
   return {
     type: SET_USER,
     userId,
     userName,
-    sessionToken
+    sessionToken,
+    thumbnail,
   }
 }
 
@@ -16,10 +17,10 @@ export function setUser(userId, userName, sessionToken) {
 export function login(fbToken) {
   return (dispatch) => {
     return network.requestLogin(fbToken)
-      .then(({userId, userName, sessionToken}) => {
-        dispatch(setUser(userId, userName, sessionToken))
+      .then(({ userId, userName, sessionToken, thumbnail }) => {
+        dispatch(setUser(userId, userName, sessionToken, thumbnail))
         dispatch(requestRefreshActivities(userId, sessionToken))
-        return {userId, userName, sessionToken}
+        return { userId, userName, sessionToken, thumbnail }
       })
   }
 }

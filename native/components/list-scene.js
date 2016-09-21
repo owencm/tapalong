@@ -13,6 +13,7 @@ const ListScene = (props) => {
       <ActivityCardList
         style={{ flex: 1 }}
         activities={ props.activities.activities }
+        user={ props.user }
         activitiesInitialized={ props.activities.initialized }
         onAttendActivity={ props.onAttendActivity }
         onUnattendActivity={ props.onUnattendActivity }

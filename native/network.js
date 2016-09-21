@@ -2,7 +2,7 @@ require('datejs');
 
 const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = false
+const delayNetworkRequests = true
 
 const requestLogin = (fbToken) => {
   return sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
@@ -10,7 +10,8 @@ const requestLogin = (fbToken) => {
       return {
         userId: response.user_id,
         userName: response.user_name,
-        sessionToken: response.session_token
+        sessionToken: response.session_token,
+        thumbnail: response.image,
       }
     });
 };
