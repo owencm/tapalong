@@ -15,7 +15,7 @@ import { AsyncStorage } from 'react-native'
 
 const getUser = () => {
   return AsyncStorage.getItem('user')
-    .then((user) => { return JSON.parse(user) })
+    .then((user) => { return JSON.parse(user) || {} })
 }
 
 let init = false
@@ -27,13 +27,18 @@ const {
   Header: NavigationHeader
 } = NavigationExperimental
 
+// Debug code for logging out the user
+// AsyncStorage.removeItem('user')
+
 const NavRoot = (props) => {
 
   // HACKS to restore the current user
   if (!init) {
     init = true
     getUser().then((user) => {
+      console.log(user)
       if (!user.sessionToken) {
+        console.log('login plz')
         // User is not logged in
         gotoLoginScene()
       } else {
