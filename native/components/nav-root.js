@@ -14,7 +14,7 @@ import {
 import { AsyncStorage } from 'react-native'
 
 // Debug code for logging out the user
-const clearUser = true
+const clearUser = false
 if (clearUser) { AsyncStorage.removeItem('user') }
 
 const getUser = () => {

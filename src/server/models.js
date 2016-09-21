@@ -236,8 +236,8 @@ const Plans = (() => {
   const getPlanFromDBPlanForUser = (dbPlan, user) => {
 
     const attendeeNames = dbPlan.getAttendees().then((dbAttendees) => {
-      // TODO: filter attendeeNames so this doesn't include user
-      return dbAttendees.map((dbUser) => dbUser.get('name'));
+      return dbAttendees.filter((dbUser) => dbUser.get('id') !== user.dbUser.get('id'))
+        .map((dbUser) => dbUser.get('name'))
     });
     const isAttending = dbPlan.hasAttendee(user.dbUser);
     const creator = dbPlan.getCreator().then(Users.getUserFromDBUser);

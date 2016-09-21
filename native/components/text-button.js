@@ -8,8 +8,8 @@ import m from '../m.js'
 
 const defaultStyle = {
   /* Put the padding and margin on the options so the click targets are larger */
-  paddingVertical: 14,
-  paddingHorizontal: 20,
+  paddingVertical: 18,
+  paddingHorizontal: 18,
 }
 
 const textStyle = {

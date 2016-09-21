@@ -28,6 +28,8 @@ const ListScene = (props) => {
         padding: 10,
         justifyContent: 'center',
         flexDirection: 'row',
+        borderTopWidth: 1.5,
+        borderTopColor: '#EEE'
       }}
       >
         <View style={{ justifyContent: 'center' }}>

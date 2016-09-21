@@ -21,6 +21,7 @@ const CardOptions = (props) => {
       type={ option.type }
       disabled={ option.disabled }
       key={ option.label }
+      // style={{ paddingBottom: 20 }}
     />
   }
 
@@ -28,7 +29,7 @@ const CardOptions = (props) => {
   const rightOptions = props.options.filter((option) => option.position !== 'left')
   const leftOptionButtons = leftOptions.map(getOptionButton);
   const rightOptionButtons = rightOptions.map(getOptionButton);
-  
+
   return (
     <View style={{ flex: 1, flexDirection: 'row' }}>
       <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'flex-end' }}>

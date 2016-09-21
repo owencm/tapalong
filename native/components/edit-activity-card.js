@@ -128,14 +128,13 @@ const EditActivityCard = React.createClass({
     /*
       Set up styles
     */
-    let inputStyle = {
+    let inputContainerStyle = {
       height: 20,
       flex: 1,
       // display: 'block',
       // boxSizing: 'border-box',
       marginVertical: 10,
       marginHorizontal: 0,
-      padding: 10,
       paddingLeft: 0,
       // borderTop: 'none',
       // borderRight: 'none',
@@ -150,9 +149,12 @@ const EditActivityCard = React.createClass({
       // fontSize: 'inherit'
     };
 
+    const bigInputViewStyle = {
+      height: 48,
+    }
+
     const bigInputStyle = {
       fontSize: 18,
-      height: 48,
     }
 
     const options = this.getOptions(editing)
@@ -161,18 +163,19 @@ const EditActivityCard = React.createClass({
       <Card>
         <View style={{padding: 16, paddingBottom: 8}}>
           <Text><Text>{this.props.userName}</Text> is planning on</Text>
-          <TextInput
-            ref='titleInput'
-            style={ m(inputStyle, bigInputStyle) }
-            value={ this.state.title }
-            placeholder='Watching Game of Thrones'
-            // onChange={ this.handleTitleChange }
-            onChangeText={ this.handleTitleChange }
-            onKeyDown={ this.handleTitleKeyDown }
-            required
-            multiline
-          >
-          </TextInput>
+          <View style={ m(inputContainerStyle, bigInputViewStyle) }>
+            <TextInput
+              ref='titleInput'
+              style={ m(bigInputViewStyle, bigInputStyle) }
+              value={ this.state.title }
+              placeholder='Watching Game of Thrones'
+              // onChange={ this.handleTitleChange }
+              onChangeText={ this.handleTitleChange }
+              onKeyDown={ this.handleTitleKeyDown }
+              required
+              autoCapitalize='none'
+            />
+        </View>
           <DatePicker
             customStyles={{
               dateInput: {
@@ -194,7 +197,7 @@ const EditActivityCard = React.createClass({
           >
           </DatePicker>
           <AutoExpandingTextInput
-            style={ inputStyle }
+            style={ inputContainerStyle }
             placeholder='Extra information (what? where?)'
             rows={ 1 }
             maxRows={ 8 }

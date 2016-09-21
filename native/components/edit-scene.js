@@ -20,7 +20,7 @@ const EditScene = (props) => {
       />
       <If condition={ props.creating }>
         <Hint
-          text="Up Dog will never post to Facebook on your behalf."
+          text="Up Dog will never post to Facebook on your behalf"
           style={{ fontSize: 12, opacity: 0.7 }}
         />
       </If>

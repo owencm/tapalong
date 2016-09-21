@@ -59,5 +59,9 @@
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",
     "web-push": "^2.0.0"
+  },
+  "devDependencies": {
+    "colors": "^1.1.2",
+    "response-time": "^2.3.1"
   }
 }

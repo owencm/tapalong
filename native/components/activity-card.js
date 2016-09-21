@@ -57,6 +57,7 @@ export default function(props) {
 
   options.push(getOption(props.activity.isCreator, props.activity.isAttending))
 
+
   return (
     <Card
       onClick={ () => props.onClick() }
@@ -65,7 +66,9 @@ export default function(props) {
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
           <FriendIcon thumbnail={props.activity.thumbnail}/>
           <If condition={ !props.activity.isCreator && props.activity.isAttending }>
-            <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
+            <View style={{ position: 'absolute', paddingTop: 3, left: 0, right: 0, alignItems: 'center'}}>
+              <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
+            </View>
           </If>
         </View>
         <View style={{flex: 1, flexDirection: 'column'}}>

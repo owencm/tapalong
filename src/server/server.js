@@ -1,15 +1,21 @@
 // TODO: have the user login with Facebook again every now and again to prevent
 //   their token from expiring
 
+import express from 'express';
 import fs from 'fs';
 import https from 'https';
 import bodyParser from 'body-parser';
 import compression from 'compression';
-import express from 'express';
+import responseTime from 'response-time'
 import path from 'path';
+import colors from 'colors'
 import { Users, Plans, Sessions, PushSubs } from './models.js';
 
 const app = express();
+
+app.use(responseTime((req, res, time) => {
+  console.log(`Responded in ${Math.round(time)}ms`.red)
+}))
 
 // Setup gzip compression
 app.use(compression());
@@ -76,6 +82,7 @@ app.post('/api/v1/login', (req, res) => {
         success: true,
         user_id: user.serializedUser.id,
         user_name: user.serializedUser.name,
+        image: user.serializedUser.image,
         session_token: token,
         first_login: newlyCreated
       };

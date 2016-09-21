@@ -21,36 +21,24 @@ const LoginScene = (props) => {
 
   const loginTextStyle = {
     color: 'white',
-    fontSize: 20
+    fontSize: 12,
+    fontWeight: '700',
   }
 
   const loginButtonStyle = {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 120,
+    height: 60,
     backgroundColor: '#3a5b98',
     borderWidth: 1,
     borderColor: '#7aa9fb',
     bottom: 0,
+    borderRadius: 30,
+    marginHorizontal: 30,
   }
 
   // props.readyToLogin
   const readyToLogin = true
-
-  const promo = (
-    <View style={{ flex: 1, justifyContent: 'space-around' }}>
-      <Text
-        style={{
-          fontSize: 20,
-          color: 'white',
-          padding: 40,
-          backgroundColor: 'rgba(0, 0, 0, 0)',
-        }}
-      >
-        Do more together with friends
-      </Text>
-    </View>
-  )
 
   const loginButton = (
     <FacebookLoginNative
@@ -63,12 +51,12 @@ const LoginScene = (props) => {
             <Image
               source={ require('../assets/facebook-f.png') }
               style={{
-                width: 25,
-                height: 50,
-                marginRight: 20
+                width: 13,
+                height: 26,
+                marginRight: 14
               }}
             />
-            <Text style={ loginTextStyle }>Continue with Facebook</Text>
+            <Text style={ loginTextStyle }>CONTINUE WITH FACEBOOK</Text>
           </View>
         </If>
         <If condition={ !readyToLogin }>
@@ -78,13 +66,52 @@ const LoginScene = (props) => {
     </FacebookLoginNative>
   )
 
+  const header = <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+    <Image
+      source={ require('../assets/logo-transparent.png') }
+      style={{ height: 30, width: 30 }}
+    />
+    <View style={{ marginHorizontal: 10, height: 30, width: 1, backgroundColor: 'white' }}></View>
+    <Text
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        textAlign: 'center',
+        fontWeight: '800',
+        fontSize: 28,
+        color: 'white'
+      }}
+    >
+      Up Dog
+    </Text>
+  </View>
+
+  const mid = <View style={{ flex: 1, justifyContent: 'center'}}>
+    <Text
+      style={{
+        backgroundColor: 'rgba(0, 0, 0, 0)',
+        textAlign: 'center',
+        fontWeight: '800',
+        fontSize: 45,
+        color: 'white',
+        margin: 20,
+      }}
+    >
+      Spend time with friends.
+    </Text>
+  </View>
+
+  const footer = <View style={{ flex: 1, justifyContent: 'center' }}>
+    { loginButton }
+  </View>
+
   return (
     <Image
       style={{ flex: 1, width: null, height: null }}
       source={ require('../assets/background-mobile.jpg') }
     >
-      { promo }
-      { loginButton }
+      { header }
+      { mid }
+      { footer }
     </Image>
   )
 };
