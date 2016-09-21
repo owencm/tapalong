@@ -23,7 +23,7 @@ const getColor = (disabled, type) => {
   } else if (type === 'bad') {
     return '#E33'
   } else if (type === 'secondary') {
-    return '#4C4C4C'
+    return '#555'
   } else {
     return '#02b0c6'
   }

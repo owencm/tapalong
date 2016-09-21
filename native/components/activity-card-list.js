@@ -30,8 +30,7 @@ const getActivitiesList = (props) => {
     }
   }
 
-  // TODO: bind the activity in these functions rather than in the child
-  return props.activities.map((activity) => {
+  const activityElements = props.activities.map((activity) => {
     return (
       <ActivityCard
         activity={ activity }
@@ -49,6 +48,7 @@ const getActivitiesList = (props) => {
     );
   });
 
+  return <View style={{ paddingBottom: 18 }}>{ activityElements }</View>
 
 }
 

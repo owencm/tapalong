@@ -61,6 +61,7 @@ export default function(props) {
   return (
     <Card
       onClick={ () => props.onClick() }
+      style={{ backgroundColor: '#FAFAFA' }}
     >
       <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>

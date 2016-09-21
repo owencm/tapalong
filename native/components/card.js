@@ -17,15 +17,11 @@ export default function(props) {
     // WebkitTransition: 'background-color 0.5s',
   };
 
-  if (props.backgroundColor !== undefined) {
-    cardStyle = m(cardStyle, {backgroundColor: props.backgroundColor});
-  }
-
   return (
     <TouchableWithoutFeedback
       onPress={ props.onClick ? props.onClick : () => {} }
     >
-      <View style={ cardStyle }>
+      <View style={ m(cardStyle, props.style) }>
         { props.children }
       </View>
     </TouchableWithoutFeedback>

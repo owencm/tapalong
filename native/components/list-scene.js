@@ -25,10 +25,10 @@ const ListScene = (props) => {
       />
       <View style={{
         backgroundColor: 'white',
-        padding: 10,
+        padding: 8,
         justifyContent: 'center',
         flexDirection: 'row',
-        borderTopWidth: 1.5,
+        borderTopWidth: 1,
         borderTopColor: '#EEE'
       }}
       >
