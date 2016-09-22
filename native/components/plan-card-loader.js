@@ -7,7 +7,7 @@ import m from '../m.js'
 import Card from './card.js'
 import FriendIcon from './friend-icon.js'
 
-const ActivityCardLoader = (props) => {
+const PlanCardLoader = (props) => {
   return (
     <Card>
       <View style={{ padding: 16, flex: 1, flexDirection: 'row', paddingBottom: 56 }}>
@@ -21,4 +21,4 @@ const ActivityCardLoader = (props) => {
   )
 }
 
-export default ActivityCardLoader
+export default PlanCardLoader

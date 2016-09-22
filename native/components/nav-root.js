@@ -45,7 +45,7 @@ const NavRoot = (props) => {
         console.log('Restored a user from storage so setting them', user)
         gotoListScene()
         props.setUser(user.userId, user.userName, user.sessionToken, user.thumbnail)
-        props.requestRefreshActivities(user.userId, user.sessionToken)
+        props.requestRefreshPlans(user.userId, user.sessionToken)
       }
     })
   }
@@ -79,24 +79,24 @@ const NavRoot = (props) => {
 
   // TODO: Maybe find a way to integrate scene transitions into Redux more
 
-  const gotoEditActivityScene = (activity) => {
+  const gotoEditPlanScene = (plan) => {
     handleNavigate({
       type: 'push',
       route: {
         key: 'edit',
         title: 'Edit',
-        activity
+        plan
       }
     })
   }
 
-  const gotoCreateActivityScene = (activity) => {
+  const gotoCreatePlanScene = (plan) => {
     handleNavigate({
       type: 'push',
       route: {
         key: 'create',
         title: 'Create',
-        activity
+        plan
       }
     })
   }
@@ -121,45 +121,45 @@ const NavRoot = (props) => {
     })
   }
 
-  const handleSaveActivity = (activity, activityChanges) => {
-    return props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
-            activity, activityChanges).then(() => {
+  const handleSavePlan = (plan, planChanges) => {
+    return props.requestUpdatePlan(props.user.userId, props.user.sessionToken,
+            plan, planChanges).then(() => {
       // gotoListViaOptIn('when a user says they\'re coming along');
       popScene()
     });
   };
 
-  const handleCreateActivity = (activity) => {
-    return props.requestCreateActivity(props.user.userId, props.user.sessionToken,
-            activity).then(() => {
+  const handleCreatePlan = (plan) => {
+    return props.requestCreatePlan(props.user.userId, props.user.sessionToken,
+            plan).then(() => {
       popScene()
       // gotoListViaOptIn('when a user says they\'re coming along');
     })
   }
 
-  const handleDeleteActivity = (activity) => {
-    return props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
-            activity).then(() => {
+  const handleDeletePlan = (plan) => {
+    return props.requestDeletePlan(props.user.userId, props.user.sessionToken,
+            plan).then(() => {
       popScene()
     })
   }
 
-  const handleAttendActivity = (activity) => {
+  const handleAttendPlan = (plan) => {
     const { userId, sessionToken } = props.user;
     // gotoListViaOptIn('if the plan changes');
-    return props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
+    return props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending);
   }
 
-  const handleUnattendActivity = (activity) => {
+  const handleUnattendPlan = (plan) => {
     const { userId, sessionToken } = props.user;
     // if (confirm('Are you sure?')) {
-      return props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+      return props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
     // }
   }
 
-  const handleExpandActivity = props.expandActivity
+  const handleExpandPlan = props.expandPlan
 
-  const handleUnexpandActivity = props.unexpandActivity
+  const handleUnexpandPlan = props.unexpandPlan
 
   const handleFacebookLoginDismissed = (fbToken) => {
     gotoListScene()
@@ -178,14 +178,14 @@ const NavRoot = (props) => {
       case 'list':
         return <ListScene
           user={ props.user }
-          activities={ props.activities }
-          requestRefreshActivities={ props.requestRefreshActivities }
-          gotoEditActivityScene={ gotoEditActivityScene }
-          gotoCreateActivityScene={ gotoCreateActivityScene }
-          onAttendActivity={ handleAttendActivity }
-          onUnattendActivity={ handleUnattendActivity }
-          onExpandActivity={ handleExpandActivity }
-          onUnexpandActivity={ handleUnexpandActivity }
+          plans={ props.plans }
+          requestRefreshPlans={ props.requestRefreshPlans }
+          gotoEditPlanScene={ gotoEditPlanScene }
+          gotoCreatePlanScene={ gotoCreatePlanScene }
+          onAttendPlan={ handleAttendPlan }
+          onUnattendPlan={ handleUnattendPlan }
+          onExpandPlan={ handleExpandPlan }
+          onUnexpandPlan={ handleUnexpandPlan }
           shouldShowButterBar={ props.butterBar.shouldShowButterBar }
           style={{ flex: 1 }}
         />
@@ -193,16 +193,16 @@ const NavRoot = (props) => {
       case 'create':
         return <EditScene
           userName={ props.user.userName }
-          onCreateClick={ handleCreateActivity }
+          onCreateClick={ handleCreatePlan }
           creating={ true }
         />
         break
       case 'edit':
         return <EditScene
-          activity={ route.activity }
+          plan={ route.plan }
           userName={ props.user.userName }
-          onSaveClick={ handleSaveActivity }
-          onDeleteClick={ handleDeleteActivity }
+          onSaveClick={ handleSavePlan }
+          onDeleteClick={ handleDeletePlan }
         />
         break
       case 'uninitialized':
@@ -280,9 +280,9 @@ export default NavRoot
 //   TouchableHighlight,
 // } from 'react-native';
 // import Login from './login.js';
-// import ActivityCardList from './activity-card-list.js';
-// import ActivityCardListPlaceholder from './activity-card-list-placeholder.js';
-// import EditActivity from './edit-activity-card.js';
+// import PlanCardList from './plan-card-list.js';
+// import PlanCardListPlaceholder from './plan-card-list-placeholder.js';
+// import EditPlan from './edit-plan-card.js';
 // import OptIn from './opt-in.js';
 // import Header from './header.js';
 // import FabButton from './fab.js';
@@ -348,7 +348,7 @@ export default NavRoot
 //
 //   let handleLoginToFacebook = (fbToken) => {
 //     props.login(fbToken).then(({userId, sessionToken}) => {
-//       return props.requestRefreshActivities(userId, sessionToken);
+//       return props.requestRefreshPlans(userId, sessionToken);
 //     }).then(() => {
 //       return props.gotoScreen(SCREEN.list);
 //     }).catch((e) => {
@@ -356,9 +356,9 @@ export default NavRoot
 //     });
 //   }
 //
-//   let { screen, optInReason, nextScreen, activityForEditing } = props.screens;
+//   let { screen, optInReason, nextScreen, planForEditing } = props.screens;
 //   let {userId, userName, sessionToken} = props.user;
-//   let activities = props.activities;
+//   let plans = props.plans;
 //
 //   if (screen == SCREEN.uninitialized) {
 //     // TODO: Work out how to return nothing from a stateless component

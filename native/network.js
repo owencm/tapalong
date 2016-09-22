@@ -16,49 +16,49 @@ const requestLogin = (fbToken) => {
     });
 };
 
-const fixDateOnActivity = (activity) => {
-  activity.startTime = new Date(activity.startTime);
-  return activity;
+const fixDateOnPlan = (plan) => {
+  plan.startTime = new Date(plan.startTime);
+  return plan;
 }
 
-const requestPublicActivities = (user) => {
+const requestPublicPlans = (user) => {
   return sendRequest('public_plans/', 'get', '', user)
 }
 
-const requestActivitiesFromServer = (user) => {
+const requestPlansFromServer = (user) => {
   return sendRequest('plans/visible_to_user/', 'get', '', user)
-    .then((activities) => {
-      return activities.map(fixDateOnActivity)
+    .then((plans) => {
+      return plans.map(fixDateOnPlan)
     })
 };
 
-const requestCreateActivity = function (user, activity) {
-  return sendRequest('plans/', 'post', JSON.stringify(activity), user)
-    .then(fixDateOnActivity)
+const requestCreatePlan = function (user, plan) {
+  return sendRequest('plans/', 'post', JSON.stringify(plan), user)
+    .then(fixDateOnPlan)
 };
 
-const requestSetAttending = function (user, activity, attending) {
+const requestSetAttending = function (user, plan, attending) {
   const endpointAction = attending ? 'attend' : 'unattend';
-  return sendRequest(`plans/${activity.id}/${endpointAction}`, 'post', '', user)
-    .then((updatedActivity) => {
-      updatedActivity = fixDateOnActivity(updatedActivity)
-      updatedActivity.clientId = activity.clientId
-      return updatedActivity
+  return sendRequest(`plans/${plan.id}/${endpointAction}`, 'post', '', user)
+    .then((updatedPlan) => {
+      updatedPlan = fixDateOnPlan(updatedPlan)
+      updatedPlan.clientId = plan.clientId
+      return updatedPlan
     })
 };
 
-const requestUpdateActivity = function(user, activity, activityChanges) {
-  return sendRequest('plans/'+activity.id+'', 'post', JSON.stringify(activityChanges), user)
-    .then((updatedActivity) => {
-      updatedActivity = fixDateOnActivity(updatedActivity)
-      updatedActivity.clientId = activity.clientId
-      return updatedActivity
+const requestUpdatePlan = function(user, plan, planChanges) {
+  return sendRequest('plans/'+plan.id+'', 'post', JSON.stringify(planChanges), user)
+    .then((updatedPlan) => {
+      updatedPlan = fixDateOnPlan(updatedPlan)
+      updatedPlan.clientId = plan.clientId
+      return updatedPlan
     })
 };
 
-const requestCancelActivity = function (user, activity) {
-  return sendRequest('plans/'+activity.id+'cancel/', 'post', '', user)
-    .then(() => { return activity })
+const requestCancelPlan = function (user, plan) {
+  return sendRequest('plans/'+plan.id+'cancel/', 'post', '', user)
+    .then(() => { return plan })
 };
 
 const requestCreatePushNotificationsSubscription = function (user, subscription) {
@@ -123,11 +123,11 @@ const sendToServiceWorker = function (data) {
 }
 
 module.exports = {
-  requestActivitiesFromServer,
-  requestCreateActivity,
+  requestPlansFromServer,
+  requestCreatePlan,
   requestSetAttending,
-  requestUpdateActivity,
-  requestCancelActivity,
+  requestUpdatePlan,
+  requestCancelPlan,
   requestCreatePushNotificationsSubscription,
   requestLogin
 };

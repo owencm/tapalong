@@ -8,28 +8,28 @@ import {
 import m from '../m.js'
 
 // TODO: Refactor to somewhere else (duplicated with actions.js)
-let validateNewActivity = function (activity) {
+let validateNewPlan = function (plan) {
   // TODO: Validate values of the properties
   // TODO: Validate client generated ones separately to server given ones
   let properties = ['description', 'startTime', 'title'];
   let hasProperties = properties.reduce(function(previous, property) {
-    return (previous && activity.hasOwnProperty(property));
+    return (previous && plan.hasOwnProperty(property));
   }, true);
   if (!hasProperties) {
     return {isValid: false, reason: 'some properties were missing'};
   }
-  if (activity.title == '') {
+  if (plan.title == '') {
     return {isValid: false, reason: 'missing title'};
   }
-  if (!activity.startTime || !(activity.startTime instanceof Date)) {
+  if (!plan.startTime || !(plan.startTime instanceof Date)) {
     return {isValid: false, reason: 'startTime wasnt a date object or was missing'};
   }
-  if (activity.startTime && activity.startTime instanceof Date) {
+  if (plan.startTime && plan.startTime instanceof Date) {
     // Allow users to see and edit events up to 2 hours in the past
     let now = new Date;
     now = now.add(-2).hours();
-    if (activity.startTime < now) {
-      return {isValid: false, reason: `date must be in the future (${activity.startTime.toString()} was invalid)`};
+    if (plan.startTime < now) {
+      return {isValid: false, reason: `date must be in the future (${plan.startTime.toString()} was invalid)`};
     }
   }
   return {isValid: true};
@@ -43,65 +43,65 @@ const sortByTime = (a, b) => {
   return a.startTime - b.startTime
 }
 
-const activityReducer = (state = {
-                          activities: [],
-                          maxActivityId: 0,
+const planReducer = (state = {
+                          plans: [],
+                          maxPlanId: 0,
                           initialized: false,
                         }, action) => {
 
   switch (action.type) {
     case ADD_ACTIVITY:
-      let validity = validateNewActivity(action.activity);
+      let validity = validateNewPlan(action.plan);
       if (!validity.isValid) {
-        console.log(`Invalid activity attempted to be added: ${validity.reason}`);
+        console.log(`Invalid plan attempted to be added: ${validity.reason}`);
         return Object.assign({}, state, { initialized: true });
       }
       return Object.assign(
         {},
         state,
         {
-          activities: [...state.activities,
-            Object.assign({}, action.activity, { clientId: state.maxActivityId })
+          plans: [...state.plans,
+            Object.assign({}, action.plan, { clientId: state.maxPlanId })
           ].sort(sortByTime),
-          maxActivityId: state.maxActivityId + 1
+          maxPlanId: state.maxPlanId + 1
         },
         { initialized: true }
       );
     case REMOVE_ACTIVITY:
       return Object.assign({}, state,
         {
-          activities: [...state.activities].filter((activity) => {
-            return activity.clientId !== action.clientId;
+          plans: [...state.plans].filter((plan) => {
+            return plan.clientId !== action.clientId;
           })
         }
       );
     case UPDATE_ACTIVITY:
-      // TODO: validate activity
+      // TODO: validate plan
 
-      const oneRemoved = [...state.activities].filter((activity) => {
-        return activity.clientId !== action.clientId;
+      const oneRemoved = [...state.plans].filter((plan) => {
+        return plan.clientId !== action.clientId;
       })
 
-      const newActivities = [...oneRemoved, action.activity].sort(sortByTime)
+      const newPlans = [...oneRemoved, action.plan].sort(sortByTime)
 
       return Object.assign(
         {},
         state,
         {
-          activities: newActivities,
+          plans: newPlans,
           initialized: true
         }
       );
     case EXPAND_ACTIVITY:
       return Object.assign({}, state,
         {
-          selectedActivity: action.activity
+          selectedPlan: action.plan
         }
       )
     case UNEXPAND_ACTIVITY:
       return Object.assign({}, state,
         {
-          selectedActivity: undefined
+          selectedPlan: undefined
         }
       )
     default:
@@ -109,4 +109,4 @@ const activityReducer = (state = {
     }
   }
 
-  export default activityReducer
+  export default planReducer

@@ -1,9 +1,9 @@
 package com.tapalongnative;
 
-import com.facebook.react.ReactActivity;
+import com.facebook.react.ReactPlan;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 
-public class MainActivity extends ReactActivity {
+public class MainPlan extends ReactPlan {
 
     /**
      * Returns the name of the main component registered from JavaScript.

@@ -1,5 +1,5 @@
 import { SET_USER } from '../constants/action-types.js'
-import { requestRefreshActivities } from './activity-actions.js'
+import { requestRefreshPlans } from './plan-actions.js'
 import network from '../network.js';
 
 export function setUser(userId, userName, sessionToken, thumbnail) {
@@ -19,7 +19,7 @@ export function login(fbToken) {
     return network.requestLogin(fbToken)
       .then(({ userId, userName, sessionToken, thumbnail }) => {
         dispatch(setUser(userId, userName, sessionToken, thumbnail))
-        dispatch(requestRefreshActivities(userId, sessionToken))
+        dispatch(requestRefreshPlans(userId, sessionToken))
         return { userId, userName, sessionToken, thumbnail }
       })
   }

@@ -22,7 +22,7 @@ const styles = {
   }
 }
 
-const ActivityCardListPlaceholder = (props) => {
+const PlanCardListPlaceholder = (props) => {
 
   return (
     <View style={styles.container}>
@@ -37,4 +37,4 @@ const ActivityCardListPlaceholder = (props) => {
   );
 }
 
-export default ActivityCardListPlaceholder
+export default PlanCardListPlaceholder

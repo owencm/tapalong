@@ -25,16 +25,16 @@ import DatePicker from 'react-native-datepicker'
 //   }
 // });
 
-const EditActivityCard = React.createClass({
+const EditPlanCard = React.createClass({
 
   getInitialState: function () {
 
     const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
     const todayFourPm = Date.today().set({hour: 16});
     return {
-      title: this.props.activity ? this.props.activity.title : '',
-      description: this.props.activity ? this.props.activity.description : '',
-      startTime: this.props.activity ? this.props.activity.startTime : todayFourPm,
+      title: this.props.plan ? this.props.plan.title : '',
+      description: this.props.plan ? this.props.plan.description : '',
+      startTime: this.props.plan ? this.props.plan.startTime : todayFourPm,
       saveRequestPending: false,
       deleteRequestPending: false,
     };
@@ -42,7 +42,7 @@ const EditActivityCard = React.createClass({
 
   componentDidMount: function () {
     // Focus the title input if we're creating
-    if (!this.props.activity) {
+    if (!this.props.plan) {
       this.refs.titleInput.focus();
     }
     // Scroll to the top of the page to ensure the editing screen is visible
@@ -72,20 +72,20 @@ const EditActivityCard = React.createClass({
   },
 
   handleSaveClick: function () {
-    let activityChanges = {
+    let planChanges = {
       title: this.state.title,
       description: this.state.description,
       startTime: this.state.startTime
     }
     this.setState({ saveRequestPending: true })
-    this.props.onSaveClick(this.props.activity, activityChanges).catch((e) => {
+    this.props.onSaveClick(this.props.plan, planChanges).catch((e) => {
       this.setState({ saveRequestPending: false })
-      console.log('Could not save activity', e)
+      console.log('Could not save plan', e)
     });
   },
 
   handleCreateClick: function () {
-    let newActivity = {
+    let newPlan = {
       title: this.state.title,
       startTime: this.state.startTime,
       location: '',
@@ -93,16 +93,16 @@ const EditActivityCard = React.createClass({
       description: this.state.description
     };
     this.setState({ saveRequestPending: true })
-    this.props.onCreateClick(newActivity).catch((e) => {
+    this.props.onCreateClick(newPlan).catch((e) => {
       this.setState({ saveRequestPending: false })
-      console.log('Could not create activity', e)
+      console.log('Could not create plan', e)
     });
   },
 
   handleDeleteClick: function () {
     // if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({ deleteRequestPending: true });
-      this.props.onDeleteClick(this.props.activity);
+      this.props.onDeleteClick(this.props.plan);
     // } else {
       // Do nothing
     // }
@@ -134,7 +134,7 @@ const EditActivityCard = React.createClass({
 
   render: function () {
     console.log('rendering form with state', this.state)
-    let editing = !!this.props.activity;
+    let editing = !!this.props.plan;
     /*
       Set up styles
     */
@@ -236,7 +236,7 @@ const EditActivityCard = React.createClass({
   }
 });
 
-export default EditActivityCard
+export default EditPlanCard
 
 
 // handleDateChange: function (event) {

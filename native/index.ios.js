@@ -2,7 +2,7 @@
 
   Set up Redux store and pass it to the app container
 
-  Temporarily also log the user in and download the new activities
+  Temporarily also log the user in and download the new plans
 
 */
 

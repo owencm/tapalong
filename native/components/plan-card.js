@@ -3,11 +3,11 @@ import m from '../m.js';
 import { View, Text } from 'react-native'
 import Card from './card.js';
 import CardOptions from './card-options.js';
-import ActivityCardTitle from './activity-card-title.js';
+import PlanCardTitle from './plan-card-title.js';
 import AttendeesList from './attendees-list.js';
 import FriendIcon from './friend-icon.js';
 import Collapsible from 'react-native-collapsible';
-import ActivityCardDetails from './activity-card-details.js'
+import PlanCardDetails from './plan-card-details.js'
 // import Collapse from 'react-collapse';
 import If from './if.js';
 
@@ -15,10 +15,10 @@ export default function(props) {
 
   let options = [];
 
-  const detailsAvaialable = props.activity.description !== '' ||
-                            props.activity.attendeeNames.length > 0
-  const alreadyShowingAllDetailsInSummary = props.activity.description === '' &&
-                                            props.activity.isCreator
+  const detailsAvaialable = props.plan.description !== '' ||
+                            props.plan.attendeeNames.length > 0
+  const alreadyShowingAllDetailsInSummary = props.plan.description === '' &&
+                                            props.plan.isCreator
 
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
@@ -55,7 +55,7 @@ export default function(props) {
     }
   };
 
-  options.push(getOption(props.activity.isCreator, props.activity.isAttending))
+  options.push(getOption(props.plan.isCreator, props.plan.isAttending))
 
 
   return (
@@ -65,28 +65,28 @@ export default function(props) {
     >
       <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-          <FriendIcon thumbnail={props.activity.thumbnail}/>
-          <If condition={ !props.activity.isCreator && props.activity.isAttending }>
+          <FriendIcon thumbnail={props.plan.thumbnail}/>
+          <If condition={ !props.plan.isCreator && props.plan.isAttending }>
             <View style={{ position: 'absolute', paddingTop: 3, left: 0, right: 0, alignItems: 'center'}}>
               <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
             </View>
           </If>
         </View>
         <View style={{flex: 1, flexDirection: 'column'}}>
-          <ActivityCardTitle
-            creatorName={ props.activity.isCreator ? 'You' : props.activity.creatorName }
-            title={ props.activity.title }
-            startTime={ props.activity.startTime }
+          <PlanCardTitle
+            creatorName={ props.plan.isCreator ? 'You' : props.plan.creatorName }
+            title={ props.plan.title }
+            startTime={ props.plan.startTime }
           />
-          <If condition={ props.activity.isCreator }>
-            <ActivityCardDetails
-              attendeeNames={ props.activity.attendeeNames }
+          <If condition={ props.plan.isCreator }>
+            <PlanCardDetails
+              attendeeNames={ props.plan.attendeeNames }
             />
           </If>
           <Collapsible collapsed={!props.selected}>
-            <ActivityCardDetails
-              description={ props.activity.description }
-              attendeeNames={ props.activity.isCreator ? [] : props.activity.attendeeNames }
+            <PlanCardDetails
+              description={ props.plan.description }
+              attendeeNames={ props.plan.isCreator ? [] : props.plan.attendeeNames }
               placeholderIfEmpty={ true }
             />
           </Collapsible>

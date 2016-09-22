@@ -1,9 +1,9 @@
 import React from 'react'
 import { View } from 'react-native'
-import ActivityCardList from './activity-card-list.js'
+import PlanCardList from './plan-card-list.js'
 import If from './if.js'
 import Hint from './hint.js'
-import EditActivityCard from './edit-activity-card.js'
+import EditPlanCard from './edit-plan-card.js'
 
 const EditScene = (props) => {
   return (
@@ -11,8 +11,8 @@ const EditScene = (props) => {
       <If condition={ props.creating }>
         <Hint text="Let friends using the app know what you have planned so they can tag along." />
       </If>
-      <EditActivityCard
-        activity={ props.activity }
+      <EditPlanCard
+        plan={ props.plan }
         userName={ props.userName }
         onSaveClick={ props.onSaveClick }
         onCreateClick={ props.onCreateClick }

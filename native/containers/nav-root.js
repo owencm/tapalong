@@ -14,7 +14,7 @@ import actions from '../actions/index.js'
 function mapStateToProps(state) {
   return {
     user: state.user,
-    activities: state.activities,
+    plans: state.plans,
     nav: state.nav,
     butterBar: state.butterBar,
   }
