@@ -97,8 +97,11 @@ export function requestCreateActivity(userId, sessionToken, newActivity) {
           dispatch(addActivity(updatedActivity))
         })
     } else {
-      alert(`Error: ${validity.reason}. Please refresh and try again`);
-      console.log('activity wasn\'t valid because '+validity.reason, newActivity);
+      alert(validity.reason)
+      console.log('Activity wasn\'t valid because '+validity.reason, newActivity)
+      return new Promise((resolve, reject) => {
+        throw new Error('Activity wasn\'t valid because '+validity.reason, newActivity)
+      })
     }
   }
 }
@@ -106,11 +109,20 @@ export function requestCreateActivity(userId, sessionToken, newActivity) {
 // TODO: Implement client side validity checking
 export function requestUpdateActivity(userId, sessionToken, activity, activityChanges) {
   return (dispatch) => {
-    return network.requestUpdateActivity({userId, sessionToken}, activity, activityChanges)
-      .then((updatedActivity) => {
-        dispatch(removeActivity(activity.clientId));
-        dispatch(addActivity(updatedActivity));
+    const validity = validateActivity(Object.assign({}, activity, activityChanges))
+    if (validity.isValid) {
+      return network.requestUpdateActivity({userId, sessionToken}, activity, activityChanges)
+        .then((updatedActivity) => {
+          dispatch(removeActivity(activity.clientId));
+          dispatch(addActivity(updatedActivity));
+        })
+    } else {
+      alert(validity.reason)
+      console.log('Activity wasn\'t valid because '+validity.reason, activity, activityChanges)
+      return new Promise((resolve, reject) => {
+        throw new Error('Activity wasn\'t valid because '+validity.reason, activity, activityChanges)
       })
+    }
   }
 }
 

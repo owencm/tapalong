@@ -8,20 +8,20 @@ const validateActivity = (activity) => {
     return (previous && activity.hasOwnProperty(property));
   }, true);
   if (!hasProperties) {
-    return {isValid: false, reason: 'some properties were missing'};
+    return {isValid: false, reason: 'A portion of the response was missing'};
   }
   if (activity.title == '') {
-    return {isValid: false, reason: 'missing title'};
+    return {isValid: false, reason: 'A title must be provided'};
   }
   if (!activity.startTime || !(activity.startTime instanceof Date)) {
-    return {isValid: false, reason: 'startTime wasnt a date object or was missing'};
+    return {isValid: false, reason: 'A date and time must be provided'};
   }
   if (activity.startTime && activity.startTime instanceof Date) {
     // Allow users to see and edit events up to 2 hours in the past
     let now = new Date;
     now = now.add(-2).hours();
     if (activity.startTime < now) {
-      return {isValid: false, reason: `date must be in the future (${activity.startTime.toString()} was invalid)`};
+      return {isValid: false, reason: `The date must be in the future (${activity.startTime.toString()} was provided)`};
     }
   }
   return { isValid: true };

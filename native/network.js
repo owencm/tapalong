@@ -5,7 +5,7 @@ const apiEndpoint = 'http://localhost:8080/api/v1'
 const delayNetworkRequests = false
 
 const requestLogin = (fbToken) => {
-  return sendRequest(apiEndpoint+'/login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
+  return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
     .then((response) => {
       return {
         userId: response.user_id,
@@ -21,21 +21,25 @@ const fixDateOnActivity = (activity) => {
   return activity;
 }
 
+const requestPublicActivities = (user) => {
+  return sendRequest('public_plans/', 'get', '', user)
+}
+
 const requestActivitiesFromServer = (user) => {
-  return sendRequest(apiEndpoint+'/plans/visible_to_user/', 'get', '', user)
+  return sendRequest('plans/visible_to_user/', 'get', '', user)
     .then((activities) => {
       return activities.map(fixDateOnActivity)
     })
 };
 
 const requestCreateActivity = function (user, activity) {
-  return sendRequest(apiEndpoint+'/plans/', 'post', JSON.stringify(activity), user)
+  return sendRequest('plans/', 'post', JSON.stringify(activity), user)
     .then(fixDateOnActivity)
 };
 
 const requestSetAttending = function (user, activity, attending) {
   const endpointAction = attending ? 'attend' : 'unattend';
-  return sendRequest(`${apiEndpoint}/plans/${activity.id}/${endpointAction}`, 'post', '', user)
+  return sendRequest(`plans/${activity.id}/${endpointAction}`, 'post', '', user)
     .then((updatedActivity) => {
       updatedActivity = fixDateOnActivity(updatedActivity)
       updatedActivity.clientId = activity.clientId
@@ -44,7 +48,7 @@ const requestSetAttending = function (user, activity, attending) {
 };
 
 const requestUpdateActivity = function(user, activity, activityChanges) {
-  return sendRequest(apiEndpoint+'/plans/'+activity.id+'/', 'post', JSON.stringify(activityChanges), user)
+  return sendRequest('plans/'+activity.id+'', 'post', JSON.stringify(activityChanges), user)
     .then((updatedActivity) => {
       updatedActivity = fixDateOnActivity(updatedActivity)
       updatedActivity.clientId = activity.clientId
@@ -53,12 +57,12 @@ const requestUpdateActivity = function(user, activity, activityChanges) {
 };
 
 const requestCancelActivity = function (user, activity) {
-  return sendRequest(apiEndpoint+'/plans/'+activity.id+'/cancel/', 'post', '', user)
+  return sendRequest('plans/'+activity.id+'cancel/', 'post', '', user)
     .then(() => { return activity })
 };
 
 const requestCreatePushNotificationsSubscription = function (user, subscription) {
-  return sendRequest(apiEndpoint+'/push_subscriptions/', 'post', JSON.stringify(subscription), user)
+  return sendRequest('push_subscriptions/', 'post', JSON.stringify(subscription), user)
 };
 
 const checkStatus = (response) => {
@@ -91,7 +95,7 @@ const sendRequest = (url, method, body, user) => {
   }
 
   return wait(delayNetworkRequests ? 500 + Math.random() * 1500 : 0)
-    .then(() => { return fetch(url, {
+    .then(() => { return fetch(`${apiEndpoint}/${url}`, {
       method,
       body,
       headers

@@ -72,9 +72,16 @@ const EditActivityCard = React.createClass({
   },
 
   handleSaveClick: function () {
-    let activityChanges = {title: this.state.title, description: this.state.description, startTime: this.state.startTime};
-    this.setState({ saveRequestPending: true });
-    this.props.onSaveClick(this.props.activity, activityChanges);
+    let activityChanges = {
+      title: this.state.title,
+      description: this.state.description,
+      startTime: this.state.startTime
+    }
+    this.setState({ saveRequestPending: true })
+    this.props.onSaveClick(this.props.activity, activityChanges).catch((e) => {
+      this.setState({ saveRequestPending: false })
+      console.log('Could not save activity', e)
+    });
   },
 
   handleCreateClick: function () {
@@ -85,8 +92,11 @@ const EditActivityCard = React.createClass({
       max_attendees: -1,
       description: this.state.description
     };
-    this.setState({ saveRequestPending: true });
-    this.props.onCreateClick(newActivity);
+    this.setState({ saveRequestPending: true })
+    this.props.onCreateClick(newActivity).catch((e) => {
+      this.setState({ saveRequestPending: false })
+      console.log('Could not create activity', e)
+    });
   },
 
   handleDeleteClick: function () {
@@ -159,17 +169,19 @@ const EditActivityCard = React.createClass({
 
     const options = this.getOptions(editing)
 
-    const placeholders = [
-      'hanging out in Dolores park',
-      'going to SF Moma',
-      'working at my place',
-      'hiking in Santa Cruz',
-      'playing board games',
-    ]
+    // const placeholders = [
+    //   'hanging out in Dolores park',
+    //   'going to SF Moma',
+    //   'working at my place',
+    //   'hiking in Santa Cruz',
+    //   'playing board games',
+    // ]
+    //
+    // const random = (from, to) => { return from + Math.floor(Math.random()*(to-from+1)) }
 
-    const random = (from, to) => { return from + Math.floor(Math.random()*(to-from+1)) }
+    // const placeholder = placeholders[random(0, placeholders.length - 1)]
 
-    const placeholder = placeholders[random(0, placehlders.length)]
+    const placeholder = 'playing board games'
 
     return (
       <Card>

@@ -10,6 +10,7 @@ import responseTime from 'response-time'
 import path from 'path';
 import colors from 'colors'
 import { Users, Plans, Sessions, PushSubs } from './models.js';
+import { selectNPublicPlans } from './public-potential-activities.js'
 
 const app = express();
 
@@ -154,10 +155,13 @@ app.post('/api/v1/push_subscriptions', (req, res) => {
   const keys = req.body.encodedKeys;
   const userPublicKey = keys.p256dh;
   const userAuthKey = keys.auth;
-  console.log('got keys',userPublicKey, userAuthKey);
   PushSubs.createPushSubForUser(endpoint, userPublicKey, userAuthKey, req.user).then(() => {
     res.sendStatus(200);
   });
+});
+
+app.get('/api/v1/public_plans', (req, res) => {
+  console.log(selectNPublicPlans(5))
 });
 
 // TODO: Implement a health check URL

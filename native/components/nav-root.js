@@ -122,7 +122,7 @@ const NavRoot = (props) => {
   }
 
   const handleSaveActivity = (activity, activityChanges) => {
-    props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
+    return props.requestUpdateActivity(props.user.userId, props.user.sessionToken,
             activity, activityChanges).then(() => {
       // gotoListViaOptIn('when a user says they\'re coming along');
       popScene()
@@ -130,7 +130,7 @@ const NavRoot = (props) => {
   };
 
   const handleCreateActivity = (activity) => {
-    props.requestCreateActivity(props.user.userId, props.user.sessionToken,
+    return props.requestCreateActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       popScene()
       // gotoListViaOptIn('when a user says they\'re coming along');
@@ -138,7 +138,7 @@ const NavRoot = (props) => {
   }
 
   const handleDeleteActivity = (activity) => {
-    props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
+    return props.requestDeleteActivity(props.user.userId, props.user.sessionToken,
             activity).then(() => {
       popScene()
     })
@@ -147,13 +147,13 @@ const NavRoot = (props) => {
   const handleAttendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
     // gotoListViaOptIn('if the plan changes');
-    props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
+    return props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending);
   }
 
   const handleUnattendActivity = (activity) => {
     const { userId, sessionToken } = props.user;
     // if (confirm('Are you sure?')) {
-      props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
+      return props.requestSetAttending(userId, sessionToken, activity, !activity.isAttending)
     // }
   }
 
