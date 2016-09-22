@@ -159,6 +159,18 @@ const EditActivityCard = React.createClass({
 
     const options = this.getOptions(editing)
 
+    const placeholders = [
+      'hanging out in Dolores park',
+      'going to SF Moma',
+      'working at my place',
+      'hiking in Santa Cruz',
+      'playing board games',
+    ]
+
+    const random = (from, to) => { return from + Math.floor(Math.random()*(to-from+1)) }
+
+    const placeholder = placeholders[random(0, placehlders.length)]
+
     return (
       <Card>
         <View style={{padding: 16, paddingBottom: 8}}>
@@ -168,7 +180,7 @@ const EditActivityCard = React.createClass({
               ref='titleInput'
               style={ m(bigInputViewStyle, bigInputStyle) }
               value={ this.state.title }
-              placeholder='Watching Game of Thrones'
+              placeholder={ placeholder }
               // onChange={ this.handleTitleChange }
               onChangeText={ this.handleTitleChange }
               onKeyDown={ this.handleTitleKeyDown }

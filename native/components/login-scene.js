@@ -28,13 +28,13 @@ const LoginScene = (props) => {
   const loginButtonStyle = {
     alignItems: 'center',
     justifyContent: 'center',
-    height: 60,
+    height: 50,
     backgroundColor: '#3a5b98',
     borderWidth: 1,
     borderColor: '#7aa9fb',
     bottom: 0,
     borderRadius: 30,
-    marginHorizontal: 30,
+    marginHorizontal: 40,
   }
 
   // props.readyToLogin

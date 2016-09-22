@@ -186,6 +186,7 @@ const NavRoot = (props) => {
           onUnattendActivity={ handleUnattendActivity }
           onExpandActivity={ handleExpandActivity }
           onUnexpandActivity={ handleUnexpandActivity }
+          shouldShowButterBar={ props.butterBar.shouldShowButterBar }
           style={{ flex: 1 }}
         />
         break

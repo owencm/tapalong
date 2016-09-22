@@ -42,7 +42,7 @@ export default function(props) {
     } else if (isAttending) {
       // Unattending
       return {
-        label: 'Cancel attending',
+        label: '✓ Going',
         type: 'secondary',
         onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
       }

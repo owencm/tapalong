@@ -2,8 +2,9 @@
 import * as activityActions from './activity-actions.js'
 import * as userActions from './user-actions.js'
 import * as navActions from './nav-actions.js'
+import * as butterBarActions from './butter-bar-actions.js'
 import m from '../m.js'
 
-const actions = m(activityActions, userActions, navActions)
+const actions = m(activityActions, userActions, navActions, butterBarActions)
 
 export default actions

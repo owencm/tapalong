@@ -35,7 +35,13 @@ let validateNewActivity = function (activity) {
   return {isValid: true};
 };
 
-const sortByTime = (a, b) => { return a.startTime < b.startTime ? -1 : 1 }
+const sortByTime = (a, b) => {
+  if (a.startTime - b.startTime === 0) {
+    console.log('Sort time was the same so sorting by clientId', a, b)
+    return a.clientId - b.clientId
+  }
+  return a.startTime - b.startTime
+}
 
 const activityReducer = (state = {
                           activities: [],

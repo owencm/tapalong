@@ -6,6 +6,11 @@ import {
   UPDATE_ACTIVITY,
 } from '../constants/action-types.js'
 
+import {
+  showButterBar,
+  hideButterBar,
+} from './butter-bar-actions.js'
+
 import network from '../network.js'
 import validateActivity from '../lib/validate-activity.js'
 
@@ -58,6 +63,13 @@ export function requestSetAttending(userId, sessionToken, activity, attending) {
     //   back from the server
     const optimisticActivity = Object.assign({}, activity, { isAttending: attending, pending: true })
     dispatch(updateActivity(activity.clientId, optimisticActivity))
+    // Hacky butter bar
+    if (attending) {
+      setTimeout(() => {
+        dispatch(showButterBar())
+        setTimeout(() => { dispatch(hideButterBar()) }, 4000)
+      }, 1000)
+    }
     return network.requestSetAttending({userId, sessionToken}, activity, attending)
       .then((updatedActivity) => {
         dispatch(updateActivity(activity.clientId, updatedActivity));

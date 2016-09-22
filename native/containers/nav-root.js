@@ -15,7 +15,8 @@ function mapStateToProps(state) {
   return {
     user: state.user,
     activities: state.activities,
-    nav: state.nav
+    nav: state.nav,
+    butterBar: state.butterBar,
   }
 }
 
