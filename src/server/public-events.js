@@ -4,15 +4,15 @@ const normalizedSF = [
       'checking out %',
     ],
     events: [
-      { title: 'the de Young', },
-      { title: 'SF MOMA', },
-      { title: 'Cal Academy of Sciences', },
-      { title: 'the Exploratorium', },
-      { title: 'the Soma food trucks', },
-      { title: 'the Legion of Honor', },
-      { title: 'the Conservatory of Flowers', },
-      { title: 'the San Francisco Zoo', },
-      { title: 'the USS Pampanito', },
+      { title: 'the de Young', url: 'http://www.google.com/search?q=de%20Young%20museum'},
+      { title: 'SF MOMA', url: 'http://www.google.com/search?q=SF%20MOMA'},
+      { title: 'Cal Academy of Sciences', url: 'http://www.google.com/search?q=Cal%20Academy%20of%20Sciences'},
+      { title: 'the Exploratorium', url: 'http://www.google.com/search?q=Exploratorium%20SF'},
+      { title: 'the Soma food trucks', url: 'http://www.somastreatfoodpark.com/'},
+      { title: 'the Legion of Honor', url: 'http://www.google.com/search?q=Legion%20of%20Honor'},
+      { title: 'the Conservatory of Flowers', url: 'https://goldengatepark.com/conservatory-of-flowers.html'},
+      { title: 'the San Francisco Zoo', url: 'http://www.google.com/search?q=San%20Francisco%20Zoo'},
+      { title: 'the USS Pampanito', url: 'http://www.google.com/search?q=USS%20Pampanito'},
     ],
   },
   {
@@ -21,13 +21,13 @@ const normalizedSF = [
       'exploring SF (% perhaps?)',
     ],
     events: [
-      { title: 'Coit Tower', },
-      { title: 'Palace of Fine Arts', },
-      { title: 'Sutro Baths', },
-      { title: 'Japanese Tea Garden', },
-      { title: 'Fisherman\'s Warf', },
-      { title: 'Peer 39', },
-      { title: 'Ocean Beach', },
+      { title: 'Coit Tower', url: 'http://www.google.com/search?q=Coit%20Tower'},
+      { title: 'Palace of Fine Arts', url: 'http://www.google.com/search?q=Palace%20of%20Fine Arts'},
+      { title: 'Sutro Baths', url: 'http://www.google.com/search?q=Sutro%20Baths'},
+      { title: 'Japanese Tea Garden', url: 'http://www.google.com/search?q=Japanese%20Tea%20Garden'},
+      { title: 'Fisherman\'s Warf', url: 'http://www.google.com/search?q=Fishermans%20Warf'},
+      { title: 'Peer 39', url: 'http://www.google.com/search?q=Peer%2039'},
+      { title: 'Ocean Beach', url: 'http://www.google.com/search?q=Ocean%20Beach'},
     ],
   },
   {
@@ -35,27 +35,27 @@ const normalizedSF = [
       'taking a tour of %',
     ],
     events: [
-      { title: 'Alcatraz', },
-      { title: 'Angel Island', },
+      { title: 'Alcatraz', url: 'http://www.google.com/search?q=Alcatraz%20tour'},
+      { title: 'Angel Island', url: 'http://www.google.com/search?q=Angel%20Island'},
     ],
   },
   {
     templates: [ '%' ],
     events: [
-      { title: 'going to the Ferry Building farmers market', },
-      { title: 'getting brunch', },
-      { title: 'walking up Twin Peaks', },
-      { title: 'hanging out in Dolores Park', },
-      { title: 'camping somewhere', },
-      'spending the weekend in Napa'
+      { title: 'going to the Ferry Building farmers market', url: 'http://www.ferrybuildingmarketplace.com/farmers-market/'},
+      { title: 'getting brunch', url: 'https://www.google.com/maps/search/brunch/'},
+      { title: 'walking up Twin Peaks', url: 'https://www.google.com/maps/place/Twin+Peaks,+San+Francisco'},
+      { title: 'hanging out in Dolores Park', url: 'https://www.google.com/maps/place/Mission+Dolores+Park/'},
+      { title: 'camping somewhere', url: 'http://www.google.com/search?q=camping'},
+      { title: 'spending the weekend in Napa', url: 'http://www.google.com/search?q=napa%20valley'}
     ],
   },
   {
     templates: [ 'hiking %' ],
     events: [
-      { title: 'Muir Woods', },
-      { title: 'Stinson Beach', },
-      { title: 'the dish at Stanford', },
+      { title: 'Muir Woods', url: 'http://www.google.com/search?q=Muir%20Woods'},
+      { title: 'Stinson Beach', url: 'http://www.google.com/search?q=Stinson%20Beach'},
+      { title: 'the dish at Stanford', url: 'http://www.google.com/search?q=stanford%20dish%20hike'},
     ]
   }
 ]
@@ -66,7 +66,7 @@ const normalizedEverywhere = [
     events: [
       { title: 'playing board games', },
       { title: 'watching a movie', },
-      { title: 'working and reading in a coffee shop', },
+      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/place/Coffee+Shops' },
     ],
   }
 ]

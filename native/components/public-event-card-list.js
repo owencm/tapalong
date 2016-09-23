@@ -30,20 +30,39 @@ const PublicEventCardList = (props) => {
     return null
   }
 
-  const getEventCard = ({ title, url }) => {
-    const options = [{
+  const getOptions = (title, url) => {
+    let options = []
+
+    if (url) {
+      options.push({
+        label: 'Search',
+        type: 'secondary',
+        onClick: () => {
+          console.log('opeening',url)
+          Linking.openURL(url)
+        }
+      })
+    }
+
+    options.push({
       label: 'Create',
       onClick: () => {
         props.onCreateClick({ title })
       }
-    }]
+    })
+
+    return options
+  }
+
+  const getEventCard = ({ title, url }) => {
+    const options = getOptions(title, url)
 
     return (
       <Card key={ title }>
         <CardMainContents style={{ flexDirection: 'row' }}>
           <FriendIcon thumbnail={ props.user.thumbnail }/>
           <View style={{flex: 1, flexDirection: 'column'}}>
-            <Text><Text style={{ fontWeight: '500' }}>You</Text> could be <Text style={{ fontWeight: '500' }}>{ title }</Text></Text>
+            <Text><Text style={{ fontWeight: '500' }}>You</Text> could consider <Text style={{ fontWeight: '500' }}>{ title }</Text></Text>
           </View>
         </CardMainContents>
         <CardOptions options={ options } />
