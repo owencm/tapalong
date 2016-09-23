@@ -81,7 +81,7 @@ const LoginScene = (props) => {
         color: 'white'
       }}
     >
-      Up Dog
+      Withapp
     </Text>
   </View>
 

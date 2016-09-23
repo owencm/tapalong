@@ -22,7 +22,7 @@ const normalizedSF = [
     ],
     events: [
       { title: 'Coit Tower', url: 'http://www.google.com/search?q=Coit%20Tower'},
-      { title: 'Palace of Fine Arts', url: 'http://www.google.com/search?q=Palace%20of%20Fine Arts'},
+      { title: 'Palace of Fine Arts', url: 'http://www.google.com/search?q=Palace%20of%20Fine%20Arts'},
       { title: 'Sutro Baths', url: 'http://www.google.com/search?q=Sutro%20Baths'},
       { title: 'Japanese Tea Garden', url: 'http://www.google.com/search?q=Japanese%20Tea%20Garden'},
       { title: 'Fisherman\'s Warf', url: 'http://www.google.com/search?q=Fishermans%20Warf'},
@@ -66,7 +66,7 @@ const normalizedEverywhere = [
     events: [
       { title: 'playing board games', },
       { title: 'watching a movie', },
-      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/place/Coffee+Shops' },
+      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/place/Coffee+Shops/' },
     ],
   }
 ]

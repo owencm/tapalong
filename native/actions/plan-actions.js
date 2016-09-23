@@ -4,6 +4,7 @@ import {
   EXPAND_PLAN,
   UNEXPAND_PLAN,
   UPDATE_PLAN,
+  SET_PLANS_INITIALIZED_STATE,
 } from '../constants/action-types.js'
 
 import {
@@ -52,6 +53,13 @@ export function unexpandPlan(plan) {
   }
 }
 
+export function setPlansInitialized(initialized) {
+  return {
+    type: SET_PLANS_INITIALIZED_STATE,
+    initialized,
+  }
+}
+
 /* Plans thunks */
 
 // Todo: why do these take session tokens and user ids?
@@ -80,6 +88,7 @@ export function requestSetAttending(userId, sessionToken, plan, attending) {
 export function requestRefreshPlans(userId, sessionToken) {
   return (dispatch) => {
     return network.requestPlansFromServer({userId, sessionToken}).then((plans) => {
+      dispatch(setPlansInitialized(true))
       for (let i = 0; i < plans.length; i++) {
         const plan = plans[i]
         dispatch(addPlan(plan))

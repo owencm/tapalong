@@ -27,7 +27,7 @@ const getDateString = (dateTime) => {
   } else if (tomorrow.equals(dateCopy)) {
     str += 'tomorrow ';
   } else {
-    str += 'on ' + dateTime.toString('dddd dS') + ' ';
+    str += 'on ' + dateTime.toString('dddd') + ' the ' + dateTime.toString('dS') + ' ';
   }
   str += 'at ' + dateTime.toString('h');
   const minutes = dateTime.toString('mm');

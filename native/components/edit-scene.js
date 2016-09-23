@@ -1,5 +1,5 @@
 import React from 'react'
-import { View } from 'react-native'
+import { ScrollView } from 'react-native'
 import PlanCardList from './plan-card-list.js'
 import If from './if.js'
 import Hint from './hint.js'
@@ -7,7 +7,7 @@ import EditPlanCard from './edit-plan-card.js'
 
 const EditScene = (props) => {
   return (
-    <View>
+    <ScrollView>
       <If condition={ props.creating }>
         <Hint text="Let friends using the app know what you have planned so they can tag along." />
       </If>
@@ -25,7 +25,7 @@ const EditScene = (props) => {
           style={{ fontSize: 12, opacity: 0.7 }}
         />
       </If>
-    </View>
+    </ScrollView>
   )
 }
 

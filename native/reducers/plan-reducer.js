@@ -4,6 +4,7 @@ import {
   EXPAND_PLAN,
   UNEXPAND_PLAN,
   UPDATE_PLAN,
+  SET_PLANS_INITIALIZED_STATE,
 } from '../constants/action-types.js'
 import m from '../m.js'
 
@@ -37,7 +38,6 @@ let validateNewPlan = function (plan) {
 
 const sortByTime = (a, b) => {
   if (a.startTime - b.startTime === 0) {
-    console.log('Sort time was the same so sorting by clientId', a, b)
     return a.clientId - b.clientId
   }
   return a.startTime - b.startTime
@@ -65,7 +65,6 @@ const planReducer = (state = {
           ].sort(sortByTime),
           maxPlanId: state.maxPlanId + 1
         },
-        { initialized: true }
       );
     case REMOVE_PLAN:
       return Object.assign({}, state,
@@ -104,6 +103,10 @@ const planReducer = (state = {
           selectedPlan: undefined
         }
       )
+    case SET_PLANS_INITIALIZED_STATE:
+      return Object.assign({}, state, {
+        initialized: action.initialized
+      })
     default:
       return state;
     }

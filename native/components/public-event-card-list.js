@@ -38,7 +38,6 @@ const PublicEventCardList = (props) => {
         label: 'Search',
         type: 'secondary',
         onClick: () => {
-          console.log('opeening',url)
           Linking.openURL(url)
         }
       })

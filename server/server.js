@@ -1,17 +1,24 @@
 // TODO: have the user login with Facebook again every now and again to prevent
 //   their token from expiring
 
-import express from 'express';
-import fs from 'fs';
-import https from 'https';
-import bodyParser from 'body-parser';
-import compression from 'compression';
-import responseTime from 'response-time'
-import path from 'path';
-import colors from 'colors'
-import { Users, Plans, Sessions, PushSubs } from './models.js';
-import { selectNPublicEvents } from './public-events.js'
+const express = require('express')
+const fs = require('fs')
+const https = require('https')
+const bodyParser = require('body-parser')
+const compression = require('compression')
+const responseTime = require('response-time')
+const path = require('path')
+const colors = require('colors')
+const { Users, Plans, Sessions, PushSubs } = require('./models.js')
+const { selectNPublicEvents } = require('./public-events.js')
 
+// Find Owen so we can send him push when stuff happens later
+let owen;
+Users.getUserWithFbId('680160262').then((user) => {
+  owen = user;
+})
+
+const publicPath = __dirname + '../web/build'
 const app = express();
 
 app.use(responseTime((req, res, time) => {
@@ -28,6 +35,8 @@ app.use(bodyParser.json());
 // TODO: find a tidier way of only authenticating specific endpoints
 // TODO: Find a tidier way of sending 403s
 app.use('/api/v1', (req, res, next) => {
+  console.log(`Serving ${req.path} for user ${req.headers['user-id']}`.blue)
+
   if (req.path === '/login/') {
     next();
     return;
@@ -47,6 +56,8 @@ app.use('/api/v1', (req, res, next) => {
     }
     req.user = user;
     next();
+  }).catch((e) => {
+    throw e
   });
 });
 
@@ -56,12 +67,6 @@ const promiseWithTimeout = (promise, timeout) => {
     return promise.then(resolve);
   });
 }
-
-// Find Owen so we can send him push when stuff happens later
-let owen;
-Users.getUserWithFbId('680160262').then((user) => {
-  owen = user;
-});
 
 // Setup routes
 
@@ -74,7 +79,7 @@ app.post('/api/v1/login', (req, res) => {
       const body = ' ';
       const url = '/';
       const tag = 'server-start';
-      PushSubs.sendNotificationToUser({ title, body, url, tag }, owen);
+      if (owen) { PushSubs.sendNotificationToUser({ title, body, url, tag }, owen) }
     }
     return Sessions.createSessionWithUser(user).then((token) => {
       // This is the response we're going to send back
@@ -103,7 +108,9 @@ app.get('/api/v1/plans/visible_to_user/', (req, res) => {
     return plans.map((plan) => plan.serializedPlan);
   }).then((plans) => {
     res.send(JSON.stringify(plans));
-  });
+  }).catch((e) => {
+    throw e
+  })
 });
 
 // Create new plan
@@ -167,7 +174,7 @@ app.get('/api/v1/public_events', (req, res) => {
 // TODO: Implement a health check URL
 
 // Statically serve any remaining paths from the public folder
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(publicPath)));
 
 // Setup ports and start listening
 

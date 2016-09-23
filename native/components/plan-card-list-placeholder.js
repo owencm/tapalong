@@ -10,6 +10,7 @@ import {
 const styles = {
   container: {
     marginTop: 100,
+    marginBottom: 64,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -27,11 +28,9 @@ const PlanCardListPlaceholder = (props) => {
   return (
     <View style={styles.container}>
       <View style={styles.inner}>
-        <Text style={styles.text}>When your friends share their plans in the app, you'll see them here.</Text>
-        <RaisedButton
-          label='Add Plan'
-          onClick={ props.onCreateClick }
-        />
+        <Text style={styles.text}>
+          { `When your Facebook friends share their plans in the app, you'll see them here.` }
+        </Text>
       </View>
     </View>
   );

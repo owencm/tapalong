@@ -57,7 +57,7 @@ const requestUpdatePlan = function(user, plan, planChanges) {
 };
 
 const requestCancelPlan = function (user, plan) {
-  return sendRequest('plans/'+plan.id+'cancel/', 'post', '', user)
+  return sendRequest('plans/'+plan.id+'/cancel/', 'post', '', user)
     .then(() => { return plan })
 };
 
@@ -82,6 +82,8 @@ const wait = (ms) => {
 }
 
 const sendRequest = (url, method, body, user) => {
+
+  console.log(url, method, body, user)
 
   let headers = {
     'Content-Type': 'application/json',

@@ -188,7 +188,7 @@ const EditPlanCard = React.createClass({
     return (
       <Card>
         <View style={{padding: 16, paddingBottom: 8}}>
-          <Text><Text>{this.props.userName}</Text> is planning on</Text>
+          <Text><Text>{this.props.userName}</Text> will be </Text>
           <View style={ m(inputContainerStyle, bigInputViewStyle) }>
             <TextInput
               ref='titleInput'
