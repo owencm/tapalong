@@ -17,6 +17,7 @@ function mapStateToProps(state) {
     plans: state.plans,
     nav: state.nav,
     butterBar: state.butterBar,
+    events: state.events,
   }
 }
 

@@ -46,12 +46,13 @@ const NavRoot = (props) => {
         gotoListScene()
         props.setUser(user.userId, user.userName, user.sessionToken, user.thumbnail)
         props.requestRefreshPlans(user.userId, user.sessionToken)
+        props.requestRefreshEvents(user.userId, user.sessionToken)
       }
     })
   }
 
   const handleNavigate = (action) => {
-    console.log('navigating', action)
+    console.log('Navigating', action)
     switch (action && action.type) {
       case 'push':
         props.pushRoute(action.route)
@@ -179,7 +180,9 @@ const NavRoot = (props) => {
         return <ListScene
           user={ props.user }
           plans={ props.plans }
+          events={ props.events }
           requestRefreshPlans={ props.requestRefreshPlans }
+          requestRefreshEvents={ props.requestRefreshEvents }
           gotoEditPlanScene={ gotoEditPlanScene }
           gotoCreatePlanScene={ gotoCreatePlanScene }
           onAttendPlan={ handleAttendPlan }
@@ -194,6 +197,7 @@ const NavRoot = (props) => {
         return <EditScene
           userName={ props.user.userName }
           onCreateClick={ handleCreatePlan }
+          plan={ route.plan }
           creating={ true }
         />
         break
@@ -203,6 +207,7 @@ const NavRoot = (props) => {
           userName={ props.user.userName }
           onSaveClick={ handleSavePlan }
           onDeleteClick={ handleDeletePlan }
+          creating={ false }
         />
         break
       case 'uninitialized':

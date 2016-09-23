@@ -10,7 +10,7 @@ import responseTime from 'response-time'
 import path from 'path';
 import colors from 'colors'
 import { Users, Plans, Sessions, PushSubs } from './models.js';
-import { selectNPublicPlans } from './public-potential-activities.js'
+import { selectNPublicEvents } from './public-events.js'
 
 const app = express();
 
@@ -160,8 +160,8 @@ app.post('/api/v1/push_subscriptions', (req, res) => {
   });
 });
 
-app.get('/api/v1/public_plans', (req, res) => {
-  console.log(selectNPublicPlans(5))
+app.get('/api/v1/public_events', (req, res) => {
+  res.send(selectNPublicEvents(4))
 });
 
 // TODO: Implement a health check URL

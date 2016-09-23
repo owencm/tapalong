@@ -7,9 +7,7 @@ import {
 import m from '../m.js'
 
 const defaultStyle = {
-  /* Put the padding and margin on the options so the click targets are larger */
-  paddingVertical: 18,
-  paddingHorizontal: 18,
+  padding: 18,
 }
 
 const textStyle = {
@@ -37,8 +35,8 @@ const TextButton = (props) => {
       onPress={ props.disabled ? () => {} : props.onClick }
       key={ props.label }
     >
-      <View style={ defaultStyle } >
-        <Text style={m(textStyle, { color }, props.style)}>
+      <View >
+        <Text style={m(textStyle, defaultStyle, { color }, props.style)}>
           { props.label.toUpperCase() }
         </Text>
       </View>

@@ -1,9 +1,9 @@
 import {
-  ADD_ACTIVITY,
-  REMOVE_ACTIVITY,
-  EXPAND_ACTIVITY,
-  UNEXPAND_ACTIVITY,
-  UPDATE_ACTIVITY,
+  ADD_PLAN,
+  REMOVE_PLAN,
+  EXPAND_PLAN,
+  UNEXPAND_PLAN,
+  UPDATE_PLAN,
 } from '../constants/action-types.js'
 import m from '../m.js'
 
@@ -50,7 +50,7 @@ const planReducer = (state = {
                         }, action) => {
 
   switch (action.type) {
-    case ADD_ACTIVITY:
+    case ADD_PLAN:
       let validity = validateNewPlan(action.plan);
       if (!validity.isValid) {
         console.log(`Invalid plan attempted to be added: ${validity.reason}`);
@@ -67,7 +67,7 @@ const planReducer = (state = {
         },
         { initialized: true }
       );
-    case REMOVE_ACTIVITY:
+    case REMOVE_PLAN:
       return Object.assign({}, state,
         {
           plans: [...state.plans].filter((plan) => {
@@ -75,7 +75,7 @@ const planReducer = (state = {
           })
         }
       );
-    case UPDATE_ACTIVITY:
+    case UPDATE_PLAN:
       // TODO: validate plan
 
       const oneRemoved = [...state.plans].filter((plan) => {
@@ -92,13 +92,13 @@ const planReducer = (state = {
           initialized: true
         }
       );
-    case EXPAND_ACTIVITY:
+    case EXPAND_PLAN:
       return Object.assign({}, state,
         {
           selectedPlan: action.plan
         }
       )
-    case UNEXPAND_ACTIVITY:
+    case UNEXPAND_PLAN:
       return Object.assign({}, state,
         {
           selectedPlan: undefined

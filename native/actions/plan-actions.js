@@ -1,9 +1,9 @@
 import {
-  ADD_ACTIVITY,
-  REMOVE_ACTIVITY,
-  EXPAND_ACTIVITY,
-  UNEXPAND_ACTIVITY,
-  UPDATE_ACTIVITY,
+  ADD_PLAN,
+  REMOVE_PLAN,
+  EXPAND_PLAN,
+  UNEXPAND_PLAN,
+  UPDATE_PLAN,
 } from '../constants/action-types.js'
 
 import {
@@ -18,21 +18,21 @@ import validatePlan from '../lib/validate-plan.js'
 
 export function addPlan(plan) {
   return {
-    type: ADD_ACTIVITY,
+    type: ADD_PLAN,
     plan,
   }
 }
 
 export function removePlan(clientId) {
   return {
-    type: REMOVE_ACTIVITY,
+    type: REMOVE_PLAN,
     clientId,
   }
 }
 
 export function updatePlan(clientId, plan) {
   return {
-    type: UPDATE_ACTIVITY,
+    type: UPDATE_PLAN,
     clientId,
     plan,
   }
@@ -40,14 +40,14 @@ export function updatePlan(clientId, plan) {
 
 export function expandPlan(plan) {
   return {
-    type: EXPAND_ACTIVITY,
+    type: EXPAND_PLAN,
     plan,
   }
 }
 
 export function unexpandPlan(plan) {
   return {
-    type: UNEXPAND_ACTIVITY,
+    type: UNEXPAND_PLAN,
     plan,
   }
 }

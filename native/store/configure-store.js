@@ -1,8 +1,6 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import rootReducer from '../reducers/index.js'
-import actions from '../actions/index.js'
-const { setUser, requestRefreshPlans } = actions
 
 const configureStore = () => {
   const store = createStore(rootReducer, applyMiddleware(thunk))
@@ -10,7 +8,15 @@ const configureStore = () => {
   // To ease debugging, output state whenever it changes
   store.subscribe(() => console.log('Store updated: ', store.getState()))
 
-  return store;
+  // if (module.hot) {
+  //   // Enable Webpack hot module replacement for reducers
+  //   module.hot.accept(() => {
+  //     const nextRootReducer = require('../reducers/index.js').default
+  //     store.replaceReducer(nextRootReducer);
+  //   });
+  // }
+
+  return store
 }
 
 export default configureStore

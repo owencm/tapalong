@@ -28,16 +28,18 @@ import DatePicker from 'react-native-datepicker'
 const EditPlanCard = React.createClass({
 
   getInitialState: function () {
-
+    const hasPlan = !!this.props.plan
     const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
     const todayFourPm = Date.today().set({hour: 16});
+    const initialDateTime = todayFourPm - Date.now() > 0 ? todayFourPm : tomorrowFourPm
     return {
-      title: this.props.plan ? this.props.plan.title : '',
-      description: this.props.plan ? this.props.plan.description : '',
-      startTime: this.props.plan ? this.props.plan.startTime : todayFourPm,
+      title: hasPlan && this.props.plan.title ? this.props.plan.title : '',
+      description: hasPlan && this.props.plan.description ? this.props.plan.description : '',
+      startTime: hasPlan && this.props.plan.startTime ? this.props.plan.startTime : initialDateTime,
       saveRequestPending: false,
       deleteRequestPending: false,
     };
+
   },
 
   componentDidMount: function () {
@@ -133,8 +135,8 @@ const EditPlanCard = React.createClass({
   },
 
   render: function () {
-    console.log('rendering form with state', this.state)
-    let editing = !!this.props.plan;
+    console.log('Rendering form with state and props', this.state, this.props)
+    let editing = !this.props.creating;
     /*
       Set up styles
     */

@@ -1,7 +1,6 @@
 import React from 'react'
 import m from '../m.js'
 import {
-  ScrollView,
   View,
 } from 'react-native'
 import PlanCard from './plan-card.js'
@@ -48,7 +47,7 @@ const getPlansList = (props) => {
     );
   });
 
-  return <View style={{ paddingBottom: 18 }}>{ planElements }</View>
+  return planElements
 
 }
 
@@ -57,9 +56,9 @@ const PlanCardList = (props) => {
   const plansList = getPlansList(props)
 
   return (
-    <ScrollView style={{ flex: 1 }}>
+    <View style={ props.style } >
       { plansList }
-    </ScrollView>
+    </View>
   )
 
 }

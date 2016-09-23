@@ -2,7 +2,7 @@ require('datejs');
 
 const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = false
+const delayNetworkRequests = true
 
 const requestLogin = (fbToken) => {
   return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
@@ -21,8 +21,8 @@ const fixDateOnPlan = (plan) => {
   return plan;
 }
 
-const requestPublicPlans = (user) => {
-  return sendRequest('public_plans/', 'get', '', user)
+const requestEventsFromServer = (user) => {
+  return sendRequest('public_events/', 'get', '', user)
 }
 
 const requestPlansFromServer = (user) => {
@@ -122,8 +122,9 @@ const sendToServiceWorker = function (data) {
   navigator.serviceWorker.controller.postMessage(data);
 }
 
-module.exports = {
+export default {
   requestPlansFromServer,
+  requestEventsFromServer,
   requestCreatePlan,
   requestSetAttending,
   requestUpdatePlan,

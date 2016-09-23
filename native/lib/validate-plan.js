@@ -21,7 +21,7 @@ const validatePlan = (plan) => {
     let now = new Date;
     now = now.add(-2).hours();
     if (plan.startTime < now) {
-      return {isValid: false, reason: `The date must be in the future (${plan.startTime.toString()} was provided)`};
+      return {isValid: false, reason: `New plans cannot be in the past`};
     }
   }
   return { isValid: true };

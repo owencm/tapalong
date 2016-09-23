@@ -1,15 +1,20 @@
-import React from 'react';
-import m from '../m.js';
-import { View, Text } from 'react-native'
-import Card from './card.js';
-import CardOptions from './card-options.js';
-import PlanCardTitle from './plan-card-title.js';
-import AttendeesList from './attendees-list.js';
-import FriendIcon from './friend-icon.js';
-import Collapsible from 'react-native-collapsible';
+import React from 'react'
+import m from '../m.js'
+import {
+  View,
+  Text,
+  Linking,
+} from 'react-native'
+import Card from './card.js'
+import CardOptions from './card-options.js'
+import CardMainContents from './card-main-contents.js'
+import PlanCardTitle from './plan-card-title.js'
+import AttendeesList from './attendees-list.js'
+import FriendIcon from './friend-icon.js'
+import Collapsible from 'react-native-collapsible'
 import PlanCardDetails from './plan-card-details.js'
 // import Collapse from 'react-collapse';
-import If from './if.js';
+import If from './if.js'
 
 export default function(props) {
 
@@ -22,6 +27,10 @@ export default function(props) {
 
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
+  const onMessageClick = () => {
+    Linking.openURL('https://m.me/elizharwood')
+  }
+
   if (detailsAvaialable && !alreadyShowingAllDetailsInSummary) {
     options.push({
       label: detailsOptionString,
@@ -30,40 +39,46 @@ export default function(props) {
     });
   }
 
-  const getOption = (isCreator, isAttending) => {
+  const getOptions = (isCreator, isAttending) => {
     let string
     if (isCreator) {
       // Editing
-      return {
+      return [{
         label: 'Edit',
         type: 'secondary',
         onClick: (e) => { e.stopPropagation(); props.onEditClick() },
-      }
+      }]
     } else if (isAttending) {
       // Unattending
-      return {
-        label: '✓ Going',
-        type: 'secondary',
-        onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
-      }
+      return [
+        {
+          label: 'Message',
+          type: 'secondary',
+          onClick: (e) => { e.stopPropagation(); onMessageClick() },
+        },
+        {
+          label: '✓ Going',
+          type: 'secondary',
+          onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
+        },
+      ]
     } else {
       // Attending
-      return {
+      return [{
         label: 'Go along',
         onClick: (e) => { e.stopPropagation(); props.onAttendClick() },
-      }
+      }]
     }
   };
 
-  options.push(getOption(props.plan.isCreator, props.plan.isAttending))
+  options = [...options, ...getOptions(props.plan.isCreator, props.plan.isAttending)]
 
 
   return (
     <Card
       onClick={ () => props.onClick() }
-      style={{ backgroundColor: '#FAFAFA' }}
     >
-      <View style={{padding: 16, paddingBottom: 8, flex: 1, flexDirection: 'row'}}>
+      <CardMainContents style={{ flexDirection: 'row' }}>
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
           <FriendIcon thumbnail={props.plan.thumbnail}/>
           <If condition={ !props.plan.isCreator && props.plan.isAttending }>
@@ -91,7 +106,7 @@ export default function(props) {
             />
           </Collapsible>
         </View>
-      </View>
+      </CardMainContents>
       <CardOptions
         options={options}
       />

@@ -17,6 +17,7 @@ const EditScene = (props) => {
         onSaveClick={ props.onSaveClick }
         onCreateClick={ props.onCreateClick }
         onDeleteClick={ props.onDeleteClick }
+        creating={ props.creating }
       />
       <If condition={ props.creating }>
         <Hint
