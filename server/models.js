@@ -12,10 +12,6 @@ const { SQPlan, SQUser, SQUserPlan, SQPushSub } = require('./models/index.js')
 
 // TODO: move to a library of helpers
 
-// SQPlan.findAll({}).then((plans) => {
-//   console.log(plans.map(plan => plan.get({plain:true})))
-// })
-
 const promiseAllObj = (obj) => {
   let promiseArr = [];
   for (let key in obj) {
@@ -196,13 +192,13 @@ const Plans = (() => {
   //   Sorry it's hard to read.
   // TODO: Improve on readibility for this logic
   const getPlanFromDBPlanForUser = (dbPlan, user) => {
-
-    const dbAttendees = dbPlan.getAttendees()
+    const dbAttendees = dbPlan.attendees !== undefined ?
+      Promise.resolve(dbPlan.attendees) : dbPlan.getAttendees()
     const dbAttendeesExceptUser = dbAttendees.then((dbAttendees) => {
       return dbAttendees.filter((dbUser) => dbUser.get('id') !== user.dbUser.get('id'))
     })
     const attendeeNames = dbAttendeesExceptUser.then((dbAttendees) => {
-      return dbAttendeesExceptUser.map((dbUser) => dbUser.get('name'))
+      return dbAttendees.map((dbUser) => dbUser.get('name'))
     })
     const isAttending = dbAttendees.then((dbAttendees) => {
       return dbAttendeesExceptUser.then((dbAttendeesExceptUser) => {
@@ -210,7 +206,9 @@ const Plans = (() => {
       })
     })
 
-    const creator = dbPlan.getCreator().then(Users.getUserFromDBUser);
+    const dbCreator = dbPlan.creator !== undefined ?
+                        Promise.resolve(dbPlan.creator) : dbPlan.getCreator()
+    const creator = dbCreator.then(Users.getUserFromDBUser)
     const isCreator = creator.then((creatorUser) => {
       return creatorUser.dbUser.get('id') === user.dbUser.get('id')
     });
@@ -257,12 +255,16 @@ const Plans = (() => {
           }
         }
       },
-      include: {
+      // Include the creator so we use it in the where clause
+      // Include the attendees to prevent additional DB lookups
+      include: [{
         model: SQUser,
         as: 'creator'
-      }
+      }, {
+        model: SQUser,
+        as: 'attendees'
+      }]
     }).then((dbPlans) => {
-      console.log(dbPlans.map((dbPlan) => { return dbPlan.get('title') }))
       return Promise.all(dbPlans.map((dbPlan) => getPlanFromDBPlanForUser(dbPlan, user)));
     });
   };
