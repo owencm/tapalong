@@ -30,7 +30,7 @@ const ListScene = (props) => {
             onAttendPlan={ props.onAttendPlan }
             onUnattendPlan={ props.onUnattendPlan }
             onEditPlan={ props.gotoEditPlanScene }
-            selectedPlan={ props.plans.selectedPlan }
+            selectedPlans={ props.plans.selectedPlans }
             onExpandPlan={ props.onExpandPlan }
             onUnexpandPlan={ props.onUnexpandPlan }
             onCreateClick={ props.gotoCreatePlanScene }

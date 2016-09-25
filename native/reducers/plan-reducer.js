@@ -47,6 +47,7 @@ const planReducer = (state = {
                           plans: [],
                           maxPlanId: 0,
                           initialized: false,
+                          selectedPlans: [],
                         }, action) => {
 
   switch (action.type) {
@@ -94,13 +95,13 @@ const planReducer = (state = {
     case EXPAND_PLAN:
       return Object.assign({}, state,
         {
-          selectedPlan: action.plan
+          selectedPlans: [...state.selectedPlans, action.planId]
         }
       )
     case UNEXPAND_PLAN:
       return Object.assign({}, state,
         {
-          selectedPlan: undefined
+          selectedPlans: state.selectedPlans.filter(planId => planId !== action.planId)
         }
       )
     case SET_PLANS_INITIALIZED_STATE:

@@ -9,10 +9,10 @@ import Card from './card.js'
 import CardOptions from './card-options.js'
 import CardMainContents from './card-main-contents.js'
 import PlanCardTitle from './plan-card-title.js'
-import AttendeesList from './attendees-list.js'
 import FriendIcon from './friend-icon.js'
 import Collapsible from 'react-native-collapsible'
 import PlanCardDetails from './plan-card-details.js'
+import AttendeesListMini from './attendees-list-mini.js'
 // import Collapse from 'react-collapse';
 import If from './if.js'
 
@@ -21,9 +21,7 @@ export default function(props) {
   let options = [];
 
   const detailsAvaialable = props.plan.description !== '' ||
-                            props.plan.attendeeNames.length > 0
-  const alreadyShowingAllDetailsInSummary = props.plan.description === '' &&
-                                            props.plan.isCreator
+                            props.plan.attendees.length > 0
 
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
@@ -31,7 +29,7 @@ export default function(props) {
     Linking.openURL('https://m.me/elizharwood')
   }
 
-  if (detailsAvaialable && !alreadyShowingAllDetailsInSummary) {
+  if (detailsAvaialable) {
     options.push({
       label: detailsOptionString,
       type: 'secondary',
@@ -97,15 +95,16 @@ export default function(props) {
             startTime={ props.plan.startTime }
           />
           <If condition={ props.plan.isCreator }>
-            <PlanCardDetails
-              attendeeNames={ props.plan.attendeeNames }
+            <AttendeesListMini
+              attendees={ props.plan.attendees }
             />
           </If>
           <Collapsible collapsed={!props.selected}>
             <PlanCardDetails
               description={ props.plan.description }
-              attendeeNames={ props.plan.isCreator ? [] : props.plan.attendeeNames }
+              attendees={ props.plan.attendees }
               placeholderIfEmpty={ true }
+              ownedPlan={ props.plan.isCreator }
             />
           </Collapsible>
         </View>

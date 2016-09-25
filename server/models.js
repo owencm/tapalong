@@ -24,6 +24,14 @@ const promiseAllObj = (obj) => {
   });
 }
 
+const getAttrs = (dbObj, attrs) => {
+ return Object.assign(
+   ...attrs.map(attr => {
+     return {[attr]: dbObj.get(attr, { plain: true })}
+   })
+ )
+}
+
 const Users = (() => {
   // fbId is a string
   const createUser = (fbId, fbToken, name, friends) => {
@@ -192,13 +200,14 @@ const Plans = (() => {
   //   Sorry it's hard to read.
   // TODO: Improve on readibility for this logic
   const getPlanFromDBPlanForUser = (dbPlan, user) => {
+
     const dbAttendees = dbPlan.attendees !== undefined ?
       Promise.resolve(dbPlan.attendees) : dbPlan.getAttendees()
     const dbAttendeesExceptUser = dbAttendees.then((dbAttendees) => {
       return dbAttendees.filter((dbUser) => dbUser.get('id') !== user.dbUser.get('id'))
     })
-    const attendeeNames = dbAttendeesExceptUser.then((dbAttendees) => {
-      return dbAttendees.map((dbUser) => dbUser.get('name'))
+    const attendees = dbAttendeesExceptUser.then((dbAttendees) => {
+      return dbAttendees.map((dbUser) => getAttrs(dbUser, ['name', 'id', 'fbId']))
     })
     const isAttending = dbAttendees.then((dbAttendees) => {
       return dbAttendeesExceptUser.then((dbAttendeesExceptUser) => {
@@ -217,20 +226,26 @@ const Plans = (() => {
     const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
 
     const serializedAttrPromises = {
-      attendeeNames,
+      attendees,
       isAttending,
       thumbnail,
       creatorName,
       isCreator
-    };
-    const attrPromises = { creator };
+    }
+    const attrPromises = { creator }
+
+    const basicSerializedPlan = getAttrs(dbPlan, ['creatorId', 'id', 'description', 'title', 'startTime'])
 
     return promiseAllObj(serializedAttrPromises).then((serializedAttrs) => {
       return promiseAllObj(attrPromises).then((attrs) => {
+        /*
+          Example output:
+            { dbPlan: ..., serializedPlan: ..., creator: ... }
+        */
         return Object.assign({
           dbPlan,
           serializedPlan: Object.assign(
-            dbPlan.get({ plain: true }),
+            basicSerializedPlan,
             serializedAttrs
           )
         }, attrs);

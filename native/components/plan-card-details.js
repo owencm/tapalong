@@ -20,7 +20,7 @@ export default function(props) {
   let sections = []
 
   const hasDescription = !(props.description === undefined || props.description === '')
-  if ( !hasDescription && props.attendeeNames.length === 0 && props.placeholderIfEmpty) {
+  if ( !hasDescription && props.attendees.length === 0 && props.placeholderIfEmpty) {
     sections.push(
       <Text
         style={ m(defaultTextStyle, sectionStyle, { fontStyle: 'italic' }) }
@@ -45,12 +45,14 @@ export default function(props) {
     )
   }
 
-  if (props.attendeeNames.length > 0) {
+  if (props.attendees.length > 0) {
     sections.push(
       <AttendeesList
-        attendeeNames={props.attendeeNames}
+        attendees={ props.attendees }
+        ownedPlan={ props.ownedPlan }
         style={sectionStyle}
         key='attendee-list'
+        messagable={ props.ownedPlan }
       />
     )
   }

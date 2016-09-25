@@ -39,17 +39,17 @@ export function updatePlan(clientId, plan) {
   }
 }
 
-export function expandPlan(plan) {
+export function expandPlan(planId) {
   return {
     type: EXPAND_PLAN,
-    plan,
+    planId,
   }
 }
 
-export function unexpandPlan(plan) {
+export function unexpandPlan(planId) {
   return {
     type: UNEXPAND_PLAN,
-    plan,
+    planId,
   }
 }
 

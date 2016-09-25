@@ -22,6 +22,7 @@ const requestActivitiesFromServer = function (user, success, failure) {
     const activities = JSON.parse(responseText).map(function (activity) {
       // Parse the datetimes into actual objects.
       activity.startTime = new Date(activity.startTime);
+      activity.attendeeNames = activity.attendees.map(attendee => attendee.name)
       return activity;
     });
     return activities;

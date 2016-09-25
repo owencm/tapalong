@@ -19,17 +19,19 @@ const getPlansList = (props) => {
     return <PlanCardListPlaceholder onCreateClick={ props.onCreateClick } />
   }
 
-  const handlePlanClick = (plan) => {
-    // If something is selected, and it's the plan clicked...
-    if (props.selectedPlan &&
-        props.selectedPlan.clientId == plan.clientId) {
-      props.onUnexpandPlan(plan)
-    } else {
-      props.onExpandPlan(plan)
-    }
-  }
+  const getPlanElement = (plan) => {
 
-  const planElements = props.plans.map((plan) => {
+    const isSelected = props.selectedPlans &&
+        props.selectedPlans.indexOf(plan.id) >= 0;
+
+    const handlePlanClick = (plan) => {
+      if (isSelected) {
+        props.onUnexpandPlan(plan.id)
+      } else {
+        props.onExpandPlan(plan.id)
+      }
+    }
+
     return (
       <PlanCard
         plan={ plan }
@@ -38,17 +40,13 @@ const getPlansList = (props) => {
         onAttendClick={ () => props.onAttendPlan(plan) }
         onUnattendClick={ () => props.onUnattendPlan(plan) }
         onEditClick={ () => props.onEditPlan(plan) }
-        selected={
-          !!props.selectedPlan &&
-          props.selectedPlan.clientId == plan.clientId
-        }
+        selected={ isSelected }
         key={ plan.clientId }
       />
     );
-  });
+  }
 
-  return planElements
-
+  return props.plans.map(getPlanElement);
 }
 
 const PlanCardList = (props) => {

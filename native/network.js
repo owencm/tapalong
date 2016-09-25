@@ -104,6 +104,7 @@ const sendRequest = (url, method, body, user) => {
     })
     .then(checkStatus)
     .then(response => response.json())
+    // .then(json => { console.log(json); return json })
   })
 
   // console.log('requesting', url)
