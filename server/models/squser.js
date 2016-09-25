@@ -13,7 +13,10 @@ module.exports = function(sequelize, DataTypes) {
           through: models.SQUserPlan,
           foreignKey: 'userId'
         })
-        SQUser.hasMany(models.SQPushSub, { as: 'pushSubs' })
+        SQUser.hasMany(models.SQPushSub, {
+          as: 'pushSubs',
+          foreignKey: 'userId'
+        })
       }
     }
   });

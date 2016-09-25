@@ -66,7 +66,7 @@ const normalizedEverywhere = [
     events: [
       { title: 'playing board games', },
       { title: 'watching a movie', },
-      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/place/Coffee+Shops/' },
+      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/search/Coffee+Shops/' },
     ],
   }
 ]

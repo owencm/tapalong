@@ -18,7 +18,7 @@ Users.getUserWithFbId('680160262').then((user) => {
   owen = user;
 })
 
-const publicPath = __dirname + '../web/build'
+const publicPath = __dirname + '/../web/build'
 const app = express();
 
 app.use(responseTime((req, res, time) => {
@@ -35,7 +35,7 @@ app.use(bodyParser.json());
 // TODO: find a tidier way of only authenticating specific endpoints
 // TODO: Find a tidier way of sending 403s
 app.use('/api/v1', (req, res, next) => {
-  console.log(`Serving ${req.path} for user ${req.headers['user-id']}`.blue)
+  console.log(`${req.method} ${req.path} request from user ${req.headers['user-id']}`.blue)
 
   if (req.path === '/login/') {
     next();

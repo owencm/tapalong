@@ -66,6 +66,7 @@ const requestCreatePushNotificationsSubscription = function (user, subscription)
 };
 
 const checkStatus = (response) => {
+  console.log(response)
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
@@ -104,7 +105,7 @@ const sendRequest = (url, method, body, user) => {
     })
     .then(checkStatus)
     .then(response => response.json())
-; return js })
+  })
 
   // console.log('requesting', url)
   // let req = new XMLHttpRequest();

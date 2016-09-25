@@ -68,8 +68,6 @@ const EditPlanCard = React.createClass({
   },
 
   handleDateTimeChange: function (date){
-    date = new Date(date)
-    console.log(date)
     this.setState({ startTime: date })
   },
 
@@ -202,26 +200,32 @@ const EditPlanCard = React.createClass({
               autoCapitalize='none'
             />
         </View>
-          <DatePicker
-            customStyles={{
-              dateInput: {
-                borderWidth: 0,
-                borderBottomWidth: 1,
-                borderBottomColor: '#DDD',
-                alignItems: 'flex-start',
-              }
+          <View
+            style={{
+              borderBottomWidth: 1,
+              borderBottomColor: '#DDD',
+              marginBottom: 10
             }}
-            showIcon={false}
-            mode='datetime'
-            confirmBtnText='Confirm'
-            cancelBtnText='Cancel'
-            format='MM/DD/YY HH:mm'
-            min={ Date.today() }
-            date={ this.state.startTime }
-            onDateChange={ this.handleDateTimeChange }
-            style={{ marginBottom: 10 }}
           >
-          </DatePicker>
+            <DatePicker
+              customStyles={{
+                dateInput: {
+                  borderWidth: 0,
+                  alignItems: 'flex-start',
+                  flex: 1,
+                }
+              }}
+              showIcon={false}
+              mode='datetime'
+              confirmBtnText='Confirm'
+              cancelBtnText='Cancel'
+              format='dddd Do MMMM, ha'
+              min={ Date.today() }
+              date={ this.state.startTime }
+              onDateChange={ (_, date) => this.handleDateTimeChange(date) }
+              style={{ flexDirection: 'row' }}
+            />
+          </View>
           <AutoExpandingTextInput
             style={ inputContainerStyle }
             placeholder='Extra information (what? where?)'

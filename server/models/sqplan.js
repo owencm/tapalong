@@ -4,7 +4,11 @@ module.exports = function(sequelize, DataTypes) {
     description: DataTypes.STRING,
     startTime: DataTypes.DATE,
     title: DataTypes.STRING,
-    cancelled: DataTypes.BOOLEAN,
+    cancelled: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+      allowNull: false,
+    },
     creatorId: DataTypes.INTEGER
   }, {
     classMethods: {
