@@ -40,7 +40,11 @@ export default function(props) {
   }
 
   const getOptions = (isCreator, isAttending) => {
-    let string
+    const messageOption = {
+      label: 'Message',
+      type: 'secondary',
+      onClick: (e) => { e.stopPropagation(); onMessageClick() },
+    }
     if (isCreator) {
       // Editing
       return [{
@@ -51,11 +55,7 @@ export default function(props) {
     } else if (isAttending) {
       // Unattending
       return [
-        {
-          label: 'Message',
-          type: 'secondary',
-          onClick: (e) => { e.stopPropagation(); onMessageClick() },
-        },
+        messageOption,
         {
           label: '✓ Going',
           type: 'secondary',
@@ -64,10 +64,13 @@ export default function(props) {
       ]
     } else {
       // Attending
-      return [{
-        label: 'Go along',
-        onClick: (e) => { e.stopPropagation(); props.onAttendClick() },
-      }]
+      return [
+        messageOption,
+        {
+          label: 'Go along',
+          onClick: (e) => { e.stopPropagation(); props.onAttendClick() },
+        },
+      ]
     }
   };
 
