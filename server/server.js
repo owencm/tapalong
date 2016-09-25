@@ -35,7 +35,7 @@ app.use(bodyParser.json());
 // TODO: find a tidier way of only authenticating specific endpoints
 // TODO: Find a tidier way of sending 403s
 app.use('/api/v1', (req, res, next) => {
-  console.log(`${req.method} ${req.path} request from user ${req.headers['user-id']}`.blue)
+  console.log(`${req.method} ${req.path} request from user ${req.headers['user-id']}`.green)
 
   if (req.path === '/login/') {
     next();
@@ -63,8 +63,8 @@ app.use('/api/v1', (req, res, next) => {
 
 const promiseWithTimeout = (promise, timeout) => {
   return new Promise((resolve, reject) => {
-    setTimeout(resolve, timeout);
-    return promise.then(resolve);
+    setTimeout(() => resolve(true), timeout);
+    return promise.then(() => resolve(false));
   });
 }
 
@@ -102,7 +102,8 @@ app.post('/api/v1/login', (req, res) => {
 // Index
 app.get('/api/v1/plans/visible_to_user/', (req, res) => {
   // Update the list of this users FB friends in case one of their friends has joined
-  promiseWithTimeout(Users.refreshFbFriendsForUser(req.user), 100).then(() => {
+  promiseWithTimeout(Users.refreshFbFriendsForUser(req.user), 1000).then((timedOut) => {
+    console.log('Updating friends ' + (timedOut ? 'timed out' : 'did not time out'))
     return Plans.getPlansVisibleToUser(req.user);
   }).then((plans) => {
     return plans.map((plan) => plan.serializedPlan);

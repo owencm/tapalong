@@ -96,7 +96,7 @@ const sendRequest = (url, method, body, user) => {
     })
   }
 
-  return wait(delayNetworkRequests ? 500 + Math.random() * 1500 : 0)
+  return wait(delayNetworkRequests ? 1000 + Math.random() * 2000 : 0)
     .then(() => { return fetch(`${apiEndpoint}/${url}`, {
       method,
       body,
