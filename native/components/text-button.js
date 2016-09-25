@@ -35,7 +35,7 @@ const TextButton = (props) => {
       onPress={ props.disabled ? () => {} : props.onClick }
       key={ props.label }
     >
-      <View >
+      <View>
         <Text style={m(textStyle, defaultStyle, { color }, props.style)}>
           { props.label.toUpperCase() }
         </Text>

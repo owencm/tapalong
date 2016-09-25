@@ -9,13 +9,11 @@ import {
 let RaisedButton = (props) => {
   let style = {
     outer: {
-      backgroundColor: '#FFFF00',
-      minWidth: 128,
-      padding: 16,
-      margin: 24,
+      backgroundColor: '#00BCD4',
+      padding: 8,
       borderRadius: 2,
       shadowColor: 'black',
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.15,
       shadowRadius: 2,
       shadowOffset: { width: 0, height: 3 },
       alignItems: 'center',
@@ -23,7 +21,8 @@ let RaisedButton = (props) => {
     inner: {
       // display: 'inline-block'
       fontWeight: '500',
-      color: '#333',
+      color: 'white',
+      fontSize: 13,
     }
   }
 

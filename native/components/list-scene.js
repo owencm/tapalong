@@ -5,7 +5,7 @@ import {
   View,
 } from 'react-native'
 import PlanCardList from './plan-card-list.js'
-import TextButton from './text-button.js'
+import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
 
@@ -48,18 +48,18 @@ const ListScene = (props) => {
         { butterBar }
       </View>
       <View style={{
-        backgroundColor: 'white',
-        padding: 8,
+        backgroundColor: '#e9e9ef',
+        padding: 12,
         justifyContent: 'center',
         flexDirection: 'row',
         borderTopWidth: 1,
-        borderTopColor: '#EEE'
+        borderTopColor: '#BBB'
       }}
       >
-        <View style={{ justifyContent: 'center' }}>
-          <Text style={{ color: '#444' }}>Got something planned?</Text>
+        <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 16 }}>
+          <Text style={{ color: '#888', fontSize: 13 }}>Got something planned?</Text>
         </View>
-        <TextButton label='Add plan' onClick={ props.gotoCreatePlanScene } />
+        <RaisedButton label='Add plan' onClick={ props.gotoCreatePlanScene } />
       </View>
     </View>
   )
