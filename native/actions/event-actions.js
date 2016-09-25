@@ -1,5 +1,5 @@
 import {
-  ADD_EVENT,
+  ADD_EVENTS,
   REMOVE_EVENT,
   EXPAND_EVENT,
   UNEXPAND_EVENT,
@@ -9,10 +9,10 @@ import network from '../network.js'
 
 /* Events actions */
 
-export function addEvent(event) {
+export function addEvents(events) {
   return {
-    type: ADD_EVENT,
-    event,
+    type: ADD_EVENTS,
+    events,
   }
 }
 
@@ -42,8 +42,7 @@ export function unexpandEvent(plan) {
 export function requestRefreshEvents(userId, sessionToken) {
   return (dispatch) => {
     return network.requestEventsFromServer({userId, sessionToken}).then((events) => {
-      console.log(events)
-      events.map((event) => { dispatch(addEvent(event)) })
+      dispatch(addEvents(events))
     })
   }
 }

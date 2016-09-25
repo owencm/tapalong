@@ -1,5 +1,5 @@
 import {
-  ADD_PLAN,
+  ADD_PLANS,
   REMOVE_PLAN,
   EXPAND_PLAN,
   UNEXPAND_PLAN,
@@ -17,10 +17,10 @@ import validatePlan from '../lib/validate-plan.js'
 
 /* Plans actions */
 
-export function addPlan(plan) {
+export function addPlans(plans) {
   return {
-    type: ADD_PLAN,
-    plan,
+    type: ADD_PLANS,
+    plans,
   }
 }
 
@@ -89,10 +89,7 @@ export function requestRefreshPlans(userId, sessionToken) {
   return (dispatch) => {
     return network.requestPlansFromServer({userId, sessionToken}).then((plans) => {
       dispatch(setPlansInitialized(true))
-      for (let i = 0; i < plans.length; i++) {
-        const plan = plans[i]
-        dispatch(addPlan(plan))
-      }
+      dispatch(addPlans(plans))
     })
   }
 }
@@ -103,7 +100,7 @@ export function requestCreatePlan(userId, sessionToken, newPlan) {
     if (validity.isValid) {
       return network.requestCreatePlan({userId, sessionToken}, newPlan)
         .then((updatedPlan) => {
-          dispatch(addPlan(updatedPlan))
+          dispatch(addPlans([updatedPlan]))
         })
     } else {
       alert(validity.reason)
@@ -123,7 +120,7 @@ export function requestUpdatePlan(userId, sessionToken, plan, planChanges) {
       return network.requestUpdatePlan({userId, sessionToken}, plan, planChanges)
         .then((updatedPlan) => {
           dispatch(removePlan(plan.clientId));
-          dispatch(addPlan(updatedPlan));
+          dispatch(addPlans([updatedPlan]));
         })
     } else {
       alert(validity.reason)

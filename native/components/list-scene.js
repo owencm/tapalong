@@ -6,16 +6,18 @@ import {
 } from 'react-native'
 import PlanCardList from './plan-card-list.js'
 import TextButton from './text-button.js'
-import If from './if.js'
 import PublicEventCardList from './public-event-card-list.js'
+import Collapsible from 'react-native-collapsible'
 
 const ListScene = (props) => {
   const butterBar = (
-    <If condition={ props.shouldShowButterBar }>
-      <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: 14, backgroundColor: '#333' }}>
-        <Text style={{ color: '#EEE' }}>{`Great! We'll let them know you are going.`}</Text>
-      </View>
-    </If>
+    <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
+      <Collapsible collapsed={ !props.shouldShowButterBar } align={ 'bottom' }>
+        <View style={{ padding: 14, backgroundColor: '#333' }}>
+          <Text style={{ color: '#EEE' }}>{`Great! We'll let them know you are going.`}</Text>
+        </View>
+      </Collapsible>
+    </View>
   )
 
   return (

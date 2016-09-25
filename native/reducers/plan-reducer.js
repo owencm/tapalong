@@ -1,5 +1,5 @@
 import {
-  ADD_PLAN,
+  ADD_PLANS,
   REMOVE_PLAN,
   EXPAND_PLAN,
   UNEXPAND_PLAN,
@@ -51,20 +51,30 @@ const planReducer = (state = {
                         }, action) => {
 
   switch (action.type) {
-    case ADD_PLAN:
-      let validity = validateNewPlan(action.plan);
-      if (!validity.isValid) {
-        console.log(`Invalid plan attempted to be added: ${validity.reason}`);
-        return Object.assign({}, state, { initialized: true });
-      }
+    case ADD_PLANS:
+
+      console.log('Adding plans', action.plans)
+
+      let plans = action.plans.filter(plan => {
+        let validity = validateNewPlan(plan)
+        if (!validity.isValid) {
+          console.log(`Invalid plan attempted to be added: ${validity.reason}`);
+        }
+        return validity.isValid
+      })
+
+      let maxPlanId = state.maxPlanId
+
+      plans = plans.map(plan => {
+        return Object.assign({}, plan, { clientId: maxPlanId++ })
+      })
+
       return Object.assign(
         {},
         state,
         {
-          plans: [...state.plans,
-            Object.assign({}, action.plan, { clientId: state.maxPlanId })
-          ].sort(sortByTime),
-          maxPlanId: state.maxPlanId + 1
+          plans: [...state.plans, ...plans].sort(sortByTime),
+          maxPlanId: maxPlanId
         },
       );
     case REMOVE_PLAN:
