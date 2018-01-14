@@ -11,8 +11,6 @@ const style = {
 }
 
 class AutoExpandingTextInput extends React.Component {
-  state: any;
-
   constructor(props) {
     super(props);
     this.state = {

@@ -2,9 +2,12 @@ import React from 'react';
 import If from './if.js';
 import DimScreen from './dim-screen.js';
 
-let InstallPromptDimmer = React.createClass({
+class InstallPromptDimmer extends React.Component {
+  state = {
+    installPromptShowing: false
+  };
 
-  componentDidMount: function() {
+  componentDidMount() {
     const handleInstallPromptShowing = (userChoice) => {
       // Only show the banner once a week in case people have the bypass user
       //   engagement flag flipped
@@ -23,22 +26,15 @@ let InstallPromptDimmer = React.createClass({
         }
       }, 200);
     });
-  },
+  }
 
-  getInitialState: function() {
-    return {
-      installPromptShowing: false
-    }
-  },
-
-  render: function() {
+  render() {
     return (
       <If condition={this.state.installPromptShowing}>
         <DimScreen />
       </If>
     )
-  },
-
-});
+  }
+}
 
 module.exports = InstallPromptDimmer;

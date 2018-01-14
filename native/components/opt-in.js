@@ -9,23 +9,20 @@ import If from './if.js';
 // TODO: Refactor dependency on this to higher up in the hierarchy
 // import swLibrary from '../swsetup.js';
 
-let OptIn = React.createClass({
-
+class OptIn extends React.Component {
   // TODO: refactor state out into Redux
-  getInitialState: function () {
-    return {showingPermissionRequest: false};
-  },
+  state = {showingPermissionRequest: false};
 
-  componentDidMount: function () {
+  componentDidMount() {
     // Let the parent know when the transition is over
     setTimeout(this.props.onScreenDim, this.props.duration);
-  },
+  }
 
-  handleOKClick: function (e) {
+  handleOKClick = (e) => {
     this.setState({showingPermissionRequest: true});
-  },
+  };
 
-  handleScreenDim: function () {
+  handleScreenDim = () => {
     console.log('Not implemented');
     // swLibrary.requestPushNotificationPermissionAndSubscribe(this.props.user, () => {
     //   this.setState({showingPermissionRequest: false});
@@ -36,9 +33,9 @@ let OptIn = React.createClass({
     //   this.setState({showingPermissionRequest: false});
     //   this.props.onOptInComplete();
     // });
-  },
+  };
 
-  render: function () {
+  render() {
     return (
       <Card>
         <div style={{padding: '24px'}}>
@@ -53,7 +50,6 @@ let OptIn = React.createClass({
       </Card>
     )
   }
-
-});
+}
 
 module.exports = OptIn;

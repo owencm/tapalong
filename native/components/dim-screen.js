@@ -1,13 +1,12 @@
 import React from 'react';
 import m from '../m.js';
 
-let DimScreen = React.createClass({
-
-  getDuration: function () {
+class DimScreen extends React.Component {
+  getDuration = () => {
     return (this.props.duration == undefined) ? 0 : this.props.duration;
-  },
+  };
 
-  render: function () {
+  render() {
     return (
       <div
         ref='permissionOverlay'
@@ -24,16 +23,15 @@ let DimScreen = React.createClass({
         }}
       />
     )
-  },
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     // Let the parent know when the transition is over
     setTimeout(this.props.onScreenDim, this.getDuration());
     // Force a layout so the transition will apply
     this.refs.permissionOverlay.offsetTop;
     this.refs.permissionOverlay.style.opacity = 1;
   }
-
-});
+}
 
 module.exports = DimScreen;

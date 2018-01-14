@@ -1,9 +1,13 @@
 import React from 'react';
 import m from '../m.js';
 
-let FacebookLogin = React.createClass({
+class FacebookLogin extends React.Component {
+  state = {
+    readyToLogin: false,
+    fbResponse: undefined
+  };
 
-  render: function() {
+  render() {
     // Clone the children so we can set props on them indicating the state of the login process
     let children = React.Children.map(this.props.children, (child) => {
       return React.cloneElement(child, {readyToLogin: this.state.readyToLogin});
@@ -14,16 +18,9 @@ let FacebookLogin = React.createClass({
         <div id="fb-root"></div>
       </div>
     )
-  },
+  }
 
-  getInitialState: function() {
-    return {
-      readyToLogin: false,
-      fbResponse: undefined
-    }
-  },
-
-  componentDidMount: function() {
+  componentDidMount() {
 
     window.fbAsyncInit = function() {
       FB.init({
@@ -51,9 +48,9 @@ let FacebookLogin = React.createClass({
      js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
    }(document, 'script', 'facebook-jssdk'));
-  },
+  }
 
-  checkLoginState: function(response) {
+  checkLoginState = (response) => {
     if (response.authResponse) {
 
       this.props.loginHandler(response.authResponse);
@@ -70,13 +67,13 @@ let FacebookLogin = React.createClass({
       // }
 
     }
-  },
+  };
 
-  handleClick: function() {
+  handleClick = () => {
     if (this.state.fbResponse) {
       this.checkLoginState(this.state.fbResponse);
     }
-  }
-});
+  };
+}
 
 module.exports = FacebookLogin;

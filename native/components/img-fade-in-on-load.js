@@ -3,17 +3,18 @@ import { View, Image, Platform } from 'react-native'
 import m from '../m.js';
 import If from './if.js';
 
-let ImgFadeInOnLoad = React.createClass({
+export default class ImgFadeInOnLoad extends React.Component {
 
-  getInitialState: function () {
-    return { loading: false, loaded: false };
-  },
+  constructor(props) {
+    super(props)
+    this.state = { loading: false, loaded: false };
+  }
 
-  componentDidMount: function () {
+  componentDidMount() {
     this.loadImage(this.props.src);
-  },
+  }
 
-  loadImage: function (src) {
+  loadImage(src) {
     if (!this.state.loadingStarted) {
       this.setState({loadingStarted: true});
       let img = new Image();
@@ -22,9 +23,9 @@ let ImgFadeInOnLoad = React.createClass({
       };
       img.src = src;
     }
-  },
+  }
 
-  render: function () {
+  render() {
     let overlayStyle = {
       width: this.props.width,
       height: this.props.height,
@@ -69,6 +70,4 @@ let ImgFadeInOnLoad = React.createClass({
     // )
   }
 
-});
-
-module.exports = ImgFadeInOnLoad;
+}
