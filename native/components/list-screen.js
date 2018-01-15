@@ -9,10 +9,10 @@ import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
 
-const ListScene = (props) => {
+const ListScreen = (props) => {
   const butterBar = (
     <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-      <Collapsible collapsed={ !props.shouldShowButterBar } align={ 'bottom' }>
+      <Collapsible collapsed={ !props.butterBar.shouldShowButterBar } align={ 'bottom' }>
         <View style={{ padding: 14, backgroundColor: '#333' }}>
           <Text style={{ color: '#EEE' }}>{`Great! We'll let them know you are going.`}</Text>
         </View>
@@ -31,15 +31,15 @@ const ListScene = (props) => {
             plansInitialized={ props.plans.initialized }
             onAttendPlan={ props.onAttendPlan }
             onUnattendPlan={ props.onUnattendPlan }
-            onEditPlan={ props.gotoEditPlanScene }
+            onEditPlan={ props.gotoEditPlanScreen }
             selectedPlans={ props.plans.selectedPlans }
             onExpandPlan={ props.onExpandPlan }
             onUnexpandPlan={ props.onUnexpandPlan }
-            onCreateClick={ props.gotoCreatePlanScene }
+            onCreateClick={ props.gotoCreatePlanScreen }
           />
           <PublicEventCardList
             user={ props.user }
-            onCreateClick={ props.gotoCreatePlanScene }
+            onCreateClick={ props.gotoCreatePlanScreen }
             eventsInitialized={ props.events.initialized }
             events={ props.events.events }
           />
@@ -59,11 +59,11 @@ const ListScene = (props) => {
         <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 16 }}>
           <Text style={{ color: '#888', fontSize: 13 }}>Got something planned?</Text>
         </View>
-        <RaisedButton label='Add plan' onClick={ props.gotoCreatePlanScene } />
+        <RaisedButton label='Add plan' onClick={ props.gotoCreatePlanScreen } />
       </View>
     </View>
   )
 
 }
 
-export default ListScene
+export default ListScreen

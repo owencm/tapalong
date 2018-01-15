@@ -11,14 +11,6 @@ import FacebookLoginNative from './facebook-login-native.js'
 
 const LoginScene = (props) => {
 
-  const handleLoginDismissed = () => {
-    props.onLoginDismissed()
-  }
-
-  const handleTokenReady = ({ accessToken }) => {
-    props.onLoginComplete(accessToken)
-  }
-
   const loginTextStyle = {
     color: 'white',
     fontSize: 12,
@@ -42,8 +34,8 @@ const LoginScene = (props) => {
 
   const loginButton = (
     <FacebookLoginNative
-      onLogin={ handleLoginDismissed }
-      onTokenReady={ handleTokenReady }
+      // onLogin={ props.onLoginDismissed }
+      onTokenReady={ props.onLoginComplete }
     >
       <View style={ loginButtonStyle }>
         <If condition={ readyToLogin }>
@@ -105,14 +97,26 @@ const LoginScene = (props) => {
   </View>
 
   return (
-    <Image
-      style={{ flex: 1, width: null, height: null }}
-      source={ require('../assets/background-mobile.jpg') }
-    >
-      { header }
-      { mid }
-      { footer }
-    </Image>
+    <View style={{ flex: 1 }}>
+      <Image
+        style={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          right: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        source={ require('../assets/background-mobile.jpg') }
+      >
+      </Image>
+      <View style={{ flex: 1 }}>
+        { header }
+        { mid }
+        { footer }
+      </View>
+    </View>
   )
 };
 

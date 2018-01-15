@@ -2,18 +2,20 @@ require('datejs');
 
 const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = true
+const delayNetworkRequests = false
 
 const requestLogin = (fbToken) => {
+  console.log('sending request to login endpoint')
   return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
     .then((response) => {
+      console.log('response from login endpoint', response)
       return {
         userId: response.user_id,
         userName: response.user_name,
         sessionToken: response.session_token,
         thumbnail: response.image,
       }
-    });
+    }).catch((e) => { throw e })
 };
 
 const fixDateOnPlan = (plan) => {

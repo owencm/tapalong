@@ -25,51 +25,53 @@ import DatePicker from 'react-native-datepicker'
 //   }
 // });
 
-export default class EditPlanCard extends React.Component {
-  constructor(props) {
-    super(props)
+const EditPlanCard = React.createClass({
+
+  getInitialState: function () {
     const hasPlan = !!this.props.plan
     const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
     const todayFourPm = Date.today().set({hour: 16});
     const initialDateTime = todayFourPm - Date.now() > 0 ? todayFourPm : tomorrowFourPm
-    this.state = {
+    return {
       title: hasPlan && this.props.plan.title ? this.props.plan.title : '',
       description: hasPlan && this.props.plan.description ? this.props.plan.description : '',
       startTime: hasPlan && this.props.plan.startTime ? this.props.plan.startTime : initialDateTime,
       saveRequestPending: false,
       deleteRequestPending: false,
     };
-  }
 
-  componentDidMount() {
+  },
+
+  componentDidMount: function () {
     // Focus the title input if we're creating
     if (!this.props.plan) {
       this.refs.titleInput.focus();
     }
     // Scroll to the top of the page to ensure the editing screen is visible
     // scroll(window, 0);
-  }
+  },
 
-  handleTitleChange(newTitle) {
+  handleTitleChange: function (newTitle) {
+    // console.log(arguments)
     this.setState({title: newTitle});
     // this.setState({title: event.target.value});
-  }
+  },
 
-  handleTitleKeyDown(event) {
+  handleTitleKeyDown: function(event) {
     if (event.keyCode == 13 ) {
       this.refs.dateInput.focus();
     }
-  }
+  },
 
-  handleDescriptionChange(description) {
+  handleDescriptionChange: function (description) {
     this.setState({ description });
-  }
+  },
 
-  handleDateTimeChange(date){
+  handleDateTimeChange: function (date){
     this.setState({ startTime: date })
-  }
+  },
 
-  handleSaveClick() {
+  handleSaveClick: function () {
     let planChanges = {
       title: this.state.title,
       description: this.state.description,
@@ -80,9 +82,9 @@ export default class EditPlanCard extends React.Component {
       this.setState({ saveRequestPending: false })
       console.log('Could not save plan', e)
     });
-  }
+  },
 
-  handleCreateClick() {
+  handleCreateClick: function () {
     let newPlan = {
       title: this.state.title,
       startTime: this.state.startTime,
@@ -95,18 +97,18 @@ export default class EditPlanCard extends React.Component {
       this.setState({ saveRequestPending: false })
       console.log('Could not create plan', e)
     });
-  }
+  },
 
-  handleDeleteClick() {
+  handleDeleteClick: function () {
     // if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({ deleteRequestPending: true });
       this.props.onDeleteClick(this.props.plan);
     // } else {
       // Do nothing
     // }
-  }
+  },
 
-  getOptions(editing) {
+  getOptions: function(editing) {
     // Set up the options on the card
     let options = [];
     if (editing) {
@@ -128,10 +130,10 @@ export default class EditPlanCard extends React.Component {
       }
     }
     return options
-  }
+  },
 
-  render() {
-    console.log('Rendering form with state and props', this.state, this.props)
+  render: function () {
+    // console.log('Rendering form with state and props', this.state, this.props)
     let editing = !this.props.creating;
     /*
       Set up styles
@@ -238,9 +240,12 @@ export default class EditPlanCard extends React.Component {
       </Card>
     )
   }
-}
+});
 
-// handleDateChange (event) {
+export default EditPlanCard
+
+
+// handleDateChange: function (event) {
 //   // Note date will parse the date as if it was UTC, and then convert it into local TZ
 //   let newDate = new Date(event.target.value);
 //   // Abort the change if the date isn't valid
@@ -260,7 +265,7 @@ export default class EditPlanCard extends React.Component {
 //   this.setState({startTime: newStartTime});
 // },
 //
-// handleTimeChange (event) {
+// handleTimeChange: function (event) {
 //   let tmp = event.target.value.split(':');
 //   let hour = parseInt(tmp[0]);
 //   let minute = parseInt(tmp[1]);

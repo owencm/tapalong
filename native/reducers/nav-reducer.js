@@ -3,11 +3,6 @@ import {
   POP_ROUTE,
   REPLACE_ROUTE,
 } from '../constants/action-types.js'
-import { NavigationExperimental } from 'react-native'
-
-const {
-  StateUtils: NavigationStateUtils
-} = NavigationExperimental
 
 // For now we'll start with the list as the root
 const initialState = {

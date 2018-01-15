@@ -1,0 +1,50 @@
+import React, { Component } from 'react'
+import EditScreenContainer from './edit-screen-container.js'
+import LoginScreenContainer from './login-screen-container.js'
+import ListScreenContainer from './list-screen-container.js'
+import { StackNavigator } from 'react-navigation';
+
+// const CreateScreenContainer = (props) => {
+//   return <EditScreen
+//     userName={ props.user.userName }
+//     onCreateClick={ handleCreatePlan }
+//     plan={ route.plan }
+//     creating={ true }
+//   />
+// }
+
+// A container should exist for each screen, and provides state and actions from the redux store to the presentational component
+
+const RootNavigator = StackNavigator({
+  Login: {
+    screen: LoginScreenContainer,
+    navigationOptions: {
+      header: null
+    }
+  },
+  List: {
+    screen: ListScreenContainer,
+    navigationOptions: {
+      title: `Upcoming Plans`,
+      headerLeft: null,
+    }
+  },
+  // Create: {
+  //   screen: CreateScreenContainer
+  // },
+  Edit: {
+    screen: EditScreenContainer,
+    navigationOptions: {
+      title: `Edit`,
+    }
+  },
+  // NotifPermission: {
+  //   screen: NotifPermissionScreenContainer
+  // },
+});
+
+export default class NavContainer extends React.Component {
+  render() {
+    return <RootNavigator />
+  }
+}

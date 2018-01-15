@@ -6,25 +6,25 @@ import {
   View,
   TouchableWithoutFeedback,
 } from 'react-native'
-import { LoginManager, AccessToken } from 'react-native-fbsdk'
+// import { LoginManager, AccessToken } from 'react-native-fbsdk'
+import { Facebook } from 'expo'
 
 const FacebookLoginNative = (props) => {
 
   const handlePress = () => {
-    LoginManager.logInWithReadPermissions(['public_profile', 'email', 'user_birthday']).then(
-      (result) => {
-        if (result.isCancelled) {
-          alert('Login cancelled')
-        } else {
-          props.onLogin()
-          AccessToken.getCurrentAccessToken().then(props.onTokenReady)
-        }
-      },
-      (error) => {
-        console.log(error)
-        alert(error);
+    Facebook.logInWithReadPermissionsAsync('175370155978273', {
+      permissions: ['public_profile', 'email', 'user_birthday'],
+    }).then(({ type, token }) => {
+      if (type === 'success') {
+        // Once upon a time I split these up so I could navigate the user to the list *before* the token was actually available, but these happen together today.
+        // props.onLogin()
+        return props.onTokenReady(token)
+      } else {
+        alert('Login cancelled')
       }
-    );
+    }).catch((e) => {
+      console.error(e)
+    })
   }
 
   // Clone the children so we can set props on them indicating the state of the login process

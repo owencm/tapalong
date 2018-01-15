@@ -26,6 +26,7 @@
     "react-native-collapsible": "^0.10.0",
     "react-native-datepicker": "^1.6.0",
     "react-native-fbsdk": "^0.3.0",
+    "react-navigation": "^1.0.0-beta.26",
     "react-redux": "^5.0.6",
     "redux": "^3.6.0",
     "redux-thunk": "^2.1.0"
