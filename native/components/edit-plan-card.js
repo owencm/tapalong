@@ -222,7 +222,7 @@ export default class EditPlanCard extends React.Component {
               format='dddd Do MMMM, ha'
               min={ Date.today() }
               date={ this.state.startTime }
-              onDateChange={ (_, date) => this.handleDateTimeChange(date).bind(this) }
+              onDateChange={ ((_, date) => this.handleDateTimeChange(date)).bind(this) }
               style={{ flexDirection: 'row' }}
             />
           </View>

@@ -48,7 +48,7 @@ class EditScreenContainer extends React.Component {
     const params = this.props.navigation.state.params || {}
     return (
       <EditScreen
-        plan={ params.plan || undefined }
+        plan={ params.plan || params.planTemplate || undefined }
         userName={ this.props.user.userName }
         onSaveClick={ this.handleSavePlan.bind(this) }
         onCreateClick={ this.handleCreatePlan.bind(this) }

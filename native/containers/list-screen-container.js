@@ -42,7 +42,7 @@ class ListScreenContainer extends React.Component {
     return (
       <ListScreen
         gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
-        gotoCreatePlanScreen={ () => { this.props.navigation.navigate('Edit') } }
+        gotoCreatePlanScreen={ (planTemplate) => { this.props.navigation.navigate('Edit', { planTemplate: planTemplate } ) } }
         onAttendPlan={ this.handleAttendPlan.bind(this) }
         onUnattendPlan={ this.handleUnattendPlan.bind(this) }
         onExpandPlan={ this.props.expandPlan }

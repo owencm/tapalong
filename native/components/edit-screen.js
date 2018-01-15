@@ -5,14 +5,14 @@ import If from './if.js'
 import Hint from './hint.js'
 import EditPlanCard from './edit-plan-card.js'
 
-const EditScene = (props) => {
+const EditSccreen = (props) => {
   return (
     <ScrollView>
       <If condition={ props.creating }>
         <Hint text="Let friends using the app know what you have planned so they can tag along." />
       </If>
       <EditPlanCard
-        plan={ props.plan }
+        plan={ props.plan || props.planTemplate }
         userName={ props.userName }
         onSaveClick={ props.onSaveClick }
         onCreateClick={ props.onCreateClick }
@@ -29,4 +29,4 @@ const EditScene = (props) => {
   )
 }
 
-export default EditScene
+export default EditSccreen
