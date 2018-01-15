@@ -21,6 +21,7 @@ module.exports = {
     password: "password",
     database: "tapalong_db_1",
     host: "127.0.0.1",
-    dialect: "mysql"
+    dialect: "mysql",
+    logging: (msg) => { console.log(msg.blue) }
   }
 }

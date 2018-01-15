@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import actions from '../actions/index.js'
 import ListScreen from '../components/list-screen.js'
+import If from '../components/if.js'
 import {
   View,
   Text,
@@ -29,7 +30,7 @@ const mapDispatchToProps = (dispatch) => {
   }, dispatch)
 }
 
-class ListScreenContainer extends React.Component {
+class PushSubscriber extends React.Component {
   async registerForPushNotificationsAsync() {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
@@ -54,13 +55,16 @@ class ListScreenContainer extends React.Component {
     // Get the token that uniquely identifies this device
     let token = await Notifications.getExpoPushTokenAsync()
     this.props.requestCreatePushNotificationsSubscription(this.props.user, token)
-
   }
-
   componentDidMount() {
     this.registerForPushNotificationsAsync()
   }
+  render() {
+    return null
+  }
+}
 
+class ListScreenContainer extends React.Component {
   handleAttendPlan(plan) {
     const { userId, sessionToken } = this.props.user;
     this.props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
@@ -73,16 +77,21 @@ class ListScreenContainer extends React.Component {
 
   render () {
     return (
-      <ListScreen
-        gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
-        gotoCreatePlanScreen={ (planTemplate) => { this.props.navigation.navigate('Edit', { planTemplate: planTemplate } ) } }
-        onAttendPlan={ this.handleAttendPlan.bind(this) }
-        onUnattendPlan={ this.handleUnattendPlan.bind(this) }
-        onExpandPlan={ this.props.expandPlan }
-        onUnexpandPlan={ this.props.unexpandPlan }
-        style={{ flex: 1 }}
-        {...this.props}
-      />
+      <View style={{ flex: 1 }}>
+        <If condition={ this.props.user.userId > -1 }>
+          <PushSubscriber {...this.props} />
+        </If>
+        <ListScreen
+          gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
+          gotoCreatePlanScreen={ (planTemplate) => { this.props.navigation.navigate('Edit', { planTemplate: planTemplate } ) } }
+          onAttendPlan={ this.handleAttendPlan.bind(this) }
+          onUnattendPlan={ this.handleUnattendPlan.bind(this) }
+          onExpandPlan={ this.props.expandPlan }
+          onUnexpandPlan={ this.props.unexpandPlan }
+          style={{ flex: 1 }}
+          {...this.props}
+        />
+      </View>
     )
   }
 }

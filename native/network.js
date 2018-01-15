@@ -1,6 +1,7 @@
 require('datejs');
 
-const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
+const apiEndpoint = 'http://104.236.189.8/api/v1'
+// const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
 // const apiEndpoint = 'http://localhost:8080/api/v1'
 
 const delayNetworkRequests = true
@@ -74,9 +75,7 @@ const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
-    var error = new Error(response.statusText)
-    error.response = response
-    throw error
+    throw 'Network request failed with status code ' + response.status
   }
 }
 

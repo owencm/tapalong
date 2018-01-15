@@ -15,18 +15,19 @@ const initialState = {
   // userId: 3,
   // userName: "Ruth Smith",
 
-  sessionToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImlhdCI6MTUxNjAwMDc4NywiZXhwIjoxNTIzNzc2Nzg3fQ.shQoRxmYq76w4BtuOn8x84DVJoIidYw88JhtaSOhrUw",
-  thumbnail: "https://graph.facebook.com/148189975539520/picture",
-  userId: 5,
-  userName: "Richard Sadanson",
+  // sessionToken: "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjUsImlhdCI6MTUxNjAwMDc4NywiZXhwIjoxNTIzNzc2Nzg3fQ.shQoRxmYq76w4BtuOn8x84DVJoIidYw88JhtaSOhrUw",
+  // thumbnail: "https://graph.facebook.com/148189975539520/picture",
+  // userId: 5,
+  // userName: "Richard Sadanson",
 
 
 }
 
+// AsyncStorage.setItem('user', JSON.stringify(initialState))
+
 const userReducer = (state = initialState, action) => {
   switch (action.type) {
     case SET_USER:
-    console.log(action)
       const newUser = {
         userId: action.userId,
         userName: action.userName,

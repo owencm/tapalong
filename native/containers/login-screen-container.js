@@ -9,26 +9,10 @@ import {
 } from 'react-native'
 
 // Temporary hacks to remember auth until I implement redux-persist
-// import { AsyncStorage } from 'react-native'
+import { AsyncStorage } from 'react-native'
 
 // Debug code for logging out the user
-// const clearUser = false
-// if (clearUser) { AsyncStorage.removeItem('user') }
-//
-// const getUser = () => {
-//   return AsyncStorage.getItem('user')
-//     .then((user) => { return JSON.parse(user) || {} })
-// }
-
-// if (!init) {
-//   init = true
-//
-//       props.requestRefreshPlans(user.userId, user.sessionToken)
-//       props.requestRefreshEvents(user.userId, user.sessionToken)
-//     }
-//   })
-
-
+// AsyncStorage.removeItem('user')
 
 const mapStateToProps = (state) => {
   return {
@@ -40,6 +24,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return bindActionCreators({
     login: actions.login,
+    setUser: actions.setUser,
     requestRefreshPlans: actions.requestRefreshPlans,
     requestRefreshEvents: actions.requestRefreshEvents,
   }, dispatch)
@@ -47,12 +32,21 @@ const mapDispatchToProps = (dispatch) => {
 
 class LoginScreenContainer extends React.Component {
   componentWillMount() {
-    const user = this.props.user
-    if (user.userId > 0) {
-      this.props.requestRefreshPlans(user.userId, user.sessionToken)
-      this.props.requestRefreshEvents(user.userId, user.sessionToken)
-      this.props.navigation.navigate('List')
-    }
+    // Temporary hack to restore the current user upon app restart
+    AsyncStorage.getItem('user')
+      .then((user) => {
+        return JSON.parse(user) || this.props.user || {}
+      }).then((user) => {
+        // console.log('stored user', user)
+        if (user.userId > 0) {
+          this.props.setUser(user.userId, user.userName, user.sessionToken, user.thumbnail)
+          setTimeout(() => {
+            this.props.requestRefreshPlans(user.userId, user.sessionToken)
+            this.props.requestRefreshEvents(user.userId, user.sessionToken)
+            this.props.navigation.navigate('List')
+          }, 100)
+        }
+      })
   }
 
   handleSavePlan(plan, planChanges) {

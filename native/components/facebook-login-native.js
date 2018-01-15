@@ -21,7 +21,7 @@ const FacebookLoginNative = (props) => {
         // props.onLogin()
         return props.onTokenReady(token)
       } else {
-        alert('Login cancelled')
+        // alert('Login cancelled')
       }
     }).catch((e) => {
       console.error(e)
