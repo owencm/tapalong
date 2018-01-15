@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 const styles = {
   text: {
     color: '#444',
-    fontSize: 14,
+    fontSize: 17,
     lineHeight: 20,
   },
   boldText: {

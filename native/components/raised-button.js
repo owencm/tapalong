@@ -22,7 +22,7 @@ let RaisedButton = (props) => {
       // display: 'inline-block'
       fontWeight: '600',
       color: 'white',
-      fontSize: 13,
+      fontSize: 16,
     }
   }
 

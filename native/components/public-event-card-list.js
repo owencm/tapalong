@@ -61,7 +61,7 @@ const PublicEventCardList = (props) => {
         <CardMainContents style={{ flexDirection: 'row' }}>
           <FriendIcon thumbnail={ props.user.thumbnail }/>
           <View style={{flex: 1, flexDirection: 'column'}}>
-            <Text><Text style={{ fontWeight: '500' }}>You</Text> could consider <Text style={{ fontWeight: '500' }}>{ title }</Text></Text>
+            <Text style={{ fontSize: 17 }}><Text style={{ fontWeight: '500' }}>You</Text> could consider <Text style={{ fontWeight: '500' }}>{ title }</Text></Text>
           </View>
         </CardMainContents>
         <CardOptions options={ options } />

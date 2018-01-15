@@ -27,7 +27,7 @@ const RootNavigator = StackNavigator({
     navigationOptions: {
       title: `Upcoming Plans`,
       headerLeft: null,
-      titleStyle: {
+      headerTitleStyle: {
         // color: 'white',
       },
       headerStyle: {

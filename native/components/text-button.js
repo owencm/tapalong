@@ -11,8 +11,8 @@ const defaultStyle = {
 }
 
 const textStyle = {
-  fontWeight: '600',
-  fontSize: 14,
+  fontWeight: '400',
+  fontSize: 16,
 }
 
 const getColor = (disabled, type) => {
@@ -37,7 +37,7 @@ const TextButton = (props) => {
     >
       <View>
         <Text style={m(textStyle, defaultStyle, { color }, props.style)}>
-          { props.label.toUpperCase() }
+          { props.label /* props.label.toUpperCase() */ }
         </Text>
       </View>
     </TouchableWithoutFeedback>
