@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import actions from '../actions/index.js'
 import ListScreen from '../components/list-screen.js'
 import {
@@ -17,13 +18,13 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  return {
+  return bindActionCreators({
     requestRefreshPlans: actions.requestRefreshPlans,
     requestRefreshEvents: actions.requestRefreshEvents,
     requestSetAttending: actions.requestSetAttending,
     expandPlan: actions.expandPlan,
     unexpandPlan: actions.unexpandPlan,
-  }
+  }, dispatch)
 }
 
 class ListScreenContainer extends React.Component {
@@ -42,8 +43,10 @@ class ListScreenContainer extends React.Component {
       <ListScreen
         gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
         gotoCreatePlanScreen={ () => { this.props.navigation.navigate('Edit') } }
-        onAttendPlan={ this.handleAttendPlan }
-        onUnattendPlan={ this.handleUnattendPlan }
+        onAttendPlan={ this.handleAttendPlan.bind(this) }
+        onUnattendPlan={ this.handleUnattendPlan.bind(this) }
+        onExpandPlan={ this.props.expandPlan }
+        onUnexpandPlan={ this.props.unexpandPlan }
         style={{ flex: 1 }}
         {...this.props}
       />

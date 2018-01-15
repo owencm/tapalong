@@ -25,53 +25,53 @@ import DatePicker from 'react-native-datepicker'
 //   }
 // });
 
-const EditPlanCard = React.createClass({
+export default class EditPlanCard extends React.Component {
 
-  getInitialState: function () {
+  constructor(props) {
+    super(props)
     const hasPlan = !!this.props.plan
     const tomorrowFourPm = Date.today().add(1).days().set({hour: 16});
     const todayFourPm = Date.today().set({hour: 16});
     const initialDateTime = todayFourPm - Date.now() > 0 ? todayFourPm : tomorrowFourPm
-    return {
+    this.state = {
       title: hasPlan && this.props.plan.title ? this.props.plan.title : '',
       description: hasPlan && this.props.plan.description ? this.props.plan.description : '',
       startTime: hasPlan && this.props.plan.startTime ? this.props.plan.startTime : initialDateTime,
       saveRequestPending: false,
       deleteRequestPending: false,
-    };
+    }
+  }
 
-  },
-
-  componentDidMount: function () {
+  componentDidMount() {
     // Focus the title input if we're creating
     if (!this.props.plan) {
       this.refs.titleInput.focus();
     }
     // Scroll to the top of the page to ensure the editing screen is visible
     // scroll(window, 0);
-  },
+  }
 
-  handleTitleChange: function (newTitle) {
+  handleTitleChange(newTitle) {
     // console.log(arguments)
     this.setState({title: newTitle});
     // this.setState({title: event.target.value});
-  },
+  }
 
-  handleTitleKeyDown: function(event) {
+  handleTitleKeyDown(event) {
     if (event.keyCode == 13 ) {
       this.refs.dateInput.focus();
     }
-  },
+  }
 
-  handleDescriptionChange: function (description) {
+  handleDescriptionChange(description) {
     this.setState({ description });
-  },
+  }
 
-  handleDateTimeChange: function (date){
+  handleDateTimeChange(date){
     this.setState({ startTime: date })
-  },
+  }
 
-  handleSaveClick: function () {
+  handleSaveClick() {
     let planChanges = {
       title: this.state.title,
       description: this.state.description,
@@ -82,9 +82,9 @@ const EditPlanCard = React.createClass({
       this.setState({ saveRequestPending: false })
       console.log('Could not save plan', e)
     });
-  },
+  }
 
-  handleCreateClick: function () {
+  handleCreateClick() {
     let newPlan = {
       title: this.state.title,
       startTime: this.state.startTime,
@@ -97,42 +97,42 @@ const EditPlanCard = React.createClass({
       this.setState({ saveRequestPending: false })
       console.log('Could not create plan', e)
     });
-  },
+  }
 
-  handleDeleteClick: function () {
+  handleDeleteClick() {
     // if (confirm('This will notify friends coming that the event is cancelled and remove it from the app. Confirm?')) {
       this.setState({ deleteRequestPending: true });
       this.props.onDeleteClick(this.props.plan);
     // } else {
       // Do nothing
     // }
-  },
+  }
 
-  getOptions: function(editing) {
+  getOptions(editing) {
     // Set up the options on the card
     let options = [];
     if (editing) {
       if (this.state.saveRequestPending) {
-        options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClick});
+        options.push({label: 'Saving...', disabled: true, onClick: this.handleSaveClick.bind(this)});
       } else {
-        options.push({label: 'Save', onClick: this.handleSaveClick});
+        options.push({label: 'Save', onClick: this.handleSaveClick.bind(this)});
       }
       if (this.state.deleteRequestPending) {
-        options.push({label: 'Deleting...', disabled: true, position: 'left', type: 'bad', onClick: this.handleDeleteClick});
+        options.push({label: 'Deleting...', disabled: true, position: 'left', type: 'bad', onClick: this.handleDeleteClick.bind(this)});
       } else {
-        options.push({label: 'Delete', position: 'left', type: 'bad', onClick: this.handleDeleteClick});
+        options.push({label: 'Delete', position: 'left', type: 'bad', onClick: this.handleDeleteClick.bind(this)});
       }
     } else {
       if (this.state.saveRequestPending) {
-        options.push({label: 'Loading...', disabled: true, onClick: this.handleCreateClick});
+        options.push({label: 'Loading...', disabled: true, onClick: this.handleCreateClick.bind(this)});
       } else {
-        options.push({label: 'Done', onClick: this.handleCreateClick});
+        options.push({label: 'Done', onClick: this.handleCreateClick.bind(this)});
       }
     }
     return options
-  },
+  }
 
-  render: function () {
+  render() {
     // console.log('Rendering form with state and props', this.state, this.props)
     let editing = !this.props.creating;
     /*
@@ -191,11 +191,11 @@ const EditPlanCard = React.createClass({
             <TextInput
               ref='titleInput'
               style={ m(bigInputViewStyle, bigInputStyle) }
-              value={ this.state.title }
+                value={ this.state.title }
               placeholder={ placeholder }
               // onChange={ this.handleTitleChange }
-              onChangeText={ this.handleTitleChange }
-              onKeyDown={ this.handleTitleKeyDown }
+              onChangeText={ this.handleTitleChange.bind(this) }
+              onKeyDown={ this.handleTitleKeyDown.bind(this) }
               required
               autoCapitalize='none'
             />
@@ -222,7 +222,7 @@ const EditPlanCard = React.createClass({
               format='dddd Do MMMM, ha'
               min={ Date.today() }
               date={ this.state.startTime }
-              onDateChange={ (_, date) => this.handleDateTimeChange(date) }
+              onDateChange={ (_, date) => this.handleDateTimeChange(date).bind(this) }
               style={{ flexDirection: 'row' }}
             />
           </View>
@@ -232,7 +232,7 @@ const EditPlanCard = React.createClass({
             rows={ 1 }
             maxRows={ 8 }
             value={ this.state.description }
-            onChangeText={ this.handleDescriptionChange }
+            onChangeText={ this.handleDescriptionChange.bind(this) }
           >
           </AutoExpandingTextInput>
         </View>
@@ -240,12 +240,9 @@ const EditPlanCard = React.createClass({
       </Card>
     )
   }
-});
+}
 
-export default EditPlanCard
-
-
-// handleDateChange: function (event) {
+// handleDateChange(event) {
 //   // Note date will parse the date as if it was UTC, and then convert it into local TZ
 //   let newDate = new Date(event.target.value);
 //   // Abort the change if the date isn't valid
@@ -263,9 +260,9 @@ export default EditPlanCard
 //     year: 1900 + newDate.getYear()
 //   });
 //   this.setState({startTime: newStartTime});
-// },
+// }
 //
-// handleTimeChange: function (event) {
+// handleTimeChange(event) {
 //   let tmp = event.target.value.split(':');
 //   let hour = parseInt(tmp[0]);
 //   let minute = parseInt(tmp[1]);

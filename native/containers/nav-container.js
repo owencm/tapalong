@@ -29,13 +29,12 @@ const RootNavigator = StackNavigator({
       headerLeft: null,
     }
   },
-  // Create: {
-  //   screen: CreateScreenContainer
-  // },
   Edit: {
     screen: EditScreenContainer,
-    navigationOptions: {
-      title: `Edit`,
+    navigationOptions: ({ navigation }) => {
+      return {
+        title: navigation.state.params && navigation.state.params.plan !== undefined ? 'Edit' : 'New plan'
+      }
     }
   },
   // NotifPermission: {
