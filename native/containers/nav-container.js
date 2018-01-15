@@ -27,13 +27,23 @@ const RootNavigator = StackNavigator({
     navigationOptions: {
       title: `Upcoming Plans`,
       headerLeft: null,
+      titleStyle: {
+        // color: 'white',
+      },
+      headerStyle: {
+        // backgroundColor: '#3CE',
+      },
     }
   },
   Edit: {
     screen: EditScreenContainer,
     navigationOptions: ({ navigation }) => {
       return {
-        title: navigation.state.params && navigation.state.params.plan !== undefined ? 'Edit' : 'New plan'
+        title: navigation.state.params && navigation.state.params.plan !== undefined ? 'Edit' : 'New plan',
+        headerTintColor: '#00BCD4',
+        headerTitleStyle: {
+          color: 'black'
+        }
       }
     }
   },

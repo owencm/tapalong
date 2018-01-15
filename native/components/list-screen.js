@@ -25,7 +25,7 @@ const ListScreen = (props) => {
       <View style={{ flex: 1 }}>
         <ScrollView style={{ flex: 1 }}>
           <PlanCardList
-            style={{ flex: 1, marginBottom: 16 }}
+            style={{ flex: 1, marginBottom: 16, marginTop: 16 }}
             plans={ props.plans.plans }
             user={ props.user }
             plansInitialized={ props.plans.initialized }

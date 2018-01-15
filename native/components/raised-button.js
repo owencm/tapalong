@@ -20,7 +20,7 @@ let RaisedButton = (props) => {
     },
     inner: {
       // display: 'inline-block'
-      fontWeight: '500',
+      fontWeight: '600',
       color: 'white',
       fontSize: 13,
     }
@@ -31,7 +31,7 @@ let RaisedButton = (props) => {
       <View style={style.outer}>
         <View>
           <Text style={style.inner}>
-            { props.label.toUpperCase() }
+            { props.label }
           </Text>
         </View>
       </View>

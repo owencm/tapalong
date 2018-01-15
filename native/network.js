@@ -2,7 +2,7 @@ require('datejs');
 
 const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = true
+const delayNetworkRequests = false
 
 const requestLogin = (fbToken) => {
   console.log('sending request to login endpoint')
