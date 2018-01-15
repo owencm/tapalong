@@ -7,6 +7,7 @@ const Sequelize = require('sequelize')
 const webPush = require('web-push')
 const env = process.env.NODE_ENV || 'development';
 const colors = require('colors')
+const Expo = require('expo-server-sdk')
 
 const { SQPlan, SQUser, SQUserPlan, SQPushSub } = require('./models/index.js')
 
@@ -382,30 +383,59 @@ const PushSubs = (() => {
     return { dbPushSub, serializedPushSub: dbPushSub.get({ plain: true }) };
   };
 
-  const createPushSubForUser = (endpoint, userPublicKey, userAuthKey, user) => {
-    return SQPushSub.findOrCreate({where: { endpoint, userPublicKey, userAuthKey }}).spread((dbPushSub) => {
-      return user.dbUser.addPushSub(dbPushSub).then(() => {
-        return getPushSubFromDBPushSub(dbPushSub);
-      });
-    });
+  const createPushSubForUser = (user, {type, expoToken, endpoint, userPublicKey, userAuthKey}) => {
+    const userId = user.serializedUser.id
+    if (type === 'expo') {
+      return SQPushSub.findOrCreate({where: { expoToken, userId, type }}).spread((dbPushSub) => {
+        // I think this is unused
+        return getPushSubFromDBPushSub(dbPushSub)
+      })
+    } else {
+      console.error('push subscription type not supported')
+    }
+
+    // return SQPushSub.findOrCreate({where: { endpoint, userPublicKey, userAuthKey }}).spread((dbPushSub) => {
+    //   return user.dbUser.addPushSub(dbPushSub).then(() => {
+    //     return getPushSubFromDBPushSub(dbPushSub);
+    //   });
+    // });
   };
 
   const sendNotificationToUser = ({ title, body, url, tag }, user) => {
     console.log('Sending a notification to ', user.serializedUser.name);
     return user.dbUser.getPushSubs().then((dbPushSubs) => {
       return Promise.all(dbPushSubs.map((dbPushSub) => {
-        const endpoint = dbPushSub.get('endpoint');
-        const userPublicKey = dbPushSub.get('userPublicKey');
-        // The web-push library expects this to be called userAuth not userAuthKey
-        const userAuth = dbPushSub.get('userAuthKey');
-        return webPush.sendNotification(endpoint, {
-          TTL: 24 * 60 * 60,
-          userPublicKey,
-          userAuth,
-          payload: JSON.stringify({ title, body, url, tag })
-        }).then((result) => {
-          console.log(result, userPublicKey, userAuth);
-        });
+
+        if (dbPushSub.get('type') === 'expo') {
+          let message = {
+            to: dbPushSub.get('expoToken'),
+            sound: 'default',
+            title,
+            body,
+            // data: { withSome: 'data' },
+          }
+
+          let expo = new Expo()
+          console.log('about to send notification')
+          setTimeout(() => {
+            expo.sendPushNotificationsAsync([message])
+          }, 3000)
+        } else {
+          console.error('push subscription type not supported')
+        }
+
+        // const endpoint = dbPushSub.get('endpoint');
+        // const userPublicKey = dbPushSub.get('userPublicKey');
+        // // The web-push library expects this to be called userAuth not userAuthKey
+        // const userAuth = dbPushSub.get('userAuthKey');
+        // return webPush.sendNotification(endpoint, {
+        //   TTL: 24 * 60 * 60,
+        //   userPublicKey,
+        //   userAuth,
+        //   payload: JSON.stringify({ title, body, url, tag })
+        // }).then((result) => {
+        //   console.log(result, userPublicKey, userAuth);
+        // });
       }));
     });
   }

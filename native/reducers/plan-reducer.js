@@ -53,12 +53,12 @@ const planReducer = (state = {
   switch (action.type) {
     case ADD_PLANS:
 
-      console.log('Adding plans', action.plans)
+      // console.log('Adding plans', action.plans)
 
       let plans = action.plans.filter(plan => {
         let validity = validateNewPlan(plan)
         if (!validity.isValid) {
-          console.log(`Invalid plan attempted to be added: ${validity.reason}`);
+          // console.log(`Invalid plan attempted to be added: ${validity.reason}`);
         }
         return validity.isValid
       })

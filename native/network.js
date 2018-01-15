@@ -6,10 +6,8 @@ const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
 const delayNetworkRequests = true
 
 const requestLogin = (fbToken) => {
-  console.log('sending request to login endpoint')
   return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
     .then((response) => {
-      console.log('response from login endpoint', response)
       return {
         userId: response.user_id,
         userName: response.user_name,
@@ -65,7 +63,11 @@ const requestCancelPlan = function (user, plan) {
 };
 
 const requestCreatePushNotificationsSubscription = function (user, subscription) {
-  return sendRequest('push_subscriptions/', 'post', JSON.stringify(subscription), user)
+  const expoSubscription = {
+    type: 'expo',
+    token: subscription,
+  }
+  return sendRequest('push_subscriptions/', 'post', JSON.stringify(expoSubscription), user)
 };
 
 const checkStatus = (response) => {
@@ -107,7 +109,11 @@ const sendRequest = (url, method, body, user) => {
     })
     .then(checkStatus)
     .then(response => response.json())
-    // .then(json => { console.log(json); return json })
+    .catch((e) => {
+      //TODO: ignore the error whereby the response has no JSON body becuase it's just an OK
+      console.error(e)
+    })
+    // .then(json => { if (url === 'push_subscriptions/') { console.log(json); } return json })
   })
 
   // console.log('requesting', url)

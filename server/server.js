@@ -17,6 +17,13 @@ let owen;
 Users.getUserWithFbId('680160262').then((user) => {
   owen = user;
 })
+//
+// let richard;
+// Users.getUserWithId(5).then((user) => {
+//   richard = user
+//   PushSubs.sendNotificationToUser({ title: 'Test title', body: 'test body' }, richard)
+// })
+
 
 const publicPath = __dirname + '/../web/build'
 const app = express();
@@ -135,9 +142,11 @@ app.post('/api/v1/plans/:planId/attend/', (req, res) => {
   const planId = req.params.planId;
   return Plans.setUserAttendingPlanId(planId, req.user, true).then((plan) => {
     res.send(JSON.stringify(plan.serializedPlan));
+    const title = plan.serializedPlan.title
+    const capitalizedTitle = title.charAt(0).toUpperCase() + title.slice(1)
     PushSubs.sendNotificationToUser({
-      title: `Up Dog: ${plan.serializedPlan.title}`,
-      body: `${req.user.serializedUser.name} is coming along`,
+      title: capitalizedTitle,
+      body: `${req.user.serializedUser.name} is coming along 🎉`,
       url: '/',
       tag: 'static'
     }, plan.creator);
@@ -154,18 +163,27 @@ app.post('/api/v1/plans/:planId/unattend/', (req, res) => {
 app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   const planId = req.params.planId;
   return Plans.cancelPlanByIdForUser(planId, req.user).then((plan) => {
-    res.send(plan);
+    res.send(plan)
   });
 });
 
 app.post('/api/v1/push_subscriptions', (req, res) => {
-  const endpoint = req.body.endpoint;
-  const keys = req.body.encodedKeys;
-  const userPublicKey = keys.p256dh;
-  const userAuthKey = keys.auth;
-  PushSubs.createPushSubForUser(endpoint, userPublicKey, userAuthKey, req.user).then(() => {
-    res.sendStatus(200);
+  const pushToken = req.body.token
+
+  PushSubs.createPushSubForUser(req.user, { type: 'expo', expoToken: pushToken }).then(() => {
+    // Send instead of sendStatus(200) because the client expects JSON back....
+    res.send(JSON.stringify({ success: true }))
   });
+
+
+  //
+  // const endpoint = req.body.endpoint;
+  // const keys = req.body.encodedKeys;
+  // const userPublicKey = keys.p256dh;
+  // const userAuthKey = keys.auth;
+  // PushSubs.createPushSubForUser(endpoint, userPublicKey, userAuthKey, req.user).then(() => {
+  //   res.sendStatus(200);
+  // });
 });
 
 app.get('/api/v1/public_events', (req, res) => {

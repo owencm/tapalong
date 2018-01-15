@@ -5,6 +5,8 @@ module.exports = function(sequelize, DataTypes) {
     userPublicKey: DataTypes.STRING,
     userAuthKey: DataTypes.STRING,
     userId: DataTypes.INTEGER,
+    type: DataTypes.STRING,
+    expoToken: DataTypes.STRING,
   }, {
     classMethods: {
       associate: function(models) {

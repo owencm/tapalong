@@ -24,6 +24,7 @@
     "browserify": "^13.0.0",
     "compression": "^1.6.1",
     "datejs": "0.0.2",
+    "expo-server-sdk": "^2.3.3",
     "express": "^4.13.4",
     "fastclick": "^1.0.6",
     "fb": "^1.0.2",

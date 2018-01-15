@@ -7,6 +7,7 @@ import {
   View,
   Text,
 } from 'react-native'
+import { Permissions, Notifications } from 'expo';
 
 const mapStateToProps = (state) => {
   return {
@@ -22,12 +23,44 @@ const mapDispatchToProps = (dispatch) => {
     requestRefreshPlans: actions.requestRefreshPlans,
     requestRefreshEvents: actions.requestRefreshEvents,
     requestSetAttending: actions.requestSetAttending,
+    requestCreatePushNotificationsSubscription: actions.requestCreatePushNotificationsSubscription,
     expandPlan: actions.expandPlan,
     unexpandPlan: actions.unexpandPlan,
   }, dispatch)
 }
 
 class ListScreenContainer extends React.Component {
+  async registerForPushNotificationsAsync() {
+    const { status: existingStatus } = await Permissions.getAsync(
+      Permissions.NOTIFICATIONS
+    )
+    let finalStatus = existingStatus
+
+    // only ask if permissions have not already been determined, because
+    // iOS won't necessarily prompt the user a second time.
+    if (existingStatus !== 'granted') {
+      // Android remote notification permissions are granted during the app
+      // install, so this will only ask on iOS
+      const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS)
+      finalStatus = status
+    }
+
+    // Stop here if the user did not grant permissions
+    if (finalStatus !== 'granted') {
+      // alert('Couldn\'t get push token')
+      return
+    }
+
+    // Get the token that uniquely identifies this device
+    let token = await Notifications.getExpoPushTokenAsync()
+    this.props.requestCreatePushNotificationsSubscription(this.props.user, token)
+
+  }
+
+  componentDidMount() {
+    this.registerForPushNotificationsAsync()
+  }
+
   handleAttendPlan(plan) {
     const { userId, sessionToken } = this.props.user;
     this.props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
