@@ -75,7 +75,7 @@ export function requestSetAttending(userId, sessionToken, plan, attending) {
     if (attending) {
       setTimeout(() => {
         dispatch(showButterBar())
-        setTimeout(() => { dispatch(hideButterBar()) }, 4000)
+        setTimeout(() => { dispatch(hideButterBar()) }, 6000)
       }, 1000)
     }
     return network.requestSetAttending({userId, sessionToken}, plan, attending)

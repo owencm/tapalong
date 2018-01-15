@@ -9,61 +9,65 @@ import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
 
-const ListScreen = (props) => {
-  const butterBar = (
-    <View style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}>
-      <Collapsible collapsed={ !props.butterBar.shouldShowButterBar } align={ 'bottom' }>
-        <View style={{ padding: 14, backgroundColor: '#333' }}>
-          <Text style={{ color: '#EEE' }}>{`Great! We'll let them know you are going.`}</Text>
-        </View>
-      </Collapsible>
-    </View>
-  )
+export default class ListScreen extends React.Component {
 
-  return (
-    <View style={{ flex: 1 }}>
+  // TODO: scroll to top when navigated to with new content
+
+  render() {
+
+    const butterBar = (
+      <View style={{ position: 'absolute', bottom: 16, left: 16, right: 16 }}>
+        <Collapsible collapsed={ !this.props.butterBar.shouldShowButterBar } align={ 'bottom' }>
+          <View style={{ padding: 14, backgroundColor: '#555', borderRadius: 14 }}>
+            <Text style={{ color: '#EEE' }}>{`Great, we'll let them know you'll be joining! 🙌`}</Text>
+          </View>
+        </Collapsible>
+      </View>
+    )
+
+    return (
       <View style={{ flex: 1 }}>
-        <ScrollView style={{ flex: 1 }}>
-          <PlanCardList
-            style={{ flex: 1, marginBottom: 16, marginTop: 16 }}
-            plans={ props.plans.plans }
-            user={ props.user }
-            plansInitialized={ props.plans.initialized }
-            onAttendPlan={ props.onAttendPlan }
-            onUnattendPlan={ props.onUnattendPlan }
-            onEditPlan={ props.gotoEditPlanScreen }
-            selectedPlans={ props.plans.selectedPlans }
-            onExpandPlan={ props.onExpandPlan }
-            onUnexpandPlan={ props.onUnexpandPlan }
-            onCreateClick={ props.gotoCreatePlanScreen }
-          />
-          <PublicEventCardList
-            user={ props.user }
-            onCreateClick={ props.gotoCreatePlanScreen }
-            eventsInitialized={ props.events.initialized }
-            events={ props.events.events }
-          />
-          <View style={{ height: 24 }} />
-        </ScrollView>
-        { butterBar }
-      </View>
-      <View style={{
-        backgroundColor: '#e9e9ef',
-        padding: 12,
-        justifyContent: 'center',
-        flexDirection: 'row',
-        borderTopWidth: 1,
-        borderTopColor: '#BBB'
-      }}
-      >
-        <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 16 }}>
-          <Text style={{ color: '#888', fontSize: 13 }}>Got something planned?</Text>
+        <View style={{ flex: 1 }}>
+          <ScrollView style={{ flex: 1 }} ref='ScrollView'>
+            <PlanCardList
+              style={{ flex: 1, marginBottom: 16, marginTop: 16 }}
+              plans={ this.props.plans.plans }
+              user={ this.props.user }
+              plansInitialized={ this.props.plans.initialized }
+              onAttendPlan={ this.props.onAttendPlan }
+              onUnattendPlan={ this.props.onUnattendPlan }
+              onEditPlan={ this.props.gotoEditPlanScreen }
+              selectedPlans={ this.props.plans.selectedPlans }
+              onExpandPlan={ this.props.onExpandPlan }
+              onUnexpandPlan={ this.props.onUnexpandPlan }
+              onCreateClick={ this.props.gotoCreatePlanScreen }
+            />
+            <PublicEventCardList
+              user={ this.props.user }
+              onCreateClick={ this.props.gotoCreatePlanScreen }
+              eventsInitialized={ this.props.events.initialized }
+              events={ this.props.events.events }
+            />
+            <View style={{ height: 24 }} />
+          </ScrollView>
+          { butterBar }
         </View>
-        <RaisedButton label='Add plan' onClick={ props.gotoCreatePlanScreen } />
+        <View style={{
+          backgroundColor: '#e9e9ef',
+          padding: 12,
+          justifyContent: 'center',
+          flexDirection: 'row',
+          borderTopWidth: 1,
+          borderTopColor: '#BBB'
+        }}
+        >
+          <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 16 }}>
+            <Text style={{ color: '#888', fontSize: 13 }}>Got something planned?</Text>
+          </View>
+          <RaisedButton label='Add plan' onClick={ this.props.gotoCreatePlanScreen } />
+        </View>
       </View>
-    </View>
-  )
+    )
 
+  }
 }
-
-export default ListScreen

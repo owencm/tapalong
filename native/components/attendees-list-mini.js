@@ -19,13 +19,13 @@ const AttendeesListMini = (props) => {
   const a = props.attendees.map(attendee => attendee.name).reverse()
   if (a > 3) {
     otherCount = a - 2
-    string = `${a[0]}, ${a[1]} and ${otherCount} others are coming`
+    string = `${a[0]}, ${a[1]} and ${otherCount} others are coming 🎉`
   } else if (a.length === 3) {
-    string = `${a[0]}, ${a[1]} and ${a[2]} are coming`
+    string = `${a[0]}, ${a[1]} and ${a[2]} are coming 🎉`
   } else if (a.length == 2) {
-    string = `${a[0]} and ${a[1]} are coming`
+    string = `${a[0]} and ${a[1]} are coming 🎉`
   } else if (a.length == 1) {
-    string = `${a[0]} is coming`
+    string = `${a[0]} is coming 🎉`
   }
 
   return (
