@@ -1,6 +1,19 @@
 {
   "expo": {
-    "sdkVersion": "23.0.0"
+    "sdkVersion": "23.0.0",
+    "name": "Withapp",
+    "description": "Spend time with friends",
+    "platforms": ["ios"],
+    "icon": "./assets/icon.png",
+    "notification": {
+      "icon": "./assets/icon-transparent-48.png",
+      "color": "#00bcd4",
+    },
+    "appKey": "main",
+    "version": "1.0.0",
+    "ios": {
+      "bundleIdentifier": "com.tapalong.tapalong"
+    },
   },
   "hooks": {
      "postPublish": [

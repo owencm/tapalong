@@ -60,7 +60,7 @@ const LoginScene = (props) => {
 
   const header = <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
     <Image
-      source={ require('../assets/logo-transparent.png') }
+      source={ require('../assets/icon-transparent.png') }
       style={{ height: 30, width: 30 }}
     />
     <View style={{ marginHorizontal: 10, height: 30, width: 1, backgroundColor: 'white' }}></View>

@@ -11,18 +11,6 @@ import Card from './card.js'
 import CardMainContents from './card-main-contents.js'
 import CardOptions from './card-options.js'
 import FriendIcon from './friend-icon.js'
-// import FBSDK from 'react-native-fbsdk'
-//
-// const shareContent = {
-//   contentType: 'link',
-//   contentUrl: 'https://www.updogapp.co',
-//   contentDescription: 'Up Dog: Spend time with friends'
-// }
-//
-//
-// const canShare = () => FBSDK.MessageDialog.canShow(shareContent)
-//
-// const share = (contentDescription) => FBSDK.MessageDialog.show(Object.assign(shareContent, { contentDescription }))
 
 const PublicEventCardList = (props) => {
 
@@ -57,11 +45,11 @@ const PublicEventCardList = (props) => {
     const options = getOptions(title, url)
 
     return (
-      <Card key={ title }>
+      <Card key={ title } style={{ marginLeft: 16, marginRight: 16, marginBottom: 8 }}>
         <CardMainContents style={{ flexDirection: 'row' }}>
           <FriendIcon thumbnail={ props.user.thumbnail }/>
           <View style={{flex: 1, flexDirection: 'column'}}>
-            <Text style={{ fontSize: 17 }}><Text style={{ fontWeight: '500' }}>You</Text> could consider <Text style={{ fontWeight: '500' }}>{ title }</Text></Text>
+            <Text style={{ fontSize: 17 }}><Text style={{ fontWeight: '600' }}>You</Text> could consider <Text style={{ fontWeight: '600' }}>{ title }</Text></Text>
           </View>
         </CardMainContents>
         <CardOptions options={ options } />
@@ -81,7 +69,7 @@ const PublicEventCardList = (props) => {
           color: '#555'
         }}
       >
-        SUGGESTED PLAN IDEAS
+        SUGGESTED PLANS
       </Text>
       { eventCards }
     </View>

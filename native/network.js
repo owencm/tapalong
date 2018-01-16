@@ -80,7 +80,7 @@ const checkStatus = (response) => {
     return response
   } else {
     warnUserOfError()
-    console.log('Network request failed with status code ' + response.status, response)
+    console.error('Network request failed with status code ' + response.status, response)
   }
 }
 
@@ -120,7 +120,7 @@ const sendRequest = (url, method, body, user) => {
     .then(response => response.json())
     .catch((e) => {
       warnUserOfError()
-      console.log(e)
+      console.error(e)
     })
   })
 

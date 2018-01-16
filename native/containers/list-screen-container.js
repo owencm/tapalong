@@ -8,7 +8,8 @@ import {
   View,
   Text,
 } from 'react-native'
-import { Permissions, Notifications } from 'expo';
+import { Permissions, Notifications, Audio } from 'expo'
+import { NavigationActions } from 'react-navigation'
 
 const mapStateToProps = (state) => {
   return {
@@ -64,10 +65,14 @@ class PushSubscriber extends React.Component {
   }
 }
 
+const soundObject = new Audio.Sound()
+soundObject.loadAsync(require('../assets/sounds/success-1.m4a'))
+
 class ListScreenContainer extends React.Component {
   handleAttendPlan(plan) {
     const { userId, sessionToken } = this.props.user;
     this.props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
+    soundObject.playFromPositionAsync(0)
   }
 
   handleUnattendPlan(plan) {

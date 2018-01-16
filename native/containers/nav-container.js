@@ -26,6 +26,8 @@ const RootNavigator = StackNavigator({
     screen: ListScreenContainer,
     navigationOptions: {
       title: `Upcoming Plans`,
+      // Disable gestures so you can't swipe back to the login screen
+      gesturesEnabled: false,
       headerLeft: null,
       headerTitleStyle: {
         // color: 'white',

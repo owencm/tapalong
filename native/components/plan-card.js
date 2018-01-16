@@ -26,6 +26,7 @@ export default function(props) {
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
   const onMessageClick = () => {
+    // TODO: Fix me!
     Linking.openURL('https://m.me/elizharwood')
   }
 
@@ -55,7 +56,7 @@ export default function(props) {
       return [
         messageOption,
         {
-          label: '✅ Going',
+          label: '✓ Going',
           type: 'secondary',
           onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
         },
@@ -83,7 +84,7 @@ export default function(props) {
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
           <FriendIcon thumbnail={props.plan.thumbnail}/>
           <If condition={ !props.plan.isCreator && props.plan.isAttending }>
-            <View style={{ position: 'relative', paddingTop: 3, left: 0, right: 0, alignItems: 'center'}}>
+            <View style={{ position: 'relative', top: 3, left: 0, right: 0, alignItems: 'center'}}>
               <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
             </View>
           </If>

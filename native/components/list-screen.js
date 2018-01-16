@@ -53,12 +53,12 @@ export default class ListScreen extends React.Component {
           { butterBar }
         </View>
         <View style={{
-          backgroundColor: '#e9e9ef',
-          padding: 12,
+          backgroundColor: 'white',
+          padding: 8,
           justifyContent: 'center',
           flexDirection: 'row',
           borderTopWidth: 1,
-          borderTopColor: '#BBB'
+          borderTopColor: '#DDD'
         }}
         >
           <View style={{ justifyContent: 'center', alignItems: 'center', marginRight: 16 }}>

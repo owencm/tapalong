@@ -65,9 +65,10 @@ const normalizedEverywhere = [
   {
     templates: [ '%' ],
     events: [
+      { title: 'hosting dinner for those interested' },
       { title: 'playing board games', },
       { title: 'watching a movie', },
-      { title: 'working and reading in a coffee shop', url: 'https://www.google.com/maps/search/Coffee+Shops/' },
+      { title: 'working in a coffee shop', url: 'https://www.google.com/maps/search/Coffee+Shops/' },
     ],
   }
 ]
