@@ -1,10 +1,14 @@
 require('datejs');
 
-const apiEndpoint = 'http://104.236.189.8/api/v1'
+const apiEndpoint = 'https://www.updogapp.co/api/v1'
 // const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
 // const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = true
+const delayNetworkRequests = false
+
+const warnUserOfError = () => {
+  alert('An error occurred. Please check the App Store for an update, and then restart the app.')
+}
 
 const requestLogin = (fbToken) => {
   return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
@@ -75,7 +79,8 @@ const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
-    throw 'Network request failed with status code ' + response.status
+    warnUserOfError()
+    console.log('Network request failed with status code ' + response.status, response)
   }
 }
 
@@ -101,18 +106,22 @@ const sendRequest = (url, method, body, user) => {
   }
 
   return wait(delayNetworkRequests ? 1000 + Math.random() * 2000 : 0)
-    .then(() => { return fetch(`${apiEndpoint}/${url}`, {
-      method,
-      body,
-      headers
-    })
+    .then(() => {
+      let req = {
+        method,
+        headers
+      }
+      if (body !== '') {
+        req.body = body
+      }
+      return fetch(`${apiEndpoint}/${url}`, req)
+    .then(response => { console.log(response); return response })
     .then(checkStatus)
     .then(response => response.json())
     .catch((e) => {
-      //TODO: ignore the error whereby the response has no JSON body becuase it's just an OK
-      console.error(e)
+      warnUserOfError()
+      console.log(e)
     })
-    // .then(json => { if (url === 'push_subscriptions/') { console.log(json); } return json })
   })
 
   // console.log('requesting', url)

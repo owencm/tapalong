@@ -1,5 +1,17 @@
 {
   "expo": {
     "sdkVersion": "23.0.0"
-  }
+  },
+  "hooks": {
+     "postPublish": [
+       {
+         "file": "sentry-expo/upload-sourcemaps",
+         "config": {
+           "organization": "owen-campbell-moore",
+           "project": "tapalong-react-native-client",
+           "authToken": "17e0eba5ce2b4c359befde0796416dfecb503f251a074ac69b3837316b2ff6b7"
+         }
+       }
+     ]
+   }
 }

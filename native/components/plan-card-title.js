@@ -4,7 +4,7 @@ import { Text } from 'react-native';
 // TODO: Refactor these to elsewhere
 const styles = {
   text: {
-    color: '#444',
+    color: 'black',
     fontSize: 17,
     lineHeight: 20,
   },

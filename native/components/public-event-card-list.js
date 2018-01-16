@@ -35,7 +35,7 @@ const PublicEventCardList = (props) => {
 
     if (url) {
       options.push({
-        label: 'Search',
+        label: 'More info',
         type: 'secondary',
         onClick: () => {
           Linking.openURL(url)

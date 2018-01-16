@@ -53,12 +53,12 @@ export default class ImgFadeInOnLoad extends React.Component {
       imgStyle.borderRadius = 0.5;
       imgStyle.overflow = 'hidden';
     }
-    if (Platform.OS == 'ios') {
+    // if (Platform.OS == 'ios') {
       return <Image
         source={{ uri: this.props.src }}
         style={ imgStyle }
       />
-    }
+    // }
 
     // return (
     //   <View style={{position: 'relative'}}>

@@ -11,9 +11,6 @@ import {
 // Temporary hacks to remember auth until I implement redux-persist
 import { AsyncStorage } from 'react-native'
 
-// Debug code for logging out the user
-// AsyncStorage.removeItem('user')
-
 const mapStateToProps = (state) => {
   return {
     // So the login screen can auto-navigate to list if the user is not undefined

@@ -51,12 +51,14 @@ app.use('/api/v1', (req, res, next) => {
   const id = req.headers['user-id'];
   const token = req.headers['session-token'];
   if (id === undefined || token === undefined) {
+    console.log(`Responding with 403 to ${req.method} ${req.path} request from user ${req.headers['user-id']} because of missing headers`.red)
     res.status(403);
     res.end();
     return
   }
   Users.getUserWithIdAndSessionToken(id, token).then((user) => {
     if (user === null) {
+      console.log(`Responding with 403 to ${req.method} ${req.path} request from user ${req.headers['user-id']} because session token invalid: ${token}`.red)
       res.status(403);
       res.end();
       return
@@ -204,31 +206,23 @@ if (app.get('env') === 'development') {
   });
 }
 
-// For now, disable SSL until we buy a domain
 if (app.get('env') === 'production') {
-  app.set('port', 80);
-  app.listen(app.get('port'), () => {
-    console.log('Listening on HTTP, port', app.get('port'));
+  const apphttps = https.createServer(
+    {
+      key: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/privkey.pem'),
+      cert: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/fullchain.pem')
+    },
+    app
+  );
+  apphttps.listen(443, () => {
+    console.log('Listening on HTTPS, port', 443);
+  });
+  var httpRedirectionApp = express();
+  // set up a route to redirect http to https
+  httpRedirectionApp.get('*', (req,res) => {
+      res.redirect('https://' + req.headers.host + req.url);
+  })
+  httpRedirectionApp.listen(80, () => {
+    console.log('Listening on HTTP to redirect, port', 80);
   });
 }
-
-// if (app.get('env') === 'production') {
-//   const apphttps = https.createServer(
-//     {
-//       key: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/privkey.pem'),
-//       cert: fs.readFileSync('/etc/letsencrypt/live/www.updogapp.co/fullchain.pem')
-//     },
-//     app
-//   );
-//   apphttps.listen(443, () => {
-//     console.log('Listening on HTTPS, port', 443);
-//   });
-//   var httpRedirectionApp = express();
-//   // set up a route to redirect http to https
-//   httpRedirectionApp.get('*', (req,res) => {
-//       res.redirect('https://' + req.headers.host + req.url);
-//   })
-//   httpRedirectionApp.listen(80, () => {
-//     console.log('Listening on HTTP to redirect, port', 80);
-//   });
-// }
