@@ -12,6 +12,8 @@ const colors = require('colors')
 const { Users, Plans, Sessions, PushSubs } = require('./models.js')
 const { selectNPublicEvents } = require('./public-events.js')
 
+let reqCount = 0
+
 // Find Owen so we can send him push when stuff happens later
 let owen;
 Users.getUserWithFbId('680160262').then((user) => {
@@ -29,7 +31,8 @@ const publicPath = __dirname + '/../web/build'
 const app = express();
 
 app.use(responseTime((req, res, time) => {
-  console.log(`Responded in ${Math.round(time)}ms`.red)
+  const fromUser = (req.headers['user-id'] > 0) ? `from user ${req.headers['user-id']}` : ``
+  console.log(`Request #${req.id} served in ${Math.round(time)}ms: ${req.method} ${req.path} request ${fromUser}`.red)
 }))
 
 // Setup gzip compression
@@ -38,13 +41,18 @@ app.use(compression());
 // Set express to parse JSON in request bodies
 app.use(bodyParser.json());
 
+app.use('/', (req, res, next) => {
+  req.id = reqCount++
+  const fromUser = (req.headers['user-id'] > 0) ? `from user ${req.headers['user-id']}` : ``
+  console.log(`Request #${req.id} received: ${req.method} ${req.path} request ${fromUser}`.green)
+  next()
+})
+
 // Authenticate calls and add req.user
 // TODO: find a tidier way of only authenticating specific endpoints
 // TODO: Find a tidier way of sending 403s
 app.use('/api/v1', (req, res, next) => {
-  console.log(`${req.method} ${req.path} request from user ${req.headers['user-id']}`.green)
-
-  if (req.path === '/login/') {
+  if (req.path === '/login/' || req.path === '/alive/') {
     next();
     return;
   }
@@ -77,10 +85,14 @@ const promiseWithTimeout = (promise, timeout) => {
   });
 }
 
+app.get('/alive', (req, res) => {
+  return res.sendStatus(200)
+})
+
 // Setup routes
 
 app.post('/api/v1/login', (req, res) => {
-  const fbToken = req.body.fb_token;
+  const fbToken = req.body.fbToken;
   // TODO: Handle accessing user data on FB failing
   Users.getOrCreateUserWithFbToken(fbToken).then(({ user, newlyCreated }) => {
     if (newlyCreated) {
@@ -95,11 +107,11 @@ app.post('/api/v1/login', (req, res) => {
       // TODO: Move away from underscore style
       return {
         success: true,
-        user_id: user.serializedUser.id,
-        user_name: user.serializedUser.name,
+        userId: user.serializedUser.id,
+        userName: user.serializedUser.name,
         image: user.serializedUser.image,
-        session_token: token,
-        first_login: newlyCreated
+        sessionToken: token,
+        // firstLogin: newlyCreated
       };
     });
   }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
@@ -160,6 +172,24 @@ app.post('/api/v1/plans/:planId/unattend/', (req, res) => {
   return Plans.setUserAttendingPlanId(planId, req.user, false).then((plan) => {
     res.send(JSON.stringify(plan.serializedPlan));
   });
+});
+
+app.post('/api/v1/plans/:planId/report/', (req, res) => {
+  const planId = req.params.planId;
+  const report = {
+    time: Date.now(),
+    reportee: req.user.serializedUser.id,
+    reportedPlan: planId
+  }
+  res.send(JSON.stringify({ success: true }))
+  // TODO: do something more sensible with reports...
+  fs.appendFile('reports.txt', JSON.stringify(report)+'\n', (err) => {
+    if (err) {
+      console.log('Failed to write report to reports.txt', report)
+    }
+    console.log(`Received report from user ${req.user.serializedUser.id} of plan ${planId}`)
+  })
+  if (owen) { PushSubs.sendNotificationToUser({ title: 'New report received' }, owen) }
 });
 
 app.post('/api/v1/plans/:planId/cancel/', (req, res) => {

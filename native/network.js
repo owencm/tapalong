@@ -1,22 +1,22 @@
 require('datejs');
 
-const apiEndpoint = 'https://www.updogapp.co/api/v1'
+// const apiEndpoint = 'https://www.updogapp.co/api/v1'
 // const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
-// const apiEndpoint = 'http://localhost:8080/api/v1'
+const apiEndpoint = 'http://localhost:8080/api/v1'
 
 const delayNetworkRequests = false
 
 const warnUserOfError = () => {
-  alert('An error occurred. Please check the App Store for an update, and then restart the app.')
+  alert('Error - something went wrong. Are you offline? If not, please try again in a few minutes.')
 }
 
 const requestLogin = (fbToken) => {
-  return sendRequest('login/', 'post', JSON.stringify({fb_token: fbToken}), undefined)
+  return sendRequest('login/', 'post', JSON.stringify({fbToken: fbToken}), undefined)
     .then((response) => {
       return {
-        userId: response.user_id,
-        userName: response.user_name,
-        sessionToken: response.session_token,
+        userId: response.userDd,
+        userName: response.userName,
+        sessionToken: response.sessionToken,
         thumbnail: response.image,
       }
     }).catch((e) => { throw e })
@@ -75,11 +75,14 @@ const requestCreatePushNotificationsSubscription = function (user, subscription)
   return sendRequest('push_subscriptions/', 'post', JSON.stringify(expoSubscription), user)
 };
 
+const requestReportPlan = (user, plan) => {
+  return sendRequest('plans/'+plan.id+'/report/', 'post', '', user)
+}
+
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
-    warnUserOfError()
     console.error('Network request failed with status code ' + response.status, response)
   }
 }
@@ -115,7 +118,7 @@ const sendRequest = (url, method, body, user) => {
         req.body = body
       }
       return fetch(`${apiEndpoint}/${url}`, req)
-    .then(response => { console.log(response); return response })
+    // .then(response => { console.log(response); return response })
     .then(checkStatus)
     .then(response => response.json())
     .catch((e) => {
@@ -149,6 +152,7 @@ export default {
   requestSetAttending,
   requestUpdatePlan,
   requestCancelPlan,
+  requestReportPlan,
   requestCreatePushNotificationsSubscription,
   requestLogin
 };

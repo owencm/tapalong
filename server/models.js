@@ -225,12 +225,14 @@ const Plans = (() => {
     const serializedCreator = creator.then((creator) => creator.serializedUser);
     const thumbnail = serializedCreator.then((serializedCreator) => serializedCreator.image);
     const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
+    const creatorFbId = serializedCreator.then((serializedCreator) => serializedCreator.fbId);
 
     const serializedAttrPromises = {
       attendees,
       isAttending,
       thumbnail,
       creatorName,
+      creatorFbId,
       isCreator
     }
     const attrPromises = { creator }
@@ -401,8 +403,8 @@ const PushSubs = (() => {
     // });
   };
 
-  const sendNotificationToUser = ({ title, body, url, tag }, user) => {
-    console.log('Sending a notification to ', user.serializedUser.name);
+  const sendNotificationToUser = ({ title = '', body = '', url = '', tag = '' }, user) => {
+    console.log('Attempt to notify', user.serializedUser.name);
     return user.dbUser.getPushSubs().then((dbPushSubs) => {
       return Promise.all(dbPushSubs.map((dbPushSub) => {
 
@@ -416,9 +418,16 @@ const PushSubs = (() => {
           }
 
           let expo = new Expo()
-          console.log('about to send notification')
+          console.log('Sending notification to', user.serializedUser.name,'via', dbPushSub.get('expoToken'))
           setTimeout(() => {
-            expo.sendPushNotificationsAsync([message])
+            expo.sendPushNotificationsAsync([message]).catch((e) => {
+              // Expo sometimes fails with 502 errors so retry failures after 10 seconds
+              setTimeout(() => {
+                expo.sendPushNotificationsAsync([message]).catch((e) => {
+                  console.error(e)
+                })
+              }, 10000)
+            })
           }, 3000)
         } else {
           console.error('push subscription type not supported')

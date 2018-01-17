@@ -41,6 +41,7 @@ export default class ListScreen extends React.Component {
               onExpandPlan={ this.props.onExpandPlan }
               onUnexpandPlan={ this.props.onUnexpandPlan }
               onCreateClick={ this.props.gotoCreatePlanScreen }
+              onReportPlan={ this.props.onReportPlan }
             />
             <PublicEventCardList
               user={ this.props.user }

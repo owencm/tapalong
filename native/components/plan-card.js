@@ -4,6 +4,9 @@ import {
   View,
   Text,
   Linking,
+  Image,
+  TouchableHighlight,
+  ActionSheetIOS,
 } from 'react-native'
 import Card from './card.js'
 import CardOptions from './card-options.js'
@@ -20,14 +23,28 @@ export default function(props) {
 
   let options = [];
 
+  const handleMenuClick = () => {
+    ActionSheetIOS.showActionSheetWithOptions({
+      options: ['Cancel', 'Report'],
+      destructiveButtonIndex: 1,
+      cancelButtonIndex: 0,
+    },
+    (buttonIndex) => {
+      if (buttonIndex === 1) {
+        props.onReportClick()
+      }
+    });
+  }
+
   const detailsAvaialable = props.plan.description !== '' ||
                             props.plan.attendees.length > 0
 
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
+  const creatorFbId = props.plan.creatorFbId
+
   const onMessageClick = () => {
-    // TODO: Fix me!
-    Linking.openURL('https://m.me/elizharwood')
+    Linking.openURL(`https://m.me/${creatorFbId}`)
   }
 
   if (detailsAvaialable) {
@@ -56,7 +73,7 @@ export default function(props) {
       return [
         messageOption,
         {
-          label: '✓ Going',
+          label: '✅ Going',
           type: 'secondary',
           onClick: (e) => { e.stopPropagation(); props.onUnattendClick() },
         },
@@ -84,7 +101,7 @@ export default function(props) {
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
           <FriendIcon thumbnail={props.plan.thumbnail}/>
           <If condition={ !props.plan.isCreator && props.plan.isAttending }>
-            <View style={{ position: 'relative', top: 3, left: 0, right: 0, alignItems: 'center'}}>
+            <View style={{ position: 'absolute', top: 44, left: 0, right: 0, alignItems: 'center'}}>
               <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
             </View>
           </If>
@@ -113,6 +130,14 @@ export default function(props) {
       <CardOptions
         options={options}
       />
+      { /* Use TouchableHighlight because TouchableWithoutFeedback get's layed out incorrectly for some reason */ }
+      <TouchableHighlight
+        style={{ position: 'absolute', right: 11, top: 5 }}
+        onPress={ handleMenuClick }
+        underlayColor="rgba(0, 0, 0, 0)"
+      >
+        <Image source={require('../assets/more-icon.png')} style={{ width: 18, height: 18, opacity: 0.6 }}></Image>
+      </TouchableHighlight>
     </Card>
   );
 

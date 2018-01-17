@@ -21,11 +21,13 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
+  console.log(actions.requestReportPlan)
   return bindActionCreators({
     requestRefreshPlans: actions.requestRefreshPlans,
     requestRefreshEvents: actions.requestRefreshEvents,
     requestSetAttending: actions.requestSetAttending,
     requestCreatePushNotificationsSubscription: actions.requestCreatePushNotificationsSubscription,
+    requestReportPlan: actions.requestReportPlan,
     expandPlan: actions.expandPlan,
     unexpandPlan: actions.unexpandPlan,
   }, dispatch)
@@ -80,6 +82,11 @@ class ListScreenContainer extends React.Component {
     this.props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
   }
 
+  handleReportPlan(plan) {
+    const { userId, sessionToken } = this.props.user;
+    this.props.requestReportPlan(userId, sessionToken, plan)
+  }
+
   render () {
     return (
       <View style={{ flex: 1 }}>
@@ -93,6 +100,7 @@ class ListScreenContainer extends React.Component {
           onUnattendPlan={ this.handleUnattendPlan.bind(this) }
           onExpandPlan={ this.props.expandPlan }
           onUnexpandPlan={ this.props.unexpandPlan }
+          onReportPlan={ this.handleReportPlan.bind(this) }
           style={{ flex: 1 }}
           {...this.props}
         />

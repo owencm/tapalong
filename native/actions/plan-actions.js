@@ -140,3 +140,13 @@ export function requestDeletePlan(userId, sessionToken, plan) {
       })
   }
 }
+
+export function requestReportPlan(userId, sessionToken, plan) {
+  return (dispatch) => {
+    return network.requestReportPlan({userId, sessionToken}, plan)
+      .then(() => {
+        alert('Thank you for reporting this content. A member of our team will review it and take action if appropriate.')
+        // dispatch(removePlan(plan.clientId));
+      })
+  }
+}
