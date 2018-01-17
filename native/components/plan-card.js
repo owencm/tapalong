@@ -25,7 +25,7 @@ export default function(props) {
 
   const handleMenuClick = () => {
     ActionSheetIOS.showActionSheetWithOptions({
-      options: ['Cancel', 'Report'],
+      options: ['Cancel', 'Report plan'],
       destructiveButtonIndex: 1,
       cancelButtonIndex: 0,
     },
@@ -44,7 +44,8 @@ export default function(props) {
   const creatorFbId = props.plan.creatorFbId
 
   const onMessageClick = () => {
-    Linking.openURL(`https://m.me/${creatorFbId}`)
+    console.log(`fb-messenger-public://user-thread/${creatorFbId}`)
+    Linking.openURL(`fb-messenger-public://`)
   }
 
   if (detailsAvaialable) {
@@ -56,22 +57,20 @@ export default function(props) {
   }
 
   const getOptions = (isCreator, isAttending) => {
-    const messageOption = {
-      label: 'Message',
-      type: 'secondary',
-      onClick: (e) => { e.stopPropagation(); onMessageClick() },
-    }
+    // const messageOption = {
+    //   label: 'Message',
+    //   type: 'secondary',
+    //   onClick: (e) => { e.stopPropagation(); onMessageClick() },
+    // }
     if (isCreator) {
-      // Editing
       return [{
         label: 'Edit',
         type: 'secondary',
         onClick: (e) => { e.stopPropagation(); props.onEditClick() },
       }]
     } else if (isAttending) {
-      // Unattending
       return [
-        messageOption,
+        // messageOption,
         {
           label: '✅ Going',
           type: 'secondary',
@@ -79,9 +78,8 @@ export default function(props) {
         },
       ]
     } else {
-      // Attending
       return [
-        messageOption,
+        // messageOption,
         {
           label: 'Go along',
           onClick: (e) => { e.stopPropagation(); props.onAttendClick() },

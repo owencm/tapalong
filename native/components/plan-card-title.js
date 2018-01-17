@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 const styles = {
   text: {
     color: 'black',
-    fontSize: 17,
+    fontSize: 16,
     lineHeight: 20,
   },
   boldText: {
@@ -27,7 +27,7 @@ const getDateString = (dateTime) => {
   } else if (tomorrow.equals(dateCopy)) {
     str += 'tomorrow ';
   } else {
-    str += 'on ' + dateTime.toString('dddd') + ' the ' + dateTime.toString('dS') + ' ';
+    str += 'on ' + dateTime.toString('dddd') + ' ' + dateTime.toString('dS') + ' ' + dateTime.toString('MMM') + ' ';
   }
   str += 'at ' + dateTime.toString('h');
   const minutes = dateTime.toString('mm');

@@ -430,7 +430,8 @@ const PushSubs = (() => {
             })
           }, 3000)
         } else {
-          console.error('push subscription type not supported')
+          // TODO: implement
+          console.error('Push subscription type for this user not supported')
         }
 
         // const endpoint = dbPushSub.get('endpoint');
