@@ -51,11 +51,12 @@ const planReducer = (state = {
                         }, action) => {
 
   switch (action.type) {
+
+    // This adds the plans given, but if a plan with the same server ID already exists we replace it
     case ADD_PLANS:
 
-      // console.log('Adding plans', action.plans)
-
-      let plans = action.plans.filter(plan => {
+      // Validate the new plans to be added
+      let newPlans = action.plans.filter(plan => {
         let validity = validateNewPlan(plan)
         if (!validity.isValid) {
           // console.log(`Invalid plan attempted to be added: ${validity.reason}`);
@@ -63,17 +64,37 @@ const planReducer = (state = {
         return validity.isValid
       })
 
+      // For each existing plan, check if it has a matching server ID to any new plan.
+      // If so, copy the client IDs to the new plan, if not, push it to a list of plans we're keeping
+      let plansToKeep = []
+      for (let oldPlan of state.plans) {
+        let foundMatchingOldPlan = false
+        for (let newPlan of newPlans) {
+          if (oldPlan.id === newPlan.id) {
+            newPlan.clientId = oldPlan.clientId
+            foundMatchingOldPlan = true
+            break;
+          }
+        }
+        if (!foundMatchingOldPlan) {
+          plansToKeep.push(oldPlan)
+        }
+      }
+
       let maxPlanId = state.maxPlanId
+      // For each new plan, check that it has a clientId or give it one
+      for (let newPlan of newPlans) {
+        if (newPlan.clientId === undefined) {
+          newPlan.clientId = maxPlanId++
+        }
+      }
 
-      plans = plans.map(plan => {
-        return Object.assign({}, plan, { clientId: maxPlanId++ })
-      })
-
+      // Join the plans to keep from before with the new plans
       return Object.assign(
         {},
         state,
         {
-          plans: [...state.plans, ...plans].sort(sortByTime),
+          plans: [...plansToKeep, ...newPlans].sort(sortByTime),
           maxPlanId: maxPlanId
         },
       );
@@ -85,6 +106,7 @@ const planReducer = (state = {
           })
         }
       );
+    // Can maybe remove this and just use ADD_PLANS since it keeps newer versions of plans
     case UPDATE_PLAN:
       // TODO: validate plan
 
@@ -92,13 +114,13 @@ const planReducer = (state = {
         return plan.clientId !== action.clientId;
       })
 
-      const newPlans = [...oneRemoved, action.plan].sort(sortByTime)
+      const updatedPlans = [...oneRemoved, action.plan].sort(sortByTime)
 
       return Object.assign(
         {},
         state,
         {
-          plans: newPlans,
+          plans: updatedPlans,
           initialized: true
         }
       );

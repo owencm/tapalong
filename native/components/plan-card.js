@@ -43,10 +43,10 @@ export default function(props) {
 
   const creatorFbId = props.plan.creatorFbId
 
-  const onMessageClick = () => {
-    console.log(`fb-messenger-public://user-thread/${creatorFbId}`)
-    Linking.openURL(`fb-messenger-public://`)
-  }
+  // const onMessageClick = () => {
+  //   console.log(`fb-messenger-public://user-thread/${creatorFbId}`)
+  //   Linking.openURL(`fb-messenger-public://`)
+  // }
 
   if (detailsAvaialable) {
     options.push({

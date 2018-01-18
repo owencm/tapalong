@@ -3,17 +3,23 @@ import {
   Image,
   Text,
   View,
+  Linking,
+  TouchableWithoutFeedback
 } from 'react-native'
 import m from '../m.js'
 // import FacebookLogin from './facebook-login.js'
 import If from './if.js'
 import FacebookLoginNative from './facebook-login-native.js'
 
+const handleTermsAndConditionsClick = () => {
+  Linking.openURL(`https://www.updogapp.co/legal`)
+}
+
 const LoginScene = (props) => {
 
   const loginTextStyle = {
     color: 'white',
-    fontSize: 12,
+    fontSize: 15,
     fontWeight: '700',
   }
 
@@ -27,6 +33,22 @@ const LoginScene = (props) => {
     bottom: 0,
     borderRadius: 30,
     marginHorizontal: 40,
+  }
+
+  const subTextStyle = {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 11,
+    backgroundColor: 'rgba(0,0,0,0)'
+  }
+
+  const subTextLayoutStyle = {
+    textAlign: 'center',
+    paddingTop: 24,
+    paddingHorizontal: 80,
+  }
+
+  const underlineStyle = {
+    textDecorationLine: 'underline'
   }
 
   // props.readyToLogin
@@ -56,6 +78,20 @@ const LoginScene = (props) => {
         </If>
       </View>
     </FacebookLoginNative>
+  )
+
+  const termsAndConditions = (
+    <TouchableWithoutFeedback
+      onPress ={ handleTermsAndConditionsClick }
+    >
+      <View>
+        <Text style={ m(subTextStyle, subTextLayoutStyle) }>
+          We will never post to Facebook.
+
+          By continuing you agree to our <Text style={ underlineStyle }>Terms</Text> and that you have read our <Text style={ underlineStyle }>Privacy Policy</Text>.
+        </Text>
+      </View>
+    </TouchableWithoutFeedback>
   )
 
   const header = <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
@@ -94,6 +130,7 @@ const LoginScene = (props) => {
 
   const footer = <View style={{ flex: 1, justifyContent: 'center' }}>
     { loginButton }
+    { termsAndConditions }
   </View>
 
   return (

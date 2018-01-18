@@ -14,7 +14,7 @@ const requestLogin = (fbToken) => {
   return sendRequest('login/', 'post', JSON.stringify({fbToken: fbToken}), undefined)
     .then((response) => {
       return {
-        userId: response.userDd,
+        userId: response.userId,
         userName: response.userName,
         sessionToken: response.sessionToken,
         thumbnail: response.image,

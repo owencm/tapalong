@@ -31,8 +31,8 @@ const publicPath = __dirname + '/../web/build'
 const app = express();
 
 app.use(responseTime((req, res, time) => {
-  const fromUser = (req.headers['user-id'] > 0) ? `from user ${req.headers['user-id']}` : ``
-  console.log(`Request #${req.id} served in ${Math.round(time)}ms: ${req.method} ${req.path} request ${fromUser}`.red)
+  const fromUser = (req.headers['user-id'] > 0) ? `from user ${req.headers['user-id']}` : `with no authentication`
+  console.log(`Request #${req.id} served in ${Math.round(time)}ms: ${req.method} ${req.path} ${fromUser}`.red)
 }))
 
 // Setup gzip compression
@@ -177,7 +177,7 @@ app.post('/api/v1/plans/:planId/unattend/', (req, res) => {
 app.post('/api/v1/plans/:planId/report/', (req, res) => {
   const planId = req.params.planId;
   const report = {
-    time: Date.now(),
+    time: Date.now().toString(),
     reportee: req.user.serializedUser.id,
     reportedPlan: planId
   }

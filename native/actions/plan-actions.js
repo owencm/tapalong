@@ -76,7 +76,7 @@ export function requestSetAttending(userId, sessionToken, plan, attending) {
       setTimeout(() => {
         dispatch(showButterBar())
         setTimeout(() => { dispatch(hideButterBar()) }, 6000)
-      }, 1000)
+      }, 1500)
     }
     return network.requestSetAttending({userId, sessionToken}, plan, attending)
       .then((updatedPlan) => {
