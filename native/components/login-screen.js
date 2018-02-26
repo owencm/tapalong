@@ -12,7 +12,7 @@ import If from './if.js'
 import FacebookLoginNative from './facebook-login-native.js'
 
 const handleTermsAndConditionsClick = () => {
-  Linking.openURL(`https://www.updogapp.co/legal`)
+  Linking.openURL(`https://www.updogapp.co/termsandprivacy.html`)
 }
 
 const LoginScene = (props) => {

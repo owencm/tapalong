@@ -27,7 +27,7 @@ Users.getUserWithFbId('680160262').then((user) => {
 // })
 
 
-const publicPath = __dirname + '/../web/build'
+const publicPath = __dirname + '/static'
 const app = express();
 
 app.use(responseTime((req, res, time) => {

@@ -28,6 +28,7 @@ const mapDispatchToProps = (dispatch) => {
     requestSetAttending: actions.requestSetAttending,
     requestCreatePushNotificationsSubscription: actions.requestCreatePushNotificationsSubscription,
     requestReportPlan: actions.requestReportPlan,
+    requestRefreshPlans: actions.requestRefreshPlans,
     expandPlan: actions.expandPlan,
     unexpandPlan: actions.unexpandPlan,
   }, dispatch)
@@ -71,6 +72,13 @@ const soundObject = new Audio.Sound()
 soundObject.loadAsync(require('../assets/sounds/success-1.m4a'))
 
 class ListScreenContainer extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      refreshing: false
+    }
+  }
+
   handleAttendPlan(plan) {
     const { userId, sessionToken } = this.props.user;
     this.props.requestSetAttending(userId, sessionToken, plan, !plan.isAttending)
@@ -87,6 +95,14 @@ class ListScreenContainer extends React.Component {
     this.props.requestReportPlan(userId, sessionToken, plan)
   }
 
+  handleRefresh() {
+    this.setState({ refreshing: true })
+    const { userId, sessionToken } = this.props.user
+    this.props.requestRefreshPlans(userId, sessionToken).then(() => {
+      this.setState({ refreshing: false })
+    })
+  }
+
   render () {
     return (
       <View style={{ flex: 1 }}>
@@ -101,6 +117,8 @@ class ListScreenContainer extends React.Component {
           onExpandPlan={ this.props.expandPlan }
           onUnexpandPlan={ this.props.unexpandPlan }
           onReportPlan={ this.handleReportPlan.bind(this) }
+          onRefresh={ this.handleRefresh.bind(this) }
+          refreshing={ this.state.refreshing }
           style={{ flex: 1 }}
           {...this.props}
         />

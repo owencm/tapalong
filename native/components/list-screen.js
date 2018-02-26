@@ -3,6 +3,7 @@ import {
   ScrollView,
   Text,
   View,
+  RefreshControl,
 } from 'react-native'
 import PlanCardList from './plan-card-list.js'
 import RaisedButton from './raised-button.js'
@@ -28,7 +29,15 @@ export default class ListScreen extends React.Component {
     return (
       <View style={{ flex: 1 }}>
         <View style={{ flex: 1 }}>
-          <ScrollView style={{ flex: 1 }} ref='ScrollView'>
+          <ScrollView
+            style={{ flex: 1 }}
+            refreshControl={
+              <RefreshControl
+                refreshing={this.props.refreshing}
+                onRefresh={this.props.onRefresh}
+              />
+            }
+          >
             <PlanCardList
               style={{ flex: 1, marginBottom: 16, marginTop: 16 }}
               plans={ this.props.plans.plans }
