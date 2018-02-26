@@ -37,8 +37,9 @@ export function requestBlockUser(userId, sessionToken, userToBlockId) {
   return (dispatch) => {
     return network.requestBlockUser({userId, sessionToken}, userToBlockId)
       .then(() => {
+        dispatch(requestRefreshPlans(userId, sessionToken))
         alert('This user has been blocked. You will no longer see their plans, and they will not be able to see yours.')
         // dispatch(removePlan(plan.clientId));
-      })
+    }).catch((e) => { throw e })
   }
 }

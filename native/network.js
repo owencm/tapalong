@@ -1,8 +1,8 @@
 require('datejs');
 
-const apiEndpoint = 'https://www.updogapp.co/api/v1'
+// const apiEndpoint = 'https://www.updogapp.co/api/v1'
 // const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
-// const apiEndpoint = 'http://localhost:8080/api/v1'
+const apiEndpoint = 'http://localhost:8080/api/v1'
 
 const delayNetworkRequests = false
 
@@ -80,8 +80,7 @@ const requestReportPlan = (user, plan) => {
 }
 
 const requestBlockUser = (user, userToBlockId) => {
-  alert('blocked yo')
-  return sendRequest('users/'+userToBlockId.id+'/block/', 'post', '', user)
+  return sendRequest('users/'+userToBlockId+'/block/', 'post', '', user)
 }
 
 const checkStatus = (response) => {

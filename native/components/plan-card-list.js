@@ -41,7 +41,7 @@ const getPlansList = (props) => {
         onUnattendClick={ () => props.onUnattendPlan(plan) }
         onEditClick={ () => props.onEditPlan(plan) }
         onReportClick={ () => props.onReportPlan(plan) }
-        onBlockClick={ () => props.onBlockUser(plan.creatorId) }
+        onBlockClick={ () => props.onBlockUser(plan.creator.id) }
         selected={ isSelected }
         key={ plan.clientId }
       />

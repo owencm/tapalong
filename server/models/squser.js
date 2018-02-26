@@ -4,7 +4,8 @@ module.exports = function(sequelize, DataTypes) {
     name: DataTypes.STRING,
     fbId: DataTypes.STRING,
     fbToken: DataTypes.STRING,
-    friends: DataTypes.STRING
+    friends: DataTypes.STRING,
+    blockedFriends: DataTypes.STRING,
   }, {
     classMethods: {
       associate: function(models) {

@@ -197,6 +197,13 @@ app.post('/api/v1/plans/:planId/cancel/', (req, res) => {
   });
 });
 
+app.post('/api/v1/users/:userToBlockId/block/', (req, res) => {
+  const userToBlockId = req.params.userToBlockId;
+  return Users.blockUserByIdForUser(userToBlockId, req.user).then(() => {
+    res.send(JSON.stringify({ success: true }))
+  });
+});
+
 app.post('/api/v1/push_subscriptions', (req, res) => {
   const pushToken = req.body.token
 

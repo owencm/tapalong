@@ -121,6 +121,7 @@ class ListScreenContainer extends React.Component {
   }
 
   handleRefresh() {
+    // TODO: migrate this into Redux so any refresh triggers it
     this.setState({ refreshing: true })
     const { userId, sessionToken } = this.props.user
     this.props.requestRefreshPlans(userId, sessionToken).then(() => {

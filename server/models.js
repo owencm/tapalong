@@ -184,6 +184,16 @@ const Users = (() => {
     });
   }
 
+  const blockUserByIdForUser = (userToBlockId, user) => {
+    let blockedFriends = JSON.parse(user.dbUser.get('blockedFriends') || '[]')
+    return getUserWithId(userToBlockId).then((userToBlock) => {
+      return [...blockedFriends, userToBlock.serializedUser.fbId]
+    }).then((newBlockedFriends) => {
+      console.log('Successfully added user to blocked list, now', newBlockedFriends)
+      return user.dbUser.update({ blockedFriends: JSON.stringify(newBlockedFriends) })
+    })
+  }
+
   return {
     createUser,
     getUserWithFbId,
@@ -191,7 +201,8 @@ const Users = (() => {
     getUserWithId,
     getUserWithIdAndSessionToken,
     getUserFromDBUser,
-    refreshFbFriendsForUser
+    refreshFbFriendsForUser,
+    blockUserByIdForUser
   }
 })();
 
@@ -222,22 +233,25 @@ const Plans = (() => {
     const isCreator = creator.then((creatorUser) => {
       return creatorUser.dbUser.get('id') === user.dbUser.get('id')
     });
-    const serializedCreator = creator.then((creator) => creator.serializedUser);
-    const thumbnail = serializedCreator.then((serializedCreator) => serializedCreator.image);
-    const creatorName = serializedCreator.then((serializedCreator) => serializedCreator.name);
-    const creatorFbId = serializedCreator.then((serializedCreator) => serializedCreator.fbId);
+    const serializedCreator = creator.then((creator) => creator.serializedUser)
+      .then((serializedCreator) => {
+        return {
+          name: serializedCreator.name,
+          id: serializedCreator.id,
+          fbId: serializedCreator.fbId,
+          thumbnail: serializedCreator.image,
+        }
+      })
 
     const serializedAttrPromises = {
       attendees,
       isAttending,
-      thumbnail,
-      creatorName,
-      creatorFbId,
+      creator: serializedCreator,
       isCreator
     }
     const attrPromises = { creator }
 
-    const basicSerializedPlan = getAttrs(dbPlan, ['creatorId', 'id', 'description', 'title', 'startTime'])
+    const basicSerializedPlan = getAttrs(dbPlan, ['id', 'description', 'title', 'startTime'])
 
     return promiseAllObj(serializedAttrPromises).then((serializedAttrs) => {
       return promiseAllObj(attrPromises).then((attrs) => {
@@ -257,7 +271,9 @@ const Plans = (() => {
   }
 
   const getPlansVisibleToUser = (user) => {
-    const friendIds = JSON.parse(user.dbUser.friends);
+    const rawFriendIds = JSON.parse(user.dbUser.friends);
+    const blockedFriendIds = JSON.parse(user.dbUser.blockedFriends || '[]')
+    const friendIds = rawFriendIds.filter(id => blockedFriendIds.indexOf(id) === -1)
     return SQPlan.findAll({
       // Find plans that haven't been cancelled that this user either created
       //  or is friends with the creator of
@@ -349,7 +365,7 @@ const Plans = (() => {
     createPlanForUser,
     cancelPlanByIdForUser,
     updatePlanByIdForUser,
-    setUserAttendingPlanId
+    setUserAttendingPlanId,
   };
 })();
 

@@ -44,7 +44,7 @@ export default function(props) {
 
   const detailsOptionString = props.selected ? 'Hide details' : 'Details'
 
-  const creatorFbId = props.plan.creatorFbId
+  const creatorFbId = props.plan.creator.fbId
 
   // const onMessageClick = () => {
   //   console.log(`fb-messenger-public://user-thread/${creatorFbId}`)
@@ -100,7 +100,7 @@ export default function(props) {
     >
       <CardMainContents style={{ flexDirection: 'row' }}>
         <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-          <FriendIcon thumbnail={props.plan.thumbnail}/>
+          <FriendIcon thumbnail={props.plan.creator.thumbnail}/>
           <If condition={ !props.plan.isCreator && props.plan.isAttending }>
             <View style={{ position: 'absolute', top: 44, left: 0, right: 0, alignItems: 'center'}}>
               <FriendIcon thumbnail={ props.user.thumbnail } size={ 20 }/>
@@ -109,7 +109,7 @@ export default function(props) {
         </View>
         <View style={{flex: 1, flexDirection: 'column'}}>
           <PlanCardTitle
-            creatorName={ props.plan.isCreator ? 'You' : props.plan.creatorName }
+            creatorName={ props.plan.isCreator ? 'You' : props.plan.creator.name }
             title={ props.plan.title }
             startTime={ props.plan.startTime }
           />
