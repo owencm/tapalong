@@ -26,8 +26,6 @@ Users.getUserWithFbId('680160262').then((user) => {
 //   PushSubs.sendNotificationToUser({ title: 'Test title', body: 'test body' }, richard)
 // })
 
-
-const publicPath = __dirname + '/static'
 const app = express();
 
 app.use(responseTime((req, res, time) => {
@@ -222,10 +220,8 @@ app.get('/api/v1/public_events', (req, res) => {
   res.send(selectNPublicEvents(4))
 });
 
-// TODO: Implement a health check URL
-
 // Statically serve any remaining paths from the public folder
-app.use(express.static(path.join(publicPath)));
+app.use(express.static(path.join(__dirname, 'static')));
 
 // Setup ports and start listening
 
