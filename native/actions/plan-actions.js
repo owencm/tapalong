@@ -145,7 +145,7 @@ export function requestReportPlan(userId, sessionToken, plan) {
   return (dispatch) => {
     return network.requestReportPlan({userId, sessionToken}, plan)
       .then(() => {
-        alert('Thank you for reporting this content. A member of our team will review it and take action if appropriate.')
+        alert('Your report has been received. A member of our team will review it as soon as possible and take action as appropriate.')
         // dispatch(removePlan(plan.clientId));
       })
   }

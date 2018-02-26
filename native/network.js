@@ -79,6 +79,11 @@ const requestReportPlan = (user, plan) => {
   return sendRequest('plans/'+plan.id+'/report/', 'post', '', user)
 }
 
+const requestBlockUser = (user, userToBlockId) => {
+  alert('blocked yo')
+  return sendRequest('users/'+userToBlockId.id+'/block/', 'post', '', user)
+}
+
 const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
@@ -153,6 +158,7 @@ export default {
   requestUpdatePlan,
   requestCancelPlan,
   requestReportPlan,
+  requestBlockUser,
   requestCreatePushNotificationsSubscription,
   requestLogin
 };

@@ -27,8 +27,18 @@ export function login(fbToken) {
   }
 }
 
-export function requestCreatePushNotificationsSubscription(user, token) {
+export function requestCreatePushNotificationsSubscription(user, sessionToken) {
   return (dispatch) => {
-    return network.requestCreatePushNotificationsSubscription(user, token)
+    return network.requestCreatePushNotificationsSubscription(user, sessionToken)
+  }
+}
+
+export function requestBlockUser(userId, sessionToken, userToBlockId) {
+  return (dispatch) => {
+    return network.requestBlockUser({userId, sessionToken}, userToBlockId)
+      .then(() => {
+        alert('This user has been blocked. You will no longer see their plans, and they will not be able to see yours.')
+        // dispatch(removePlan(plan.clientId));
+      })
   }
 }

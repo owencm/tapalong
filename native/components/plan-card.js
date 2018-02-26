@@ -25,13 +25,16 @@ export default function(props) {
 
   const handleMenuClick = () => {
     ActionSheetIOS.showActionSheetWithOptions({
-      options: ['Cancel', 'Report plan'],
+      options: ['Cancel', 'Report plan', 'Block user'],
       destructiveButtonIndex: 1,
+      destructiveButtonIndex: 2,
       cancelButtonIndex: 0,
     },
     (buttonIndex) => {
       if (buttonIndex === 1) {
         props.onReportClick()
+      } else if (buttonIndex === 2) {
+        props.onBlockClick()
       }
     });
   }

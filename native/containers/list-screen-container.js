@@ -7,6 +7,8 @@ import If from '../components/if.js'
 import {
   View,
   Text,
+  Alert,
+  SafeAreaView,
 } from 'react-native'
 import { Permissions, Notifications, Audio } from 'expo'
 import { NavigationActions } from 'react-navigation'
@@ -21,13 +23,13 @@ const mapStateToProps = (state) => {
 }
 
 const mapDispatchToProps = (dispatch) => {
-  console.log(actions.requestReportPlan)
   return bindActionCreators({
     requestRefreshPlans: actions.requestRefreshPlans,
     requestRefreshEvents: actions.requestRefreshEvents,
     requestSetAttending: actions.requestSetAttending,
     requestCreatePushNotificationsSubscription: actions.requestCreatePushNotificationsSubscription,
     requestReportPlan: actions.requestReportPlan,
+    requestBlockUser: actions.requestBlockUser,
     requestRefreshPlans: actions.requestRefreshPlans,
     expandPlan: actions.expandPlan,
     unexpandPlan: actions.unexpandPlan,
@@ -91,8 +93,31 @@ class ListScreenContainer extends React.Component {
   }
 
   handleReportPlan(plan) {
-    const { userId, sessionToken } = this.props.user;
-    this.props.requestReportPlan(userId, sessionToken, plan)
+    Alert.alert(
+      'Confirm',
+      'Are you sure you want to report this content?',
+      [
+        {text: 'Cancel', onPress: () => {  }, style: 'cancel'},
+        {text: 'Report', onPress: () => {
+          const { userId, sessionToken } = this.props.user;
+          this.props.requestReportPlan(userId, sessionToken, plan)
+        }, style: 'destructive'},
+      ]
+    )
+  }
+
+  handleBlockUser(userToBlockId) {
+    Alert.alert(
+      'Confirm',
+      'Are you sure you want to block this user? This action cannot be undone.',
+      [
+        {text: 'Cancel', onPress: () => {  }, style: 'cancel'},
+        {text: 'Block', onPress: () => {
+          const { userId, sessionToken } = this.props.user;
+          this.props.requestBlockUser(userId, sessionToken, userToBlockId)
+        }, style: 'destructive'},
+      ]
+    )
   }
 
   handleRefresh() {
@@ -105,24 +130,27 @@ class ListScreenContainer extends React.Component {
 
   render () {
     return (
-      <View style={{ flex: 1 }}>
-        <If condition={ this.props.user.userId > -1 }>
-          <PushSubscriber {...this.props} />
-        </If>
-        <ListScreen
-          gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
-          gotoCreatePlanScreen={ (planTemplate) => { this.props.navigation.navigate('Edit', { planTemplate: planTemplate } ) } }
-          onAttendPlan={ this.handleAttendPlan.bind(this) }
-          onUnattendPlan={ this.handleUnattendPlan.bind(this) }
-          onExpandPlan={ this.props.expandPlan }
-          onUnexpandPlan={ this.props.unexpandPlan }
-          onReportPlan={ this.handleReportPlan.bind(this) }
-          onRefresh={ this.handleRefresh.bind(this) }
-          refreshing={ this.state.refreshing }
-          style={{ flex: 1 }}
-          {...this.props}
-        />
-      </View>
+      <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ flex: 1, backgroundColor: '#eaeaea' }}>
+          <If condition={ this.props.user.userId > -1 }>
+            <PushSubscriber {...this.props} />
+          </If>
+          <ListScreen
+            gotoEditPlanScreen={ (plan) => this.props.navigation.navigate('Edit', { plan }) }
+            gotoCreatePlanScreen={ (planTemplate) => { this.props.navigation.navigate('Edit', { planTemplate: planTemplate } ) } }
+            onAttendPlan={ this.handleAttendPlan.bind(this) }
+            onUnattendPlan={ this.handleUnattendPlan.bind(this) }
+            onExpandPlan={ this.props.expandPlan }
+            onUnexpandPlan={ this.props.unexpandPlan }
+            onReportPlan={ this.handleReportPlan.bind(this) }
+            onBlockUser={ this.handleBlockUser.bind(this) }
+            onRefresh={ this.handleRefresh.bind(this) }
+            refreshing={ this.state.refreshing }
+            style={{ flex: 1 }}
+            {...this.props}
+          />
+        </View>
+      </SafeAreaView>
     )
   }
 }

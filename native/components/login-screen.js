@@ -12,7 +12,7 @@ import If from './if.js'
 import FacebookLoginNative from './facebook-login-native.js'
 
 const handleTermsAndConditionsClick = () => {
-  Linking.openURL(`https://www.updogapp.co/termsandprivacy.html`)
+  Linking.openURL(`https://www.updogapp.co/legal/termsandprivacy.html`)
 }
 
 const LoginScene = (props) => {
@@ -109,7 +109,7 @@ const LoginScene = (props) => {
         color: 'white'
       }}
     >
-      Withapp
+      With
     </Text>
   </View>
 
