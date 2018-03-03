@@ -116,10 +116,9 @@ const Users = (() => {
 
   // By deafult FB Tokens expire very quickly so swap it for a long-lived token
   const setupLongFbTokenForUser = (user, fbToken) => {
-    // TODO: Move the ID and secret to a config file
     FB.api('oauth/access_token', {
-      client_id: '175370155978273',
-      client_secret: 'eb33b0e99c6d4d856c7460ffe66bdb92',
+      client_id: process.env.FB_CLIENT_ID,
+      client_secret: process.env.FB_CLIENT_SECRET,
       grant_type: 'fb_exchange_token',
       fb_exchange_token: fbToken
     }, (res) => {
@@ -370,8 +369,7 @@ const Plans = (() => {
 })();
 
 const Sessions = (() => {
-  // TODO: move this to somewhere secure
-  const sessionSecret = 'ymkYmbXLH8Vg2NRRERpLLIYKVHG3kwXiIw828CClvphIAHdLo3SFgiUpJOW0';
+  const sessionSecret = process.env.SESSION_SECRET;
 
   // TODO: add versioning in case we want to change payload style
   const createSessionWithUser = (user) => {
@@ -394,8 +392,7 @@ const Sessions = (() => {
 })();
 
 const PushSubs = (() => {
-  // TODO: move this to somewhere secure
-  webPush.setGCMAPIKey('AIzaSyAAxf-66b5V2lsH7Son8Bd0scLtKMcYztA');
+  webPush.setGCMAPIKey(process.env.GCM_API_KEY);
 
   const getPushSubFromDBPushSub = (dbPushSub) => {
     return { dbPushSub, serializedPushSub: dbPushSub.get({ plain: true }) };

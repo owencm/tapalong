@@ -132,13 +132,15 @@ export default function(props) {
         options={options}
       />
       { /* Use TouchableHighlight because TouchableWithoutFeedback get's layed out incorrectly for some reason */ }
-      <TouchableHighlight
-        style={{ position: 'absolute', right: 11, top: 5 }}
-        onPress={ handleMenuClick }
-        underlayColor="rgba(0, 0, 0, 0)"
-      >
-        <Image source={require('../assets/more-icon.png')} style={{ width: 18, height: 18, opacity: 0.6 }}></Image>
-      </TouchableHighlight>
+      <If condition={ !props.plan.isCreator }>
+        <TouchableHighlight
+          style={{ position: 'absolute', right: 11, top: 5 }}
+          onPress={ handleMenuClick }
+          underlayColor="rgba(0, 0, 0, 0)"
+        >
+          <Image source={require('../assets/more-icon.png')} style={{ width: 18, height: 18, opacity: 0.6 }}></Image>
+        </TouchableHighlight>
+      </If>
     </Card>
   );
 
