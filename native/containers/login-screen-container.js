@@ -35,7 +35,7 @@ class LoginScreenContainer extends React.Component {
         return JSON.parse(user) || this.props.user || {}
       }).then((user) => {
         // console.log('stored user', user)
-        if (user.userId > 0) {
+        if (user.userId > -1) {
           this.props.setUser(user.userId, user.userName, user.sessionToken, user.thumbnail)
           setTimeout(() => {
             this.props.requestRefreshPlans(user.userId, user.sessionToken)

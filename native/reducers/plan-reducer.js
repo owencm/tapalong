@@ -5,8 +5,11 @@ import {
   UNEXPAND_PLAN,
   UPDATE_PLAN,
   SET_PLANS_INITIALIZED_STATE,
+  CLEAR_NON_MATCHING_PLANS,
 } from '../constants/action-types.js'
 import m from '../m.js'
+
+// TODO: determine whether concept of clientID is still needed and consider removing to simplify
 
 // TODO: Refactor to somewhere else (duplicated with actions.js)
 let validateNewPlan = function (plan) {
@@ -140,6 +143,16 @@ const planReducer = (state = {
       return Object.assign({}, state, {
         initialized: action.initialized
       })
+    case CLEAR_NON_MATCHING_PLANS:
+      idsOfPlansToKeep = action.plans.map(plan => plan.id)
+
+      return Object.assign({}, state,
+        {
+          plans: [...state.plans].filter((plan) => {
+            return idsOfPlansToKeep.indexOf(plan.id) > -1
+          })
+        }
+      );
     default:
       return state;
     }

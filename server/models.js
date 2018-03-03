@@ -184,13 +184,21 @@ const Users = (() => {
   }
 
   const blockUserByIdForUser = (userToBlockId, user) => {
-    let blockedFriends = JSON.parse(user.dbUser.get('blockedFriends') || '[]')
-    return getUserWithId(userToBlockId).then((userToBlock) => {
-      return [...blockedFriends, userToBlock.serializedUser.fbId]
-    }).then((newBlockedFriends) => {
-      console.log('Successfully added user to blocked list, now', newBlockedFriends)
+    // Note, friend graphs are keyed by fbID not id, so we need to add the fbID to the blocked list
+    const addFBIdToBlockedListForUser = (fbId, user) => {
+      let blockedFriends = JSON.parse(user.dbUser.get('blockedFriends') || '[]')
+      const newBlockedFriends = [...blockedFriends, fbId]
       return user.dbUser.update({ blockedFriends: JSON.stringify(newBlockedFriends) })
+    }
+
+    return getUserWithId(userToBlockId).then((userToBlock) => {
+      // Add each user to each others blocked list. Note therefore ACL-wise you can add yourself to anybody's blocked list
+      // TODO: don't use blockedFriends for both parties since users should be able to manage who they have blocked but not who has blocked them
+      //   When I come to build that feature I'll have to scrape logs to determine who blocked who to fix up the data set :/
+      addFBIdToBlockedListForUser(userToBlock.serializedUser.fbId, user)
+      addFBIdToBlockedListForUser(user.serializedUser.fbId, userToBlock)
     })
+
   }
 
   return {
@@ -392,6 +400,7 @@ const Sessions = (() => {
 })();
 
 const PushSubs = (() => {
+  // TODO: reset GCM key, old one was in github repo
   webPush.setGCMAPIKey(process.env.GCM_API_KEY);
 
   const getPushSubFromDBPushSub = (dbPushSub) => {

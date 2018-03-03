@@ -1,8 +1,8 @@
 require('datejs');
 
-// const apiEndpoint = 'https://www.updogapp.co/api/v1'
+const apiEndpoint = 'https://www.updogapp.co/api/v1'
 // const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
-const apiEndpoint = 'http://localhost:8080/api/v1'
+// const apiEndpoint = 'http://localhost:8080/api/v1'
 
 const delayNetworkRequests = false
 
@@ -87,6 +87,9 @@ const checkStatus = (response) => {
   if (response.status >= 200 && response.status < 300) {
     return response
   } else {
+    if (response.status === 403) {
+      throw 403
+    }
     console.error('Network request failed with status code ' + response.status, response)
   }
 }
@@ -127,7 +130,7 @@ const sendRequest = (url, method, body, user) => {
     .then(response => response.json())
     .catch((e) => {
       warnUserOfError()
-      console.error(e)
+      throw e
     })
   })
 
@@ -143,10 +146,6 @@ const sendRequest = (url, method, body, user) => {
   // }
   // req.setRequestHeader('Content-Type', 'application/json');
   // req.send(body);
-}
-
-const sendToServiceWorker = function (data) {
-  navigator.serviceWorker.controller.postMessage(data);
 }
 
 export default {

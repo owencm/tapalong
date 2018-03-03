@@ -5,6 +5,7 @@ import {
   UNEXPAND_PLAN,
   UPDATE_PLAN,
   SET_PLANS_INITIALIZED_STATE,
+  CLEAR_NON_MATCHING_PLANS,
 } from '../constants/action-types.js'
 
 import {
@@ -14,6 +15,8 @@ import {
 
 import network from '../network.js'
 import validatePlan from '../lib/validate-plan.js'
+
+import { setUser } from './user-actions.js'
 
 /* Plans actions */
 
@@ -60,6 +63,13 @@ export function setPlansInitialized(initialized) {
   }
 }
 
+export function clearNonMatchingPlans(plans) {
+  return {
+    type: CLEAR_NON_MATCHING_PLANS,
+    plans,
+  }
+}
+
 /* Plans thunks */
 
 // Todo: why do these take session tokens and user ids?
@@ -89,8 +99,18 @@ export function requestRefreshPlans(userId, sessionToken) {
   return (dispatch) => {
     return network.requestPlansFromServer({userId, sessionToken}).then((plans) => {
       dispatch(setPlansInitialized(true))
+      // This adds or updates plans, but need to ensure we clear any plans that weren't returned (because deleted, ACLs changed etc)
       dispatch(addPlans(plans))
-    })
+      dispatch(clearNonMatchingPlans(plans))
+    }).catch((e) => {
+      // If the session token has become invalid, this logs the user out so they can reauthenticate.
+      // This is a hack because I couldn't see a nice way to listen for any 403s for any requests and trigger logout.
+      if (e === 403) {
+        dispatch(setUser())
+        // TODO: navigate the user to the login screen and suppress the errors from the network stack.
+        // Note, not possible today because screen navigation is not within redux
+      }
+    }).catch((e) => { alert(e) })
   }
 }
 
