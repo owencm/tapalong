@@ -46,8 +46,8 @@ const normalizedSF = [
       { title: 'going to the Ferry Building farmers market', url: 'http://www.ferrybuildingmarketplace.com/farmers-market/'},
       { title: 'getting brunch', url: 'https://www.google.com/maps/search/brunch/'},
       { title: 'walking up Twin Peaks', url: 'https://www.google.com/maps/place/Twin+Peaks,+San+Francisco'},
-      { title: 'hanging out in Dolores Park', url: 'https://www.google.com/maps/place/Mission+Dolores+Park/'},
-      { title: 'camping somewhere', url: 'http://www.google.com/search?q=camping'},
+      { title: 'hanging out in Dolores Park', url: 'http://www.google.com/search?q=Mission%20Dolores%20Park/'},
+      { title: 'camping somewhere', url: 'http://www.google.com/search?q=campsites%20near%20me'},
       { title: 'spending the weekend in Napa', url: 'http://www.google.com/search?q=napa%20valley'}
     ],
   },

@@ -158,7 +158,7 @@ app.post('/api/v1/plans/:planId/attend/', (req, res) => {
     const capitalizedTitle = title.charAt(0).toUpperCase() + title.slice(1)
     PushSubs.sendNotificationToUser({
       title: capitalizedTitle,
-      body: `${req.user.serializedUser.name} is coming along 🎉`,
+      body: `${req.user.serializedUser.name} is coming along 🙂`,
       url: '/',
       tag: 'static'
     }, plan.creator);
