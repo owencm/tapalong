@@ -9,6 +9,7 @@ import {
   Text,
   Alert,
   SafeAreaView,
+  AppState,
 } from 'react-native'
 import { Permissions, Notifications, Audio } from 'expo'
 import { NavigationActions } from 'react-navigation'
@@ -79,6 +80,25 @@ class ListScreenContainer extends React.Component {
     this.state = {
       refreshing: false
     }
+  }
+
+  _appState = AppState.currentState
+  _handleAppStateChange = (nextAppState) => {
+    // alert(this._appState)
+    if (this._appState.match(/inactive|background/) && nextAppState === 'active') {
+      // App has come into foreground
+      this.handleRefresh()
+    }
+    this._appState = nextAppState
+  }
+
+
+  componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
   }
 
   handleAttendPlan(plan) {
