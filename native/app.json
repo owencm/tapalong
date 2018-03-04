@@ -1,7 +1,7 @@
 {
   "expo": {
     "sdkVersion": "23.0.0",
-    "name": "With plans",
+    "name": "With Plans",
     "description": "Spend time with friends",
     "platforms": ["ios"],
     "icon": "./assets/icon.png",

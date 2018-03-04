@@ -11,6 +11,8 @@ const Expo = require('expo-server-sdk')
 
 const { SQPlan, SQUser, SQUserPlan, SQPushSub } = require('./models/index.js')
 
+FB.options({'appSecret': process.env.FB_APP_SECRET});
+
 // TODO: move to a library of helpers
 
 const promiseAllObj = (obj) => {
