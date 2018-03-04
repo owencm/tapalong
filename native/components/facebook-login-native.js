@@ -14,7 +14,7 @@ const FacebookLoginNative = (props) => {
   const handlePress = () => {
     Facebook.logInWithReadPermissionsAsync('175370155978273', {
       permissions: ['public_profile', 'email', 'user_friends'],
-      // behavior: 'native'
+      behavior: 'web'
     }).then(({ type, token }) => {
       if (type === 'success') {
         // Once upon a time I split these up so I could navigate the user to the list *before* the token was actually available, but these happen together today.

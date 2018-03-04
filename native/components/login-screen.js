@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   Image,
+  ImageBackground,
   Text,
   View,
   Linking,
@@ -135,24 +136,16 @@ const LoginScene = (props) => {
 
   return (
     <View style={{ flex: 1, backgroundColor: '#2284a9' }}>
-      <Image
-        style={{
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          right: 0,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+      <ImageBackground
         source={ require('../assets/background-mobile.jpg') }
+        style={{ flex: 1 }}
       >
-      </Image>
-      <View style={{ flex: 1 }}>
-        { header }
-        { mid }
-        { footer }
-      </View>
+        <View style={{ flex: 1 }}>
+          { header }
+          { mid }
+          { footer }
+        </View>
+      </ImageBackground>
     </View>
   )
 };
