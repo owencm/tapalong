@@ -109,7 +109,7 @@ const LoginScene = (props) => {
         color: 'white'
       }}
     >
-      With
+      With Plans
     </Text>
   </View>
 
@@ -134,7 +134,7 @@ const LoginScene = (props) => {
   </View>
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: '#2284a9' }}>
       <Image
         style={{
           position: 'absolute',

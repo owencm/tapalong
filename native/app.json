@@ -1,7 +1,7 @@
 {
   "expo": {
     "sdkVersion": "23.0.0",
-    "name": "With",
+    "name": "With plans",
     "description": "Spend time with friends",
     "platforms": ["ios"],
     "icon": "./assets/icon.png",
@@ -12,13 +12,13 @@
     "appKey": "main",
     "version": "1.0.1",
     "ios": {
-      "bundleIdentifier": "com.tapalong.tapalong"
+      "bundleIdentifier": "com.tapalong.tapalong",
+      "loadJSInBackgroundExperimental": true
     },
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover"
     },
-    "loadJSInBackgroundExperimental": "true",
   },
   "hooks": {
      "postPublish": [

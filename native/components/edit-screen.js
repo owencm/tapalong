@@ -21,7 +21,7 @@ const EditSccreen = (props) => {
       />
       <If condition={ props.creating }>
         <Hint
-          text="With does not post to Facebook"
+          text="With Plans does not post to Facebook"
           style={{ fontSize: 12, opacity: 0.7 }}
         />
       </If>
