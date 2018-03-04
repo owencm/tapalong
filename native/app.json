@@ -13,7 +13,6 @@
     "version": "1.0.1",
     "ios": {
       "bundleIdentifier": "com.tapalong.tapalong",
-      "loadJSInBackgroundExperimental": true
     },
     "splash": {
       "image": "./assets/splash.png",
