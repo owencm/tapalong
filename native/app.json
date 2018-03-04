@@ -19,7 +19,11 @@
       "resizeMode": "cover"
     },
     "facebookScheme": "fb175370155978273",
-    "facebookAppId": "175370155978273"
+    "facebookAppId": "175370155978273",
+    "assetBundlePatterns": [
+      "assets/**",
+      "node_modules/react-navigation/src/**/*.png",
+    ]
   },
   "hooks": {
      "postPublish": [
