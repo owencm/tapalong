@@ -11,7 +11,7 @@ const Expo = require('expo-server-sdk')
 
 const { SQPlan, SQUser, SQUserPlan, SQPushSub } = require('./models/index.js')
 
-FB.options({'appSecret': process.env.FB_APP_SECRET});
+FB.options({'appSecret': process.env.FB_APP_SECRET, appId: process.env.FB_CLIENT_ID});
 
 // TODO: move to a library of helpers
 
@@ -85,8 +85,8 @@ const Users = (() => {
   }
 
   const getFbUser = (fbToken) => {
-    FB.setAccessToken(fbToken);
     return new Promise((resolve, reject) => {
+      FB.options({accessToken: fbToken});
       // Request the users ID, name and friends
       FB.api('/me?fields=id,name,friends', (res) => {
         // Note the friends list returned includes only friends that use the app
@@ -118,11 +118,14 @@ const Users = (() => {
 
   // By deafult FB Tokens expire very quickly so swap it for a long-lived token
   const setupLongFbTokenForUser = (user, fbToken) => {
+    FB.options({accessToken: fbToken});
+    // I don't understand why the IDs and secrets have to be specified here given they were set in FB.options, but
+    //   ommitting them causes errors
     FB.api('oauth/access_token', {
-      client_id: process.env.FB_CLIENT_ID,
-      client_secret: process.env.FB_CLIENT_SECRET,
       grant_type: 'fb_exchange_token',
-      fb_exchange_token: fbToken
+      fb_exchange_token: fbToken,
+      client_id: process.env.FB_CLIENT_ID,
+      client_secret: process.env.FB_APP_SECRET,
     }, (res) => {
       if(!res || res.error) {
           console.log(!res ? 'error occurred' : res.error);

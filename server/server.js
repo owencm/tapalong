@@ -113,7 +113,7 @@ app.post('/api/v1/login', (req, res) => {
       };
     });
   }).then((response) => res.send(JSON.stringify(response))).catch((e) => {
-    setImmediate(() => { throw e });
+    setImmediate(() => { console.error(e); throw e });
   });
 });
 
