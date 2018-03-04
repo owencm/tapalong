@@ -4,7 +4,7 @@ const apiEndpoint = 'https://www.updogapp.co/api/v1'
 // const apiEndpoint = 'http://192.168.86.207:8080/api/v1'
 // const apiEndpoint = 'http://localhost:8080/api/v1'
 
-const delayNetworkRequests = false
+const delayNetworkRequests = true
 
 const warnUserOfError = () => {
   alert('Error - something went wrong. Are you offline? If not, please try again in a few minutes.')

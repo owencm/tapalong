@@ -6,13 +6,14 @@ import {
 import PlanCard from './plan-card.js'
 import PlanCardLoader from './plan-card-loader.js'
 import PlanCardListPlaceholder from './plan-card-list-placeholder'
+import DelayView from './delay-view.js'
 
 const getPlansList = (props) => {
   if (props.plansInitialized === false) {
-    return <View>
+    return <DelayView delay={2000}>
       <PlanCardLoader/>
       <PlanCardLoader/>
-    </View>
+    </DelayView>
   }
 
   if (props.plans.length === 0) {

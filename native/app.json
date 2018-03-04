@@ -10,7 +10,7 @@
       "color": "#00bcd4",
     },
     "appKey": "main",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "ios": {
       "bundleIdentifier": "com.tapalong.tapalong",
     },
@@ -18,6 +18,8 @@
       "image": "./assets/splash.png",
       "resizeMode": "cover"
     },
+    "facebookScheme": "fb175370155978273",
+    "facebookAppId": "175370155978273"
   },
   "hooks": {
      "postPublish": [

@@ -9,6 +9,7 @@ import PlanCardList from './plan-card-list.js'
 import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
+import If from './if.js'
 
 export default class ListScreen extends React.Component {
 
@@ -53,12 +54,14 @@ export default class ListScreen extends React.Component {
               onReportPlan={ this.props.onReportPlan }
               onBlockUser={ this.props.onBlockUser }
             />
-            <PublicEventCardList
-              user={ this.props.user }
-              onCreateClick={ this.props.gotoCreatePlanScreen }
-              eventsInitialized={ this.props.events.initialized }
-              events={ this.props.events.events }
-            />
+            <If condition={ this.props.plans.initialized }>
+              <PublicEventCardList
+                user={ this.props.user }
+                onCreateClick={ this.props.gotoCreatePlanScreen }
+                eventsInitialized={ this.props.events.initialized }
+                events={ this.props.events.events }
+              />
+            </If>
             <View style={{ height: 24 }} />
           </ScrollView>
           { butterBar }
