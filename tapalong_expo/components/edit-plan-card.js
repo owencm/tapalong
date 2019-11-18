@@ -3,6 +3,7 @@ import {
   View,
   Text,
   TextInput,
+  DatePickerIOS,
 } from 'react-native'
 import m from '../m.js'
 import Card from './card.js'
@@ -16,7 +17,7 @@ import {
   getHyphenSeparatedToday,
   getHyphenSeparatedTomorrow,
 } from '../lib/date-helpers.js'
-import DatePicker from 'react-native-datepicker'
+// import DatePicker from 'react-native-datepicker'
 
 // TODO: set form fields to blur after enter pressed
 // titleInputElem.addEventListener('keydown', function(key) {
@@ -191,7 +192,7 @@ export default class EditPlanCard extends React.Component {
             <TextInput
               ref='titleInput'
               style={ m(bigInputViewStyle, bigInputStyle) }
-                value={ this.state.title }
+              value={ this.state.title }
               placeholder={ placeholder }
               // onChange={ this.handleTitleChange }
               onChangeText={ this.handleTitleChange.bind(this) }
@@ -207,7 +208,8 @@ export default class EditPlanCard extends React.Component {
               marginBottom: 10
             }}
           >
-            <DatePicker
+            {
+            /* <DatePicker
               customStyles={{
                 dateInput: {
                   borderWidth: 0,
@@ -224,6 +226,16 @@ export default class EditPlanCard extends React.Component {
               date={ this.state.startTime }
               onDateChange={ ((_, date) => this.handleDateTimeChange(date)).bind(this) }
               style={{ flexDirection: 'row' }}
+              />*/
+            }
+            <DatePickerIOS
+              mode='datetime'
+              confirmBtnText='Confirm'
+              cancelBtnText='Cancel'
+              format='dddd Do MMMM, ha'
+              minimumDate={ Date.today() }
+              date={ this.state.startTime }
+              onDateChange={ (date => this.handleDateTimeChange(date)).bind(this) }
             />
           </View>
           <AutoExpandingTextInput

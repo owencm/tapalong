@@ -43,4 +43,4 @@ const CardOptions = (props) => {
 
 }
 
-module.exports = CardOptions;
+export default CardOptions

@@ -8,4 +8,4 @@ let If = ({condition, children}) => {
   return condition ? children : null;
 }
 
-module.exports = If;
+export default If

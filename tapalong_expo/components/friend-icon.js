@@ -35,4 +35,4 @@ let FriendIcon = (props) => {
 
 };
 
-module.exports = FriendIcon;
+export default FriendIcon;
