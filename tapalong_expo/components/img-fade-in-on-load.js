@@ -15,14 +15,16 @@ export default class ImgFadeInOnLoad extends React.Component {
   }
 
   loadImage(src) {
-    if (!this.state.loadingStarted) {
-      this.setState({loadingStarted: true});
-      let img = new Image();
-      img.onload = () => {
-        this.setState({loaded: true})
-      };
-      img.src = src;
-    }
+    this.setState({loaded: true})
+    // TODO: work out how to get this to work in nex expo
+    // if (!this.state.loadingStarted) {
+    //   this.setState({loadingStarted: true});
+    //   let img = new Image();
+    //   img.onload = () => {
+    //     this.setState({loaded: true})
+    //   };
+    //   img.src = src;
+    // }
   }
 
   render() {

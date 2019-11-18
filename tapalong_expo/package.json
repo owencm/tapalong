@@ -12,7 +12,19 @@
     "react": "16.8.3",
     "react-dom": "16.8.3",
     "react-native": "https://github.com/expo/react-native/archive/sdk-35.0.0.tar.gz",
-    "react-native-web": "^0.11.7"
+    "react-native-web": "^0.11.7",
+    "datejs": "^1.0.0-rc3",
+    "react-native-collapsible": "^0.10.0",
+    "react-native-datepicker": "^1.6.0",
+    "react-native-fbsdk": "^0.3.0",
+    "react-navigation": "^1.0.0-beta.27",
+    "react-redux": "^5.0.6",
+    "redux": "^3.6.0",
+    "redux-thunk": "^2.1.0",
+    "sentry-expo": "^1.7.0",
+    "expo-av": "~7.0.1",
+    "expo-facebook": "~7.0.0",
+    "expo-permissions": "~7.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^7.1.0"

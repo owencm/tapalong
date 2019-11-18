@@ -1,30 +1,50 @@
 {
   "expo": {
-    "name": "With App",
+    "name": "With Plans",
+    "description": "Spend time with friends",
     "slug": "tapalong_expo",
     "privacy": "public",
     "sdkVersion": "35.0.0",
     "platforms": [
-      "ios",
-      "android",
-      "web"
+      "ios"
     ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "notification": {
+      "icon": "./assets/icon-transparent-48.png",
+      "color": "#00bcd4"
+    },
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "resizeMode": "cover"
     },
+    "facebookScheme": "fb175370155978273",
+    "facebookAppId": "175370155978273",
+    "DEFAULTassetBundlePatterns": [
+      "**/*"
+    ],
+    "assetBundlePatterns": [
+      "assets/**",
+      "node_modules/react-navigation/src/**/*.png"
+    ],
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
     "ios": {
       "supportsTablet": true
     }
-  }
+  },
+  "hooks": {
+     "postPublish": [
+       {
+         "file": "sentry-expo/upload-sourcemaps",
+         "config": {
+           "organization": "owen-campbell-moore",
+           "project": "tapalong-react-native-client",
+           "authToken": "17e0eba5ce2b4c359befde0796416dfecb503f251a074ac69b3837316b2ff6b7"
+         }
+       }
+     ]
+   }
 }

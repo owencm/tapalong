@@ -7,7 +7,8 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native'
 // import { LoginManager, AccessToken } from 'react-native-fbsdk'
-import { Facebook, Constants } from 'expo'
+import Constants from 'expo-constants';
+import * as Facebook from 'expo-facebook';
 
 const isStandalone = () => {
   return Constants.appOwnership !== 'expo';

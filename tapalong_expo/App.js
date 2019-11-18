@@ -1,19 +1,29 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react'
+import { StatusBar, View } from 'react-native'
+import { Provider } from 'react-redux'
+import NavContainer from './containers/nav-container.js'
+import configureStore from './store/configure-store.js'
+import Sentry from 'sentry-expo'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
+// Remove this once Sentry is correctly setup.
+Sentry.enableInExpoDevelopment = true
+
+Sentry.config('https://2fb02cb6bb7b4c2897a4ac3291da4e05@sentry.io/272148').install()
+
+const store = configureStore()
+
+// ES6 class used as registerComponent does not support stateless components
+export default class App extends React.Component {
+  render() {
+    return (
+      <View style={{ flex: 1 }}>
+        <StatusBar
+          barStyle="dark-content"
+        />
+        <Provider store={store}>
+          <NavContainer />
+        </Provider>
+      </View>
+    )
+  }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

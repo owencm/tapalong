@@ -11,7 +11,9 @@ import {
   SafeAreaView,
   AppState,
 } from 'react-native'
-import { Permissions, Notifications, Audio } from 'expo'
+import * as Permissions from 'expo-permissions'
+import { Notifications } from 'expo'
+import { Audio } from 'expo-av'
 import { NavigationActions } from 'react-navigation'
 
 const mapStateToProps = (state) => {
