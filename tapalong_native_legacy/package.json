@@ -22,7 +22,7 @@
     "datejs": "^1.0.0-rc3",
     "expo": "^25.0.0",
     "react": "16.2.0",
-    "react-native": "https://github.com/expo/react-native/archive/sdk-25.0.0.tar.gz",
+    "react-native": "^0.61.4",
     "react-native-collapsible": "^0.10.0",
     "react-native-datepicker": "^1.6.0",
     "react-native-fbsdk": "^0.3.0",
