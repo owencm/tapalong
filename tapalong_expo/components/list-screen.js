@@ -6,6 +6,7 @@ import {
   RefreshControl,
 } from 'react-native'
 import PlanCardList from './plan-card-list.js'
+import InviteCard from './invite-card.js'
 import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
@@ -54,6 +55,11 @@ export default class ListScreen extends React.Component {
               onReportPlan={ this.props.onReportPlan }
               onBlockUser={ this.props.onBlockUser }
             />
+            <If condition={ this.props.plans.initialized }>
+              <InviteCard
+                user={ this.props.user }
+              />
+            </If>
             <If condition={ this.props.plans.initialized }>
               <PublicEventCardList
                 user={ this.props.user }
