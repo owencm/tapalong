@@ -127,7 +127,7 @@ export default class EditPlanCard extends React.Component {
       if (this.state.saveRequestPending) {
         options.push({label: 'Loading...', disabled: true, onClick: this.handleCreateClick.bind(this)});
       } else {
-        options.push({label: 'Done', onClick: this.handleCreateClick.bind(this)});
+        options.push({label: 'Create', onClick: this.handleCreateClick.bind(this)});
       }
     }
     return options
@@ -240,7 +240,7 @@ export default class EditPlanCard extends React.Component {
           </View>
           <AutoExpandingTextInput
             style={ inputContainerStyle }
-            placeholder='Extra information (what? where?)'
+            placeholder='Extra information (where?)'
             rows={ 1 }
             maxRows={ 8 }
             value={ this.state.description }

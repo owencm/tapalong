@@ -25,26 +25,15 @@ const styles = {
 
 export default (props) => {
 
-  const handleInviteViaMessages = () => {
-    SMS.sendSMSAsync([], 'I\'m using this app to share plans I have so people can let me know if they want to come along! You should try it! https://www.google.com')
-  }
-
-  const handleShareClick = () => {
-    Share.share({
-      message: 'I\'m using this app to share plans I have so people can let me know if they want to come along! You should try it! https://www.google.com',
-    });
+  const handleFeedbackViaMessages = () => {
+    SMS.sendSMSAsync('+16507131658', '')
   }
 
   const options = [
     {
-      label: 'Share',
-      type: 'secondary',
-      onClick: handleShareClick
-    },
-    {
-      label: 'Invite via Messages',
+      label: 'Write feedback',
       type: 'primary',
-      onClick: handleInviteViaMessages
+      onClick: handleFeedbackViaMessages
     }
   ]
 
@@ -53,10 +42,10 @@ export default (props) => {
       <CardMainContents style={{ flexDirection: 'row' }}>
         <View style={{flex: 1, flexDirection: 'column'}}>
           <Text style={styles.text}>
+            <Text>Got a question, idea or suggestion? </Text>
             <Text style={styles.boldText}>
-              Invite
+              Share feedback with the developers!
             </Text>
-            <Text> your friends to get With Plans!</Text>
           </Text>
         </View>
       </CardMainContents>

@@ -7,6 +7,7 @@ import {
 } from 'react-native'
 import PlanCardList from './plan-card-list.js'
 import InviteCard from './invite-card.js'
+import FeedbackCard from './feedback-card.js'
 import RaisedButton from './raised-button.js'
 import PublicEventCardList from './public-event-card-list.js'
 import Collapsible from 'react-native-collapsible'
@@ -56,9 +57,7 @@ export default class ListScreen extends React.Component {
               onBlockUser={ this.props.onBlockUser }
             />
             <If condition={ this.props.plans.initialized }>
-              <InviteCard
-                user={ this.props.user }
-              />
+              <InviteCard />
             </If>
             <If condition={ this.props.plans.initialized }>
               <PublicEventCardList
@@ -67,6 +66,7 @@ export default class ListScreen extends React.Component {
                 eventsInitialized={ this.props.events.initialized }
                 events={ this.props.events.events }
               />
+              <FeedbackCard />
             </If>
             <View style={{ height: 24 }} />
           </ScrollView>
